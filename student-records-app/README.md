@@ -3,8 +3,13 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## IF YOURE GETTING ERROR RUN
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned-Scope CurrentUser
-then npm install
+"cd student-records-app"
+then run "npm install"
+
+If you get an error which says "scripts are not allowed on this device" 
+make sure you're in the student-records-app directory
+run "Set-ExecutionPolicy -ExecutionPolicy RemoteSigned-Scope CurrentUser"
+then "npm install"
 ## Available Scripts
 
 In the project directory, you can run:
