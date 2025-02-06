@@ -45,6 +45,12 @@ def login():
     if user and bcrypt.checkpw(password, user[0].encode("utf-8")):
         return jsonify({"message": "Login successful!"}), 200
     return jsonify({"error": "Invalid credentials"}), 401
+@app.route("/courses", methods=["GET"])
+def get_courses():
+    cursor.execute("SELECT id, name FROM courses")  # Fetch courses from DB
+    courses = [{"id": row[0], "name": row[1]} for row in cursor.fetchall()]
+    return jsonify(courses)
+    
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
