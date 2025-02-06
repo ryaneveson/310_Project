@@ -1,4 +1,4 @@
-To get header and footer put <div id="header"></div> at the top of the body and <div id="footer"></div> at the bottom of the body
+To get header and footer put div id="header" at the top of the body and div id="footer" at the bottom of the body in the html
 Then put the following code in the js file: 
 import HeaderLoader from './Header'; 
 import FooterLoader from './Footer';
