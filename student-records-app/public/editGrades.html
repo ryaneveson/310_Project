@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade Editing</title>
+    <script>
+        async function submitGrades() {
+            const inputs = document.querySelectorAll('.grade-input');
+            let grades = {};
+
+            inputs.forEach(input => {
+                grades[input.name] = parseInt(input.value);
+            });
+
+            const response = await fetch('/update_grades', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(grades)
+            });
+
+            const result = await response.json();
+            alert(result.message);
+        }
+    </script>
+</head>
+<body>
+    <h2>Edit Grades</h2>
+    <form onsubmit="event.preventDefault(); submitGrades();">
+        {% for subject, grade in grades.items() %}
+            <label>{{ subject }}:</label>
+            <input type="number" class="grade-input" name="{{ subject }}" value="{{ grade }}"><br>
+        {% endfor %}
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
