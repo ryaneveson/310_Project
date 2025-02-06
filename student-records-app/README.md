@@ -8,7 +8,7 @@ then run "npm install"
 
 If you get an error which says "scripts are not allowed on this device" 
 make sure you're in the student-records-app directory
-run "Set-ExecutionPolicy -ExecutionPolicy RemoteSigned-Scope CurrentUser"
+run "Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser"
 then "npm install"
 ## Available Scripts
 
