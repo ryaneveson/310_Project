@@ -1,0 +1,19 @@
+header {
+    width: 100%;
+    margin-bottom: 3rem;
+    background-color: lightgray;
+    box-shadow: 10px 10px 8px #888888;
+    color: black;
+}
+nav {
+    background-color: navy;
+}
+nav a {
+    background-color: lightgray;
+    padding: 10px;
+    border-radius: 8px;
+}
+nav a:hover {
+    background-color: lightblue;
+    border: 1px solid black;
+}
