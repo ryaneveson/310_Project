@@ -1,17 +1,51 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 function Courses() {
-  const [courses, setCourses] = useState([]);
+  // Hardcoded courses list
+  const allCourses = [
+    "Introduction to Programming",
+    "Data Structures",
+    "Web Development",
+    "Database Management",
+    "Machine Learning",
+    "Software Engineering",
+    "Cybersecurity Basics",
+    "Cloud Computing",
+    "Computer Networks",
+  ];
 
-  useEffect(() => {
-    fetch("/courses.html") // Path to courses file
-      .then(response => response.text())
-      .then(data => setCourses(data))
-      .catch(error => console.error("Error loading courses:", error));
-  }, []);
+  const [searchTerm, setSearchTerm] = useState(""); // Store search input
 
-  return <div dangerouslySetInnerHTML={{ __html: courses }} />;
+  // Filter courses based on search input
+  const filteredCourses = allCourses.filter((course) =>
+    course.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  return (
+    <div className="container">
+      <h2>Available Courses</h2>
+
+      {/* Search Input */}
+      <input
+        type="text"
+        placeholder="Search for a course..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="search-box"
+      />
+
+      {/* Display Filtered Courses */}
+      <ul>
+        {filteredCourses.length > 0 ? (
+          filteredCourses.map((course, index) => (
+            <li key={index}>{course}</li>
+          ))
+        ) : (
+          <li>No courses found</li>
+        )}
+      </ul>
+    </div>
+  );
 }
 
 export default Courses;
-
