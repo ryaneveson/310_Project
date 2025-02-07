@@ -36,7 +36,7 @@ function Courses() {
       <ul>
         {filteredCourses.length > 0 ? (
           filteredCourses.map((course, index) => (
-            <li key={index}>{course}</li>
+            <p key={index}>{course}</p>
           ))
         ) : (
           <li>No courses found</li>
