@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Dashboard</title>
+</head>
+<body id="makePayment">
+    <h2>How much to Pay: </h2>
+    <p>Amount due in next 30 days: </p>
+    <p>Total amount due: </p>
+    <label for="payment-amount">Payment amount: </label>
+    <div class="input-container">
+        <span>$</span>
+        <input type="text" id="payment-amount" class="currency-input" placeholder="0.00" oninput="validateCurrencyInput(this)">
+    </div>
+    <h2>Choose a payment method: </h2>
+    <div class="box-container">
+
+    </div>
+    <script>
+        function validateCurrencyInput(input) {
+            input.value = input.value
+                .replace(/[^0-9.]/g, '')  // Allow only numbers and dots
+                .replace(/(\..*)\./g, '$1') // Prevent multiple dots
+                .replace(/^0+(\d)/, '$1') // Prevent leading zeros
+                .replace(/^(\d*\.\d{2}).*/, '$1'); // Allow only two decimal places
+        }
+        
+        const billingMethods = [
+            { "Card Type": "Visa", "Card Number": "**** **** **** 1234", "Cardholder Name": "John Doe", "Billing Address": "123 Main St, City, Country" },
+            { "Card Type": "MasterCard", "Card Number": "**** **** **** 5678", "Cardholder Name": "Jane Smith", "Billing Address": "456 Elm St, City, Country" }
+        ];
+    </script>
+</body>
+</html>

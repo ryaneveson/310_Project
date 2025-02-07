@@ -1,0 +1,6 @@
+Flask
+flask
+pymongo
+bcrypt
+flask-cors
+gunicorn

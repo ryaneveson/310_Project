@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import "./loginStyles.css"; // Import the styles
+import "./frontend/loginStyles.css";
 
 const CreateUser = () => {
   const [username, setUsername] = useState("");
