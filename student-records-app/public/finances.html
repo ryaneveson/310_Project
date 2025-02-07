@@ -26,7 +26,7 @@
         </div>
     </div>
     <script>
-        // Sample billing methods array
+        // sample billing methods array
         const billingMethods = [
             { "Card Type": "Visa", "Card Number": "**** **** **** 1234", "Cardholder Name": "John Doe", "Billing Address": "123 Main St, City, Country" },
             { "Card Type": "MasterCard", "Card Number": "**** **** **** 5678", "Cardholder Name": "Jane Smith", "Billing Address": "456 Elm St, City, Country" }
@@ -35,11 +35,11 @@
         const container = document.getElementById("billing-tables");
 
         billingMethods.forEach((method, index) => {
-            // Create title for each billing method
+            // create title for each billing method
             const title = document.createElement("h4");
             title.textContent = `Billing Method ${index + 1}`;
             container.appendChild(title);
-            // Create table
+            // create table
             const table = document.createElement("table");
             Object.entries(method).forEach(([key, value]) => {
                 const row = document.createElement("tr");
@@ -62,7 +62,7 @@
         
         const itemsTable = document.getElementById("items-due");
 
-        // Generate rows dynamically
+        // generate rows dynamically
         itemsDue.forEach(item => {
             const row = document.createElement("tr");
             item.forEach(detail => {
