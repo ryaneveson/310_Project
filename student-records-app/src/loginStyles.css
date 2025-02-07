@@ -1,0 +1,127 @@
+/* Import Modern Font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+/* General Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Full Page Styling */
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #f7f7ff; /* Clean, Soft White */
+  color: #495867;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Auth Container */
+.auth-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100vh;
+  padding-top: 80px;
+  padding-bottom: 80px;
+}
+
+/* Auth Box (Minimalist Card Design) */
+.auth-box {
+  background: #ffffff;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.05); /* Soft Shadow */
+  width: 400px;
+  text-align: center;
+  border: 1px solid #e0e0e0; /* Light Border */
+}
+
+/* Title */
+.auth-title {
+  font-size: 26px;
+  font-weight: 600;
+  color: #495867;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+}
+
+/* Input Fields */
+.auth-input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid #d0d0d0;
+  border-radius: 8px;
+  font-size: 16px;
+  background: #ffffff;
+  color: #495867;
+  transition: all 0.3s ease-in-out;
+}
+
+.auth-input:focus {
+  outline: none;
+  border-color: #004385;
+  box-shadow: 0 0 8px rgba(254, 95, 85, 0.3);
+}
+
+/* 3D Button Effect */
+.auth-button {
+  background: #004385;
+  color: white;
+  padding: 14px;
+  border: none;
+  width: 100%;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0px 5px 0px #004385;
+  position: relative;
+}
+
+.auth-button:hover {
+  background: #3674b3;
+  box-shadow: 0px 2px 0px #004385;
+}
+
+.auth-button:active {
+  transform: translateY(4px);
+  box-shadow: 0px 0px 0px #004385;
+}
+
+/* Error & Success Messages */
+.auth-error {
+  color: #004385;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.auth-success {
+  color: #577399;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+/* Footer Links */
+.auth-footer {
+  margin-top: 15px;
+  font-size: 14px;
+  color: #495867;
+}
+
+.auth-link {
+  color: #004385;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.auth-link:hover {
+  text-decoration: underline;
+}

@@ -1,0 +1,61 @@
+/* Header Styling */
+header {
+    width: 100%;
+    background: #ffffff; /* Clean White Background */
+    padding: 20px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); /* Soft Shadow */
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+  }
+  
+  /* Website Title */
+  header h1 {
+    font-size: 22px;
+    font-weight: 600;
+    color: #495867;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  
+  /* Navigation Links */
+  nav {
+    display: flex;
+    gap: 20px;
+  }
+  
+  nav a {
+    font-size: 16px;
+    font-weight: 500;
+    color: #495867;
+    text-decoration: none;
+    padding: 8px 12px;
+    transition: all 0.3s ease-in-out;
+    position: relative;
+  }
+  
+  /* Underline Hover Effect */
+  nav a::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -5px;
+    width: 0;
+    height: 2px;
+    background: #004385;
+    transition: width 0.3s ease-in-out, left 0.3s ease-in-out;
+  }
+  
+  nav a:hover::after {
+    width: 100%;
+    left: 0;
+  }
+  
+  nav a:hover {
+    color: #004385;
+  }
+  
