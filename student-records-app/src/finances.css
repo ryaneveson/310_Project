@@ -13,6 +13,7 @@
     flex-wrap: wrap;
     gap: 3rem;
     justify-content: space-around;
+    align-items: flex-start;
 }
 #finances .box-container > * {
     background-color: white;
