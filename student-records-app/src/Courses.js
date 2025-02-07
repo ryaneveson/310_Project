@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "./courses.css"
 
 function Courses() {
   // Hardcoded courses list

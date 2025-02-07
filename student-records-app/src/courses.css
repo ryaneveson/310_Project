@@ -1,0 +1,27 @@
+/* courses page styling */
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    padding: 0;
+}
+input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+li {
+    padding: 8px;
+    margin: 5px 0;
+    background: #f4f4f4;
+    border-radius: 5px;
+    transition: background 0.3s ease;
+}
+.highlight {
+    background: yellow;
+    font-weight: bold;
+}
