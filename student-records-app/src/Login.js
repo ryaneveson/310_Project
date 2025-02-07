@@ -34,10 +34,11 @@ const Login = () => {
         localStorage.setItem("token", data.token);
         window.location.href = "/dashboard";
       } else {
-        setError(data.error || "Login failed.");
+        alert("Password or username is incorrect!");
+        setError(data.error);
       }
     } catch (err) {
-      setError("Error connecting to server.");
+      setError("Error connecting to server");
     }
   };
 

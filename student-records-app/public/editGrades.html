@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Grades</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            padding: 20px;
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+        h2 {
+            color: #333;
+        }
+        table {
+            width: 60%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        th {
+            background: #007BFF;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        input {
+            width: 80px;
+            padding: 5px;
+            text-align: center;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #218838;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Student: John Doe</h2>
+    <h3>Grade Report</h3>
+
+    <table>
+        <tr>
+            <th>Subject</th>
+            <th>Grade (%)</th>
+            <th>Edit Grade</th>
+        </tr>
+        <tr>
+            <td>Mathematics</td>
+            <td>92</td>
+            <td><input type="number" class="grade-input" value="92"></td>
+        </tr>
+        <tr>
+            <td>Science</td>
+            <td>89</td>
+            <td><input type="number" class="grade-input" value="89"></td>
+        </tr>
+        <tr>
+            <td>History</td>
+            <td>85</td>
+            <td><input type="number" class="grade-input" value="85"></td>
+        </tr>
+        <tr>
+            <td>English</td>
+            <td>90</td>
+            <td><input type="number" class="grade-input" value="90"></td>
+        </tr>
+        <tr>
+            <td>Physical Education</td>
+            <td>95</td>
+            <td><input type="number" class="grade-input" value="95"></td>
+        </tr>
+    </table>
+
+    <button onclick="saveGrades()">Save Changes</button>
+
+    <script>
+        function saveGrades() {
+            const inputs = document.querySelectorAll('.grade-input');
+            let updatedGrades = {};
+
+            inputs.forEach((input, index) => {
+                let subject = document.querySelectorAll("td:first-child")[index].innerText;
+                updatedGrades[subject] = input.value;
+            });
+
+            alert("Updated Grades: " + JSON.stringify(updatedGrades, null, 2));
+            console.log(updatedGrades); // For debugging
+        }
+    </script>
+
+</body>
+</html>

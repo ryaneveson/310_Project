@@ -4,6 +4,7 @@ import Dashboard from "./Dashboard";
 import Courses from "./Courses"; // Import Courses page
 import CreateUser from "./createUser";
 
+
 function App() {
   return (
     <Router>
@@ -11,7 +12,6 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/courses" element={<Courses />} /> {/* Courses Route */}
-        <Route path="/createUser" element={<CreateUser />} />
       </Routes>
     </Router>
   );

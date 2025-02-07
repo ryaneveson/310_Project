@@ -25,6 +25,11 @@
             margin: 5px 0;
             background: #f4f4f4;
             border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+        .highlight {
+            background: yellow;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -32,10 +37,10 @@
 
     <h1>Available Courses</h1>
 
-    <!-- this si teh search bar that calls the filtered courses -->
+    <!-- Search bar -->
     <input type="text" id="search" placeholder="Search for a course..." onkeyup="filterCourses()">
 
-    <!-- these are all of the hard coded courses that will show in the courses section, change this when you are connected to the database-->
+    <!-- List of courses -->
     <ul id="courseList">
         <li>Introduction to Programming</li>
         <li>Data Structures</li>
@@ -55,7 +60,11 @@
 
             for (let i = 0; i < courses.length; i++) {
                 let course = courses[i].textContent.toLowerCase();
-                courses[i].style.display = course.includes(input) ? "" : "none";
+                if (course.includes(input) && input !== "") {
+                    courses[i].classList.add("highlight"); // Highlight matching courses
+                } else {
+                    courses[i].classList.remove("highlight"); // Remove highlight if not matching
+                }
             }
         }
     </script>
