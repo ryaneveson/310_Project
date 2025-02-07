@@ -22,10 +22,12 @@ const Login = () => {
         localStorage.setItem("token", data.token); // Store token (if implemented)
         window.location.href = "/dashboard"; // Redirect to dashboard
       } else {
+        alert("Password or username is incorrect!");
         setError(data.error);
       }
     } catch (err) {
       setError("Error connecting to server");
+      alert("Error connecting to server");
     }
   };
 
