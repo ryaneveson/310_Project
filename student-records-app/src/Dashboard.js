@@ -6,18 +6,17 @@ const Dashboard = () => {
   const [username, setUsername] = useState("");
 
   useEffect(() => {
-    // Check if user is logged in (i.e., token exists)
     const token = localStorage.getItem("token");
     if (!token) {
       navigate("/");
     } else {
-      setUsername("User"); // Replace this with actual username decoding logic
+      setUsername("User"); // Replace this with actual username logic
     }
   }, [navigate]);
 
   const handleLogout = () => {
-    localStorage.removeItem("token"); // Clear login session
-    navigate("/"); // Redirect to login
+    localStorage.removeItem("token"); 
+    navigate("/"); 
   };
 
   return (
