@@ -1,6 +1,6 @@
 /* makePayment.css */
 #makePayment > * {
-    margin: 1rem 0;
+    margin: 2rem 0;
 }
 #makePayment .input-container {
     position: relative;
@@ -26,7 +26,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 3rem;
-    margin: 3rem;
+    margin: 2rem 3rem;
     justify-content: space-around;
     align-items: flex-start;
 }
@@ -61,4 +61,19 @@
 }
 #makePayment .add-payment > a:hover {
     color: #004385;
+}
+#makePayment .amount {
+    background-color: white;
+    padding: 1rem 1.5rem;
+    box-shadow: 20px 20px 10px rgba(0, 0, 0, 0.05); /* Soft Shadow */
+    border: 3px solid #004385;
+    border-radius: 25px;
+    display: inline-block; /* Ensures width only fits content */
+    width: auto; /* Default behavior for inline-block */
+    max-width: 100%; /* Prevents it from overflowing */
+    white-space: nowrap; /* Prevents wrapping inside the element */
+    margin-top: 0;
+}
+#makePayment .amount > * {
+    padding: 0.25rem;
 }

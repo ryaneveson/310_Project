@@ -21,13 +21,15 @@ function MakePayment() {
   return (
     <div className="container" id="makePayment">
       <h2>How much to Pay: </h2>
-      <p>Amount due in next 30 days: </p>
-      <p>Total amount due: </p>
-      <label htmlFor="payment-amount">Payment amount: </label>
-      <div className="input-container">
-        <span>$</span>
-        {/* Attach the validateCurrencyInput function directly */}
-        <input type="text" id="payment-amount" className="currency-input" placeholder="0.00" onInput={validateCurrencyInput} />
+      <div className="amount">
+        <p>Amount due in next 30 days: </p>
+        <p>Total amount due: </p>
+        <label htmlFor="payment-amount">Payment amount: </label>
+        <div className="input-container">
+            <span>$</span>
+            {/* Attach the validateCurrencyInput function directly */}
+            <input type="text" id="payment-amount" className="currency-input" placeholder="0.00" onInput={validateCurrencyInput} />
+        </div>
       </div>
       <h2>Choose a payment method: </h2>
       <div className="box-container">
