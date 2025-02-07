@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 
 function Courses() {
-  // Hardcoded courses list
   const allCourses = [
     "Introduction to Programming",
     "Data Structures",
@@ -14,9 +13,8 @@ function Courses() {
     "Computer Networks",
   ];
 
-  const [searchTerm, setSearchTerm] = useState(""); // Store search input
+  const [searchTerm, setSearchTerm] = useState(""); 
 
-  // Filter courses based on search input
   const filteredCourses = allCourses.filter((course) =>
     course.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -25,7 +23,7 @@ function Courses() {
     <div className="container">
       <h2>Available Courses</h2>
 
-      {/* Search Input */}
+
       <input
         type="text"
         placeholder="Search for a course..."

@@ -44,7 +44,6 @@ const Login = () => {
 
   return (
     <>
-      <div id="header"></div> {/* Inject header */}
       <div className="auth-container">
         <div className="auth-box">
           <h2 className="auth-title">Login</h2>
@@ -74,7 +73,6 @@ const Login = () => {
           </p>
         </div>
       </div>
-      <div id="footer"></div> {/* Inject footer */}
     </>
   );
 };
