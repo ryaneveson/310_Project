@@ -38,8 +38,8 @@
     border-radius: 25px;
 }
 #makePayment .add-payment > a {
-    font-weight: 500;
-    color: #495867;
+    font-weight: bold;
+    color: #004385;
     text-decoration: none;
     transition: all 0.3s ease-in-out;
     position: relative;
@@ -76,4 +76,11 @@
 }
 #makePayment .amount > * {
     padding: 0.25rem;
+}
+#makePayment .confirm-button {
+    padding: 1rem 1.5rem;
+    background-color: #004385;
+    color: white;
+    box-shadow: 20px 20px 10px rgba(0, 0, 0, 0.05); /* Soft Shadow */
+    border-radius: 25px;
 }
