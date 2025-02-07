@@ -13,16 +13,19 @@ function Courses() {
     "Computer Networks",
   ];
 
-  const [searchTerm, setSearchTerm] = useState(""); 
+  const [searchTerm, setSearchTerm] = useState("");
 
   const filteredCourses = allCourses.filter((course) =>
     course.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const handleRegister = (course) => {
+    alert(`You have registered for ${course}!`);
+  };
+
   return (
     <div className="container">
       <h2>Available Courses</h2>
-
 
       <input
         type="text"
@@ -36,7 +39,10 @@ function Courses() {
       <ul>
         {filteredCourses.length > 0 ? (
           filteredCourses.map((course, index) => (
-            <p key={index}>{course}</p>
+            <li key={index} style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <span>{course}</span>
+              <button onClick={() => handleRegister(course)}>Register</button>
+            </li>
           ))
         ) : (
           <li>No courses found</li>
