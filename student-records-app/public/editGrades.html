@@ -4,92 +4,68 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Grades</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 40px;
-            padding: 20px;
-            background-color: #f4f4f4;
-            text-align: center;
-        }
-        h2 {
-            color: #333;
-        }
-        table {
-            width: 60%;
-            margin: 20px auto;
-            border-collapse: collapse;
-            background: white;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        th, td {
-            padding: 12px;
-            border: 1px solid #ddd;
-            text-align: center;
-        }
-        th {
-            background: #007BFF;
-            color: white;
-        }
-        tr:nth-child(even) {
-            background: #f9f9f9;
-        }
-        input {
-            width: 80px;
-            padding: 5px;
-            text-align: center;
-        }
-        button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background: #28a745;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background: #218838;
-        }
-    </style>
 </head>
 <body>
+    <!--Right now this is hard-coded just to have UI working. Going to pull data from database using Student ID later-->
     <h2>Student: John Doe</h2>
     <h3>Grade Report</h3>
 
-    <table>
+    <!-- Student ID Input Box -->
+    <label for="student-id">Enter Student ID:</label>
+    <input type="text" id="student-id" placeholder="Enter Student ID">
+    
+    <br><br> <!-- Ensures proper spacing -->
+
+    <table border="1">
         <tr>
             <th>Subject</th>
             <th>Grade (%)</th>
             <th>Edit Grade</th>
         </tr>
         <tr>
-            <td>Mathematics</td>
-            <td>92</td>
-            <td><input type="number" class="grade-input" value="92"></td>
+            <!--varialbe id names are not consistent with course name, I'll fix it later when DB is set up-->
+            <td>Intro to Programming</td>
+            <td id="math-grade">92</td>
+            <td><input type="number" class="grade-input" id="math-input" value="92"></td>
         </tr>
         <tr>
-            <td>Science</td>
-            <td>89</td>
-            <td><input type="number" class="grade-input" value="89"></td>
+            <td>Data Structures</td>
+            <td id="science-grade">89</td>
+            <td><input type="number" class="grade-input" id="science-input" value="89"></td>
         </tr>
         <tr>
-            <td>History</td>
-            <td>85</td>
-            <td><input type="number" class="grade-input" value="85"></td>
+            <td>Web Development</td>
+            <td id="history-grade">85</td>
+            <td><input type="number" class="grade-input" id="history-input" value="85"></td>
         </tr>
         <tr>
-            <td>English</td>
-            <td>90</td>
-            <td><input type="number" class="grade-input" value="90"></td>
+            <td>Software Engineering</td>
+            <td id="english-grade">90</td>
+            <td><input type="number" class="grade-input" id="english-input" value="90"></td>
         </tr>
         <tr>
-            <td>Physical Education</td>
-            <td>95</td>
-            <td><input type="number" class="grade-input" value="95"></td>
+            <td>Computer Networks</td>
+            <td id="pe-grade">95</td>
+            <td><input type="number" class="grade-input" id="pe-input" value="95"></td>
         </tr>
     </table>
 
+    <!--click button to save the grade changes back to the DB-->
     <button onclick="saveGrades()">Save Changes</button>
 
+    <script>
+        // Define variables to store grades
+        let grades = {
+            "Intro to Programming": 92,
+            "Data Structures": 89,
+            "Web Development": 85,
+            "Software Engineering": 90,
+            "Computer Networks": 95
+        };
+
+        function editGrades() {
+            alert("Grades saved!");
+        }
+    </script>
 </body>
 </html>

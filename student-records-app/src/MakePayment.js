@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./makePayment.css";
+import "./frontend/makePayment.css";
 
 function MakePayment() {
   const [selectedMethod, setSelectedMethod] = useState(null);

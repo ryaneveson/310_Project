@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
+import './frontend/index.css';
 import App from './App';
-import HeaderLoader from './Header'; // Import HeaderLoader
-import FooterLoader from './Footer'; // Import FooterLoader
+import HeaderLoader from './Header'; 
+import FooterLoader from './Footer'; 
 
 import reportWebVitals from './reportWebVitals';
 
