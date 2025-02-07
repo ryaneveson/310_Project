@@ -13,6 +13,7 @@
     flex-wrap: wrap;
     gap: 3rem;
     justify-content: space-around;
+    align-items: flex-start;
 }
 #finances .box-container > * {
     background-color: white;
@@ -22,8 +23,8 @@
     border-radius: 25px;
 }
 #finances .box-container > a {
-    font-weight: 500;
-    color: #495867;
+    font-weight: bold;
+    color: #004385;
     text-decoration: none;
     transition: all 0.3s ease-in-out;
     position: relative;
