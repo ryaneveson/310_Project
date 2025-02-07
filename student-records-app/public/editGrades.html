@@ -53,7 +53,6 @@
     </style>
 </head>
 <body>
-
     <h2>Student: John Doe</h2>
     <h3>Grade Report</h3>
 
@@ -91,21 +90,6 @@
     </table>
 
     <button onclick="saveGrades()">Save Changes</button>
-
-    <script>
-        function saveGrades() {
-            const inputs = document.querySelectorAll('.grade-input');
-            let updatedGrades = {};
-
-            inputs.forEach((input, index) => {
-                let subject = document.querySelectorAll("td:first-child")[index].innerText;
-                updatedGrades[subject] = input.value;
-            });
-
-            alert("Updated Grades: " + JSON.stringify(updatedGrades, null, 2));
-            console.log(updatedGrades); // For debugging
-        }
-    </script>
 
 </body>
 </html>
