@@ -32,6 +32,8 @@ function EditGrades() {
     }
   
     return (
+      //hand back html with grade values inserted
+      //eventually I want to save grades to database, and then pull them again in the html file to display
       <div>
         <h2>Student: John Doe</h2>
         <h3>Grade Report</h3>

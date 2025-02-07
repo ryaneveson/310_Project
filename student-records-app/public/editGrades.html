@@ -6,6 +6,7 @@
     <title>Student Grades</title>
 </head>
 <body>
+    <!--Right now this is hard-coded just to have UI working. Going to pull data from database using Student ID later-->
     <h2>Student: John Doe</h2>
     <h3>Grade Report</h3>
 
@@ -22,6 +23,7 @@
             <th>Edit Grade</th>
         </tr>
         <tr>
+            <!--varialbe id names are not consistent with course name, I'll fix it later when DB is set up-->
             <td>Intro to Programming</td>
             <td id="math-grade">92</td>
             <td><input type="number" class="grade-input" id="math-input" value="92"></td>
@@ -48,6 +50,7 @@
         </tr>
     </table>
 
+    <!--click button to save the grade changes back to the DB-->
     <button onclick="saveGrades()">Save Changes</button>
 
     <script>
@@ -60,7 +63,7 @@
             "Computer Networks": 95
         };
 
-        function saveGrades() {
+        function editGrades() {
             alert("Grades saved!");
         }
     </script>
