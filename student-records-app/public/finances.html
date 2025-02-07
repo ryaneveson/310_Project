@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Dashboard</title>
+</head>
+<body id="finances">
+    <h1>Financial Dashboard</h1>
+    <div class="box-container">
+        <p>Current Account Balance: </p> <!--for all of these it is going to need to be added the real data-->
+        <p>Amount due in next 30 days: </p>
+        <p>Total future amout due: </p>
+        <a href="/finances">Pay Tuition</a>
+        <a href="/finances">Change financial information</a>
+        <div class="info-table">
+            <h3>Billing Methods: </h3>
+            <div id="billing-tables"></div>
+        </div>
+        <div class="info-table">
+            <h3>Future Items Due</h3>
+            <table>
+                <tr><th>Item</th><th>Amount</th><th>Due Date</th></tr>
+                <tbody id="items-due"></tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+        // Sample billing methods array
+        const billingMethods = [
+            { "Card Type": "Visa", "Card Number": "**** **** **** 1234", "Cardholder Name": "John Doe", "Billing Address": "123 Main St, City, Country" },
+            { "Card Type": "MasterCard", "Card Number": "**** **** **** 5678", "Cardholder Name": "Jane Smith", "Billing Address": "456 Elm St, City, Country" }
+        ];
+
+        const container = document.getElementById("billing-tables");
+
+        billingMethods.forEach((method, index) => {
+            // Create title for each billing method
+            const title = document.createElement("h4");
+            title.textContent = `Billing Method ${index + 1}`;
+            container.appendChild(title);
+            // Create table
+            const table = document.createElement("table");
+            Object.entries(method).forEach(([key, value]) => {
+                const row = document.createElement("tr");
+                const th = document.createElement("th");
+                th.textContent = key;
+                const td = document.createElement("td");
+                td.textContent = value;
+                row.appendChild(th);
+                row.appendChild(td);
+                table.appendChild(row);
+            });
+            container.appendChild(table);
+        });
+
+        const itemsDue = [
+            ["course1", "500", "jan 1"],
+            ["course2", "500", "jan 1"],
+            ["fees", "250", "sept 1"]
+        ];
+        
+        const itemsTable = document.getElementById("items-due");
+
+        // Generate rows dynamically
+        itemsDue.forEach(item => {
+            const row = document.createElement("tr");
+            item.forEach(detail => {
+                const cell = document.createElement("td");
+                cell.textContent = detail;
+                row.appendChild(cell);
+            });
+            itemsTable.appendChild(row);
+        });
+
+    </script>
+</body>
+</html>
