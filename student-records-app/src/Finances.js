@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
-import "./finances.css";
+import "./frontend/finances.css";
+
+
 
 function Finances() {
   const [htmlContent, setHtmlContent] = useState("");
