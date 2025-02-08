@@ -2,20 +2,26 @@ import React, { useState } from "react";
 import "./calendar.css";
 
 const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
-const hours = Array.from({ length: 25 }, (_, i) => 8 + i * 0.5); // 8 AM - 8 PM in 30-min increments
+const hours = Array.from({ length: 25 }, (_, i) => 8 + i * 0.5); // 8:00 - 20:00 PM in 30-min increments
 
 function Calendar() {
-    const [events, setEvents] = useState([
-        {day: "Monday", startTime: "9", endTime: "11", title: "Team Meeting"},
-        {day: "Tuesday", startTime: "13", endTime: "14", title: "Client Call"},
-        {day: "Thursday", startTime: "16", endTime: "17", title: "Project Review"},
-        {day: "Friday", startTime: "11", endTime: "12", title: "Lunch Break"},
-      ]);
+  const [events, setEvents] = useState([
+    { day: "Monday", startTime: "9:00", endTime: "11:00", classCode: "COSC 111", room: "COM 201" },
+    { day: "Tuesday", startTime: "13:00", endTime: "14:30", classCode: "MATH 101", room: "COM 201" },
+    { day: "Thursday", startTime: "15:30", endTime: "17:00", classCode: "COSC 304", room: "COM 201" },
+    { day: "Friday", startTime: "11:00", endTime: "12:00", classCode: "COSC 310", room: "COM 201" },
+  ]);
+
+  // function to convert "HH:MM" to decimal hours
+  const parseTime = (timeStr) => {
+    const [hours, minutes] = timeStr.split(":").map(Number);
+    return hours + minutes / 60;
+  };
 
   return (
     <div className="calendar-container">
       <div className="calendar-grid">
-        {/* render column headers */}
+        {/* column headers */}
         <div className="time-column"></div>
         {days.map((day) => (
           <div key={day} className="day-header">
@@ -23,14 +29,14 @@ function Calendar() {
           </div>
         ))}
 
-        {/* render time slots */}
+        {/* time slots */}
         {hours.map((hour) => (
           <div key={hour} className="time-slot">
             {Math.floor(hour)}:{hour % 1 === 0 ? "00" : "30"}
           </div>
         ))}
 
-        {/* render schedule cells */}
+        {/* schedule Grid */}
         {days.map((day) => (
           <div key={day} className="day-column">
             {hours.map((hour) => (
@@ -39,33 +45,34 @@ function Calendar() {
           </div>
         ))}
 
-        {/* render event blocks */}
+        {/* event Blocks */}
         {events.map((event, index) => {
-          const { day, startTime, endTime, title } = event;
+          const { day, startTime, endTime, classCode, room } = event;
           const dayIndex = days.indexOf(day);
-          const startHour = parseFloat(startTime);
-          const endHour = parseFloat(endTime);
-          const topPosition = (((startHour - 8) * 40) + 5) + "px";
-          const height = (((endHour - startHour) * 100) - 10) + "px";
+          const startHour = parseTime(startTime);
+          const endHour = parseTime(endTime);
+
+          const topPosition = (((startHour - 8) * 80) + 50) + "px"; // each hour = 80px (2x 40px for half-hour) + 50 to account for day header
+          const height = ((endHour - startHour) * 80) + "px"; // dynamic height based on duration
 
           return (
             <div
               key={index}
               className="event-block"
               style={{
-                gridColumnStart: dayIndex + 2,
-                gridRowStart: (startHour - 7.5) * 2,
-                height,
-                top: topPosition,
+                gridColumnStart: dayIndex + 2, // align event to correct day
+                top: topPosition, // correct vertical position
+                height: height, // correct event duration
               }}
             >
-              {title}
+              {classCode} <br />
+              {room}
             </div>
           );
         })}
       </div>
     </div>
   );
-};
+}
 
 export default Calendar;

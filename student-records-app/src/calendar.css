@@ -51,14 +51,14 @@
   }
   
   .event-block {
-    position: relative;
+    position: absolute;
     background-color: lightgray;
     color: #495867;
-    padding: 5px;
-    border-radius: 5px;
+    padding: 10px;
+    border-radius: 15px;
     font-size: 14px;
-    max-width: 140px;
-    left: 5px;
+    left: 1px;
+    width: 150px;
     z-index: 10;
   }
   
