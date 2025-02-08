@@ -7,9 +7,9 @@ const hours = Array.from({ length: 25 }, (_, i) => 8 + i * 0.5); // 8:00 - 20:00
 function Calendar() {
   const [events, setEvents] = useState([
     { day: "Monday", startTime: "9:00", endTime: "11:00", classCode: "COSC 111", room: "COM 201" },
-    { day: "Tuesday", startTime: "13:00", endTime: "14:30", classCode: "MATH 101", room: "COM 201" },
-    { day: "Thursday", startTime: "15:30", endTime: "17:00", classCode: "COSC 304", room: "COM 201" },
-    { day: "Friday", startTime: "11:00", endTime: "12:00", classCode: "COSC 310", room: "COM 201" },
+    { day: "Tuesday", startTime: "13:00", endTime: "14:30", classCode: "MATH 101", room: "COM 202" },
+    { day: "Thursday", startTime: "15:30", endTime: "17:00", classCode: "COSC 304", room: "COM 203" },
+    { day: "Friday", startTime: "11:00", endTime: "12:00", classCode: "COSC 310", room: "COM 204" },
   ]);
 
   // function to convert "HH:MM" to decimal hours
@@ -22,7 +22,7 @@ function Calendar() {
     <div className="calendar-container">
       <div className="calendar-grid">
         {/* column headers */}
-        <div className="time-column"></div>
+        <div className="time-column">Weekly Schedule</div>
         {days.map((day) => (
           <div key={day} className="day-header">
             {day}

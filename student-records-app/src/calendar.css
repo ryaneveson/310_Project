@@ -9,20 +9,25 @@
     grid-template-columns: 100px repeat(5, 150px);
     grid-template-rows: 50px repeat(25, 40px);
     position: relative;
-    border: 1px solid #ddd;
+    background-color: white;
+    border: 5px solid #ddd;
+    border-radius: 10px;
   }
   
   .time-column {
     grid-column: 1;
     background-color: #004385;
+    color: white;
     text-align: center;
     font-weight: bold;
-    padding: 10px 0;
+    padding-top: 5px;
+    padding-bottom: 15px;
   }
   
   .day-header {
     background-color: #004385;
     color: white;
+    border-left: 2px solid #ddd;
     text-align: center;
     font-weight: bold;
     padding: 10px;
