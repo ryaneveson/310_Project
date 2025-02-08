@@ -1,4 +1,9 @@
 /* makePayment.css */
+#makePayment {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    margin-top: 5rem;
+}
 #makePayment > * {
     margin: 2rem 0;
 }
