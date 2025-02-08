@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import Login from "./Login";
 import Dashboard from "./Dashboard";
-import Courses from "./Courses"; // Import Courses page
+import Courses from "./Courses"; 
 import Finances from "./Finances";
 import Calendar from "./Calendar";
 import CreateUser from "./createUser";
