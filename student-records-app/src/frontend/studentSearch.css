@@ -1,1 +1,76 @@
 /* studentSearch.css */
+/* ensure the entire body has a full height */
+#studentSearch {
+    height: 100%;
+    margin-top: 7rem;
+    font-family: Arial, sans-serif;
+    display: flex;
+  }
+  
+  /* sidebar styles */
+  #studentSearch .sidebar {
+    width: 300px; /* fixed width for the sidebar */
+    background-color: #f4f4f4;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    position: relative;
+  }
+  
+  #studentSearch .sidebar .checkboxes {
+    margin-top: 20px;
+  }
+  
+  #studentSearch .sidebar h3 {
+    font-size: 1.2rem;
+  }
+  
+  #studentSearch .sidebar .checkboxes label {
+    display: block;
+    margin-bottom: 10px;
+  }
+  
+  #studentSearch .sidebar .toggle-btn {
+    position: relative;
+    top: 0;
+    left: 0;
+    padding: 5px;
+    cursor: pointer;
+    transform: translate(200px, 1.5rem);
+  }
+  
+  /* student list styling */
+  #studentSearch article {
+    padding: 20px;
+  }
+  
+  #studentSearch article h2 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+  }
+  
+  #studentSearch table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  #studentSearch table, #studentSearch th, #studentSearch td {
+    border: 1px solid #ddd;
+  }
+  
+  #studentSearch th, #studentSearch td {
+    padding: 8px;
+    text-align: left;
+  }
+  
+  th {
+    background-color: #f4f4f4;
+  }
+  
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  tr:hover {
+    background-color: #f1f1f1;
+  }
+  
