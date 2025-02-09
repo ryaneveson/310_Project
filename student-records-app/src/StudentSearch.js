@@ -24,6 +24,7 @@ function StudentSearch() {
         student.classes.some(className => filterClasses.includes(className))
     );
 
+
     return ( 
         <aside class="sidebar" id="sidebar">
         <button class="toggle-btn" onclick="toggleSidebar()">Toggle Sidebar</button>
@@ -35,6 +36,7 @@ function StudentSearch() {
             <label><input type="checkbox" /> Option 5</label>
         </div>
         </aside>
+
     );
 }
 
