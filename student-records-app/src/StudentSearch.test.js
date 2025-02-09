@@ -19,7 +19,7 @@ describe("StudentSearch Component", () => {
         expect(screen.queryByText("Bob")).not.toBeInTheDocument();
 
         fireEvent.change(searchInput, { target: { value: "Moore" } });
-        expect(screen.getByText("Grade")).toBeInTheDocument();
+        expect(screen.getByText("Grace")).toBeInTheDocument();
         expect(screen.queryByText("Bob")).not.toBeInTheDocument();
 
         fireEvent.change(searchInput, { target: { value: "8" } });
@@ -48,18 +48,50 @@ describe("StudentSearch Component", () => {
         fireEvent.click(mathCheckbox);
         
         expect(screen.getByText("Alice")).toBeInTheDocument(); // Alice is in math 101
-        expect(screen.getByText("Eva")).not.toBeInTheDocument(); // Eva is not in math 101
+        expect(screen.queryByText("Eva")).not.toBeInTheDocument(); // Eva is not in math 101
     });
 
     test("toggles sidebar visibility", () => {
         render(<StudentSearch />);
 
-        expect(screen.queryByText("Art 101")).toBeInTheDocument();
-        const toggleButton = screen.queryByText("Collapse");
+        expect(screen.getByTestId("checkboxes")).toHaveStyle(`height: auto`);
+        const toggleButton = screen.getByText("Collapse");
         fireEvent.click(toggleButton);
-        expect(screen.queryByText("Art 101")).not.toBeInTheDocument();
-        expect(screen.queryByText("Expand")).toBeInTheDocument();
+        expect(screen.getByTestId("checkboxes")).toHaveStyle(`height: 0`);
+        expect(screen.getByText("Expand")).toBeInTheDocument();
         fireEvent.click(toggleButton);
-        expect(screen.queryByText("Art 101")).toBeInTheDocument();
+        expect(screen.getByTestId("checkboxes")).toHaveStyle(`height: auto`);
+    });
+
+    test("clear and reset buttons work correctly", () => {
+        render(<StudentSearch />);
+
+        const searchInput = screen.getByPlaceholderText("Search for a student...");
+        const minGpaInput = screen.getByPlaceholderText("0");
+        const maxGpaInput = screen.getByPlaceholderText("100");
+        const clearSearchButton = screen.getByText("Clear");
+        const clearMinGpaButton = screen.getAllByTestId("reset")[1];
+        const clearMaxGpaButton = screen.getAllByTestId("reset")[0];
+        const resetButton = screen.getAllByTestId("reset")[2];
+        
+        fireEvent.change(searchInput, { target: { value: "Alice" } });
+        fireEvent.click(clearSearchButton);
+        expect(searchInput.value).toBe("");
+
+        fireEvent.change(minGpaInput, { target: { value: "80" } });
+        fireEvent.click(clearMinGpaButton);
+        expect(minGpaInput.value).toBe("0");
+
+        fireEvent.change(maxGpaInput, { target: { value: "90" } });
+        fireEvent.click(clearMaxGpaButton);
+        expect(maxGpaInput.value).toBe("100");
+
+        screen.getAllByRole("checkbox").forEach(checkbox => {
+            if (!checkbox.checked) {
+                fireEvent.click(checkbox);
+            }
+        });
+        fireEvent.click(resetButton);
+        expect(screen.getAllByRole("checkbox").every(checkbox => !checkbox.checked)).toBe(true);
     });
 });

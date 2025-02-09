@@ -66,6 +66,18 @@ function StudentSearch() {
     const toggleClasses = () => {
         setSidebarVisible(!isSidebarVisible);
     };
+    const reset = () => {
+        setSelectedClasses(new Set());
+    }
+    const clearMax = () => {
+        setMaxGpa(100);
+    }
+    const clearMin = () => {
+        setMinGpa(0);
+    }
+    const clearSearch = () => {
+        setSearchTerm("");
+    }
 
     return (
     <div id="studentSearch" className="container">
@@ -78,6 +90,7 @@ function StudentSearch() {
                 onChange={(e) => updateMaxGpa(e.target.value)}
                 className="grade-box"
             /><br /></label>
+            <button id="clear-btn" className="btn" data-testid="reset" onClick={clearMax}>Reset</button><br />
             <label>Minimum Percentage Average:<br /><input
                 type="text"
                 placeholder="0"
@@ -86,18 +99,21 @@ function StudentSearch() {
                 onChange={(e) => updateMinGpa(e.target.value)}
                 className="grade-box"
             /><br /></label>
-            <button className="toggle-btn" onClick={toggleClasses}>{isSidebarVisible ? 'Collapse' : 'Expand'}</button>
-            <h3>Select Classes</h3>
-            <div className="checkboxes" style={{
+            <button id="clear-btn" className="btn" data-testid="reset" onClick={clearMin}>Reset</button><br />
+            <button id="reset-btn" className="btn" data-testid="reset" onClick={reset}>Reset</button>
+            <button id="toggle-btn" className="btn" onClick={toggleClasses}>{isSidebarVisible ? 'Collapse' : 'Expand'}</button>
+            <h3>Classes</h3>
+            <div className="checkboxes" data-testid="checkboxes" style={{
                 height: isSidebarVisible ? 'auto' : '0',
                 transition: 'width 0.3s ease',
-                overflow: 'hidden',
+                overflow: 'hidden'
             }}>
                 {allClasses.map((className) => (
                     <div key={className}>
                         <label>
                             <input
                                 type="checkbox"
+                                data-testid="checkbox"
                                 checked={selectedClasses.has(className)}
                                 onChange={() => handleClassSelection(className)}
                             />
@@ -109,19 +125,19 @@ function StudentSearch() {
             </div>
         </aside>
         <article>
-            <label>Search for a student:<br /><input
+            <div id="search"><label>Search for a student:<br /><input
                 type="text"
                 placeholder="Search for a student..."
                 value={searchTerm}
                 id="search-term"
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="search-box"
-            /><br /></label>
-            <h2>Filtered Students:</h2>
+            /><br /></label><button id="clear-btn" className="btn" onClick={clearSearch}>Clear</button></div>
+            <div id="results"><h2>Filtered Students:</h2>
             <table>
                     <thead>
                         <tr>
-                            <th>Name</th>
+                            <th>First Name</th>
                             <th>Last Name</th>
                             <th>Student Number</th>
                         </tr>
@@ -135,7 +151,7 @@ function StudentSearch() {
                             </tr>
                         ))}
                     </tbody>
-                </table>
+                </table></div>
         </article>
     </div>
     );
