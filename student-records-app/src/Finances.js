@@ -6,13 +6,13 @@ function Finances() {
   const [itemsDue, setItemsDue] = useState([]);
 
   useEffect(() => {
-    // Sample billing methods array
+    // sample billing methods array
     setBillingMethods([
       { "Card Type": "Visa", "Card Number": "**** **** **** 1234", "Cardholder Name": "John Doe", "Billing Address": "123 Main St, City, Country" },
       { "Card Type": "MasterCard", "Card Number": "**** **** **** 5678", "Cardholder Name": "Jane Smith", "Billing Address": "456 Elm St, City, Country" }
     ]);
 
-    // Sample items due array
+    // sample items due array
     setItemsDue([
       ["course1", "500", "Jan 1"],
       ["course2", "500", "Jan 1"],
@@ -20,52 +20,37 @@ function Finances() {
     ]);
   }, []);
 
-  // Render billing methods table
-  const renderBillingMethods = () => {
-    return billingMethods.map((method, index) => (
-      <div key={index}>
-        <h4>{`Billing Method ${index + 1}`}</h4>
-        <table>
-          {Object.entries(method).map(([key, value]) => (
-            <tr key={key}>
-              <th>{key}</th>
-              <td>{value}</td>
-            </tr>
-          ))}
-        </table>
-      </div>
-    ));
-  };
-
-  // Render items due table
-  const renderItemsDue = () => {
-    return itemsDue.map((item, index) => (
-      <tr key={index}>
-        {item.map((detail, i) => (
-          <td key={i}>{detail}</td>
-        ))}
-      </tr>
-    ));
-  };
-
   return (
     <div className="container" id="finances">
       <h1>Financial Dashboard</h1>
       <div className="box-container">
-        <p>Current Account Balance: {/* Replace with real data */}</p>
-        <p>Amount due in next 30 days: {/* Replace with real data */}</p>
-        <p>Total future amount due: {/* Replace with real data */}</p>
-        <a href="/makePayment">Pay Tuition</a>
-        <a href="/finances">Change financial information</a>
+        <p role="region">Current Account Balance: {/* replace with real data */}</p>
+        <p role="region">Amount due in next 30 days: {/* replace with real data */}</p>
+        <p role="region">Total future amount due: {/* replace with real data */}</p>
+        <a role="region" href="/makePayment">Pay Tuition</a>
+        <a role="region" href="/finances">Change financial information</a>
 
-        <div className="info-table">
-          <h3>Billing Methods:</h3>
+        <div role="region" className="info-table">
           <div id="billing-tables">
-            {renderBillingMethods()}
+            <h3>Billing Methods:</h3>
+            {/* render billing methods tables */}
+            {billingMethods.map((method, index) => (
+              <div key={index}>
+                <h4>{`Billing Method ${index + 1}`}</h4>
+                <table>
+                  {Object.entries(method).map(([key, value]) => (
+                    <tr key={key}>
+                      <th>{key}</th>
+                      <td>{value}</td>
+                    </tr>
+                    ))}
+                </table>
+              </div>
+            ))}
           </div>
         </div>
 
-        <div className="info-table">
+        <div role="region" className="info-table">
           <h3>Future Items Due</h3>
           <table>
             <thead>
@@ -76,7 +61,14 @@ function Finances() {
               </tr>
             </thead>
             <tbody id="items-due">
-              {renderItemsDue()}
+              {/* render items due table */}
+              {itemsDue.map((item, index) => (
+                <tr key={index}>
+                  {item.map((detail, i) => (
+                    <td key={i}>{detail}</td>
+                  ))}
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

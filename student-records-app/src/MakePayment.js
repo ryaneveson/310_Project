@@ -3,32 +3,43 @@ import "./makePayment.css";
 
 function MakePayment() {
   const [selectedMethod, setSelectedMethod] = useState(null);
-  const [selectedCardNumber, setSelectedCardNumber] = useState("")
+  const [selectedCardNumber, setSelectedCardNumber] = useState("");
   const [paymentAmount, setPaymentAmount] = useState("");
+  const [isFocused, setIsFocused] = useState(false);
   
   const billingMethods = [
     {cardType: "Visa", cardNumber: "**** **** **** 1234", cardholderName: "John Doe", billingAddress: "123 Main St, City, Country",},
     {cardType: "MasterCard", cardNumber: "**** **** **** 5678", cardholderName: "Jane Smith", billingAddress: "456 Elm St, City, Country",},
   ];
 
-  // Function to validate currency input
-  const validateCurrencyInput = (event) => {
-    let input = event.target;
-    let value = input.value
-      .replace(/[^0-9.]/g, "") // Allow only numbers and dots
-      .replace(/(\..*)\./g, "$1") // Prevent multiple dots
-      .replace(/^0+(\d)/, "$1") // Prevent leading zeros
-      .replace(/^(\d*\.\d{2}).*/, "$1"); // Allow only two decimal places
-    if (value && !value.includes(".")) {
-      value = parseFloat(value).toFixed(2);
-    }
-    setPaymentAmount(value);
+  // function to validate currency input
+  const validateCurrencyInput = (value) => {
+    let formattedValue = value
+      .replace(/[^0-9.]/g, "") // allow only numbers and dots
+      .replace(/(\..*)\./g, "$1") // prevent multiple dots
+      .replace(/^0+(\d)/, "$1") // prevent leading zeros
+      .replace(/^(\d*\.\d{2}).*/, "$1"); // allow only two decimal places
+      if (!isFocused && formattedValue && !formattedValue.includes(".")) {
+        formattedValue = parseFloat(formattedValue).toFixed(2);
+      }
+    return formattedValue;
   };
 
+  const handleFocus = () => {
+    setIsFocused(true);
+  };
   const handleBlur = () => {
-    if (paymentAmount && !isNaN(paymentAmount)) {
-      setPaymentAmount(parseFloat(paymentAmount).toFixed(2));
+    setIsFocused(false);
+    let formattedAmount = validateCurrencyInput(paymentAmount);
+    if (formattedAmount && !formattedAmount.includes(".")) {
+      formattedAmount = parseFloat(formattedAmount).toFixed(2);
     }
+    setPaymentAmount(formattedAmount);
+  };
+
+  const handleInput = (event) => {
+    const value = validateCurrencyInput(event.target.value);
+    setPaymentAmount(value); // real-time input update without validation
   };
 
   const handleSubmit = (event) => {
@@ -58,7 +69,10 @@ function MakePayment() {
             id="payment-amount"
             className="currency-input"
             placeholder="0.00"
-            onInput={validateCurrencyInput}
+            onChange={handleInput} // update the value in real-time
+            value={paymentAmount}
+            onBlur={handleBlur} // validate when the cursor leaves the input field
+            onFocus={handleFocus}
           />
         </div>
       </div>
@@ -67,11 +81,13 @@ function MakePayment() {
       <form onSubmit={handleSubmit}>
         <div className="box-container">
           {billingMethods.map((method, index) => (
-            <label key={index} className="billing-box radio-option">
+            <label key={index} className="billing-box radio-option" htmlFor={`billing-method-${method.cardType}`}>
               <input
                 type="radio"
                 name="billingMethod"
+                id={`billing-method-${method.cardType}`}
                 value={method.cardType}
+                data-testid="billing-method-input"
                 onChange={() => {
                   setSelectedMethod(method.cardType);
                   setSelectedCardNumber(method.cardNumber);
@@ -96,6 +112,5 @@ function MakePayment() {
     </div>
   );
 }
-
 
 export default MakePayment;
