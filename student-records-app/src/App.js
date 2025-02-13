@@ -6,6 +6,7 @@ import Courses from "./Courses";
 import Finances from "./Finances";
 import MakePayment from "./MakePayment";
 import CreateUser from "./createUser";
+import StudentRanking from './studentRanking';
 
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
         <Route path="/courses" element={<Courses />} /> 
         <Route path="/finances" element={<Finances />} />
         <Route path="/makePayment" element={<MakePayment />} />
+        <Route path="/studentRanking" element={<StudentRanking />} />
       </Routes>
     </Router>
   );
