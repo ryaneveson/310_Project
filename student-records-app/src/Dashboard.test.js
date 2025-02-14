@@ -2,10 +2,8 @@ import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import Dashboard from "./Dashboard";
 
-// Define a mock navigate function instead of using react-router-dom
 const mockNavigate = jest.fn();
 
-// Mock useNavigate manually inside the component's scope
 jest.mock("./Dashboard", () => (props) => {
     const ActualDashboard = jest.requireActual("./Dashboard").default;
     return <ActualDashboard {...props} navigate={mockNavigate} />;
