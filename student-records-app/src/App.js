@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Login from "./Login";
 import Dashboard from "./Dashboard";
+import Calendar from "./Calendar";
 import EditGrades from "./editGrades";
 import Courses from "./Courses";
 import Finances from "./Finances";
@@ -19,6 +20,7 @@ function App() {
         <Route path="/editGrades" element={<EditGrades />} />
         <Route path="/courses" element={<Courses />} />
         <Route path="/finances" element={<Finances />} />
+        <Route path="/calendar" element={<Calendar />} />
         <Route path="/makePayment" element={<MakePayment />} />
         <Route path="/studentRanking" element={<StudentRanking />} />
         <Route path="/studentSearch" element={<StudentSearch />} />
