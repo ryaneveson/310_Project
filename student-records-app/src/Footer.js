@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import "./footer.css";
+import "./frontend/footer.css";
 
 function FooterLoader() {
   const [content, setContent] = useState('');

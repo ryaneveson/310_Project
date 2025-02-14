@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import "./loginStyles.css";
+import "./frontend/loginStyles.css";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -8,9 +8,6 @@ const Login = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch("/header.html")
-      .then((res) => res.text())
-      .then((data) => (document.getElementById("header").innerHTML = data));
 
     fetch("/footer.html")
       .then((res) => res.text())

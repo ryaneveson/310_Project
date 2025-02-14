@@ -1,0 +1,147 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap");
+
+/* General Styles */
+.dashboard-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: auto;
+  font-family: "Poppins", sans-serif;
+  color: #495867;
+}
+
+/* Hero Section */
+.hero {
+  text-align: left;
+  padding: 20px;
+  background: #f4f4f4;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.hero h2 {
+  font-size: 28px;
+  font-weight: 600;
+  color: #004385;
+}
+
+.hero p {
+  font-size: 16px;
+  color: #577399;
+}
+
+/* Main Content Layout */
+.dashboard-content {
+  display: flex;
+  gap: 20px;
+}
+
+/* Left Column - Cards */
+.info-cards {
+  flex: 2;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e0e0e0;
+}
+
+.card h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #004385;
+}
+
+.card p {
+  font-size: 14px;
+  color: #495867;
+}
+
+/* Right Column - Apps */
+.apps-card {
+  flex: 1;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e0e0e0;
+}
+
+.apps-card h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #004385;
+  margin-bottom: 15px;
+}
+
+.apps-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.app-button {
+  background: #004385;
+  color: white;
+  padding: 9px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0px 5px 0px #002b5b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.app-button:hover {
+  background: #3674b3;
+  box-shadow: 0px 2px 0px #002b5b;
+}
+
+.app-button:active {
+  transform: translateY(4px);
+  box-shadow: 0px 0px 0px #002b5b;
+}
+
+.icon {
+  font-size: 24px;
+}
+
+/* Logout Button */
+.logout-container {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.logout-button {
+  background: #004385;
+  color: white;
+  padding: 14px;
+  border: none;
+  width: 150px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0px 5px 0px #004385;
+  position: relative;
+}
+
+.logout-button:hover {
+  background: #3674b3;
+  box-shadow: 0px 2px 0px #004385;
+}
+
+.logout-button:active {
+  transform: translateY(4px);
+  box-shadow: 0px 0px 0px #004385;
+}

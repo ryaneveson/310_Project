@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
-import "./finances.css";
+import "./frontend/finances.css";
+
+
 
 function Finances() {
   const [htmlContent, setHtmlContent] = useState("");
 
   useEffect(() => {
-    fetch("/finances.html") // Path to finances.html in the public directory
+    fetch("/finances.html") // path to finances.html in the public directory
       .then((response) => response.text())
       .then((data) => {
         setHtmlContent(data);
@@ -15,11 +17,11 @@ function Finances() {
 
   useEffect(() => {
     if (htmlContent) {
-      executeScripts(); // Only execute scripts after content is fully loaded
+      executeScripts(); // only execute scripts after content is fully loaded
     }
-  }, [htmlContent]); // Runs again when htmlContent updates
+  }, [htmlContent]); // runs again when htmlContent updates
 
-  // Function to execute any scripts within the fetched HTML
+  // function to execute any scripts within the fetched HTML
   const executeScripts = () => {
     const container = document.getElementById("finances");
 
@@ -29,12 +31,12 @@ function Finances() {
     for (let script of scripts) {
       const newScript = document.createElement("script");
       if (script.src) {
-        newScript.src = script.src; // Copy external script source
-        newScript.async = true; // Ensure non-blocking execution
+        newScript.src = script.src; // copy external script source
+        newScript.async = true; // ensure non-blocking execution
       } else {
-        newScript.textContent = script.textContent; // Copy inline script content
+        newScript.textContent = script.textContent; // copy inline script content
       }
-      document.body.appendChild(newScript); // Execute script in document scope
+      document.body.appendChild(newScript); // execute script in document scope
     }
   };
 
