@@ -5,7 +5,7 @@ import EditGrades from './editGrades';
 import Courses from "./Courses"; 
 import Finances from "./Finances";
 import MakePayment from "./MakePayment";
-import CreateUser from "./createUser";
+import CreateUser from "./createUser.js";
 import StudentSearch from "./StudentSearch";
 
 
