@@ -1,20 +1,25 @@
-import React, { useEffect, useState } from 'react';
-import "./header.css";
+import React, { useState } from "react";
+import "./frontend/header.css";
 
-function HeaderLoader() {
-  const [content, setContent] = useState('');
+const Header = () => {
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  useEffect(() => {
-    fetch('/header.html') //Fetch header.html from public folder
-      .then(response => {
-        if (!response.ok) throw new Error('Failed to load header');
-        return response.text();
-      })
-      .then(data => setContent(data))
-      .catch(error => console.error('Error loading header:', error));
-  }, []);
+  return (
+    <header>
+      <h1>Werkday</h1>
+      <button className={`menu-button ${menuOpen ? "open" : ""}`} onClick={() => setMenuOpen(!menuOpen)}>
+        <div></div>
+        <div></div>
+        <div></div>
+      </button>
+      <ul className={`dropdown-menu ${menuOpen ? "open" : ""}`}>
+        <li><a href="/Dashboard">Home</a></li>
+        <li><a href="/Finances">Financial Dashboard</a></li>
+        <li><a href="/Courses">Courses</a></li>
+        <li><a href="/editGrades">Edit Grades</a></li>
+      </ul>
+    </header>
+  );
+};
 
-  return <div dangerouslySetInnerHTML={{ __html: content }} />;
-}
-
-export default HeaderLoader;
+export default Header;

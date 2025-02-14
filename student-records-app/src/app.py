@@ -7,11 +7,10 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-# Connect to MongoDB Atlas
 MONGO_URI = "mongodb+srv://samijaffri01:6XjmdnygdfRrD8dF@cluster0.fgfo7.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 client = MongoClient(MONGO_URI)
-db = client["student_records"]  # Database name
-users_collection = db["users"]  # Collection (table equivalent)
+db = client["student_records"]  
+users_collection = db["users"]  
 
 @app.route("/register", methods=["POST"])
 def register():
@@ -26,7 +25,7 @@ def register():
 
     users_collection.insert_one({
         "username": username,
-        "password": hashed_password.decode("utf-8")  # Store hashed password
+        "password": hashed_password.decode("utf-8") 
     })
 
     return jsonify({"message": "User registered successfully!"}), 201
@@ -43,6 +42,9 @@ def login():
         return jsonify({"message": "Login successful!"}), 200
     return jsonify({"error": "Invalid credentials"}), 401
 
+@app.before_request
+def log_request():
+    print(f"Incoming {request.method} request to {request.path}")
+
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
-

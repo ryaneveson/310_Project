@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import "./loginStyles.css";
+import "./frontend/loginStyles.css";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -8,37 +8,25 @@ const Login = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch("/header.html")
-      .then((res) => res.text())
-      .then((data) => (document.getElementById("header").innerHTML = data));
-
     fetch("/footer.html")
       .then((res) => res.text())
       .then((data) => (document.getElementById("footer").innerHTML = data));
   }, []);
 
-  const handleLogin = async (e) => {
+  const handleLogin = (e) => {
     e.preventDefault();
     setError("");
 
-    try {
-      const response = await fetch("http://127.0.0.1:5000/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
-      });
+    // Hardcoded credentials
+    const hardcodedUsername = "testuser";
+    const hardcodedPassword = "mypassword";
 
-      const data = await response.json();
-      if (response.ok) {
-        alert("Login successful!");
-        localStorage.setItem("token", data.token);
-        window.location.href = "/dashboard";
-      } else {
-        alert("Password or username is incorrect!");
-        setError(data.error);
-      }
-    } catch (err) {
-      setError("Error connecting to server");
+    if (username === hardcodedUsername && password === hardcodedPassword) {
+      console.log("Hardcoded user logged in!");
+      localStorage.setItem("token", "hardcoded-token");
+      window.location.href = "/dashboard";
+    } else {
+      setError("Invalid username or password!");
     }
   };
 
