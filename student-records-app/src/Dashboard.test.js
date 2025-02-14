@@ -2,17 +2,15 @@ import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import Dashboard from "./Dashboard";
 
-const mockNavigate = jest.fn();
-
-jest.mock("./Dashboard", () => (props) => {
-    const ActualDashboard = jest.requireActual("./Dashboard").default;
-    return <ActualDashboard {...props} navigate={mockNavigate} />;
-});
-
 describe("Dashboard Component", () => {
     beforeEach(() => {
         localStorage.clear();
-        mockNavigate.mockClear();
+        delete window.location;
+        window.location = { href: jest.fn() };
+    });
+
+    afterEach(() => {
+        jest.restoreAllMocks();
     });
 
     test("renders without crashing", () => {
@@ -24,7 +22,7 @@ describe("Dashboard Component", () => {
 
     test("redirects to home if no token is found", () => {
         render(<Dashboard />);
-        expect(mockNavigate).toHaveBeenCalledWith("/");
+        expect(window.location.href).toBe("/");
     });
 
     test("displays username when token exists", () => {
@@ -33,14 +31,14 @@ describe("Dashboard Component", () => {
         expect(screen.getByText("Hi There")).toBeInTheDocument();
     });
 
-    test("navigates to the correct pages when clicking app buttons", () => {
+    test("redirects to the correct pages when clicking app buttons", () => {
         render(<Dashboard />);
-        
+
         fireEvent.click(screen.getByText("Academics"));
-        expect(mockNavigate).toHaveBeenCalledWith("/Courses");
+        expect(window.location.href).toBe("/Courses");
 
         fireEvent.click(screen.getByText("Finances"));
-        expect(mockNavigate).toHaveBeenCalledWith("/Finances");
+        expect(window.location.href).toBe("/Finances");
     });
 
     test("logs out and redirects to home when logout button is clicked", () => {
@@ -49,6 +47,6 @@ describe("Dashboard Component", () => {
 
         fireEvent.click(screen.getByText("Logout"));
         expect(localStorage.getItem("token")).toBeNull();
-        expect(mockNavigate).toHaveBeenCalledWith("/");
+        expect(window.location.href).toBe("/");
     });
 });

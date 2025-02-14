@@ -1,23 +1,21 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import "./frontend/dashboardStyles.css"; 
 
 const Dashboard = () => {
-  const navigate = useNavigate();
   const [username, setUsername] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
-      navigate("/");
+      window.location.href = "/";
     } else {
       setUsername("User");
     }
-  }, [navigate]);
+  });
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    navigate("/");
+    window.location.href = "/";
   };
 
   return (
@@ -50,14 +48,14 @@ const Dashboard = () => {
         <div className="apps-card">
           <h3>Your Top Apps</h3>
           <div className="apps-buttons">
-            <button onClick={() => navigate("/Courses")} className="app-button">
-                Academics
+            <button onClick={() => (window.location.href = "/Courses")} className="app-button">
+              Academics
             </button>
-            <button onClick={() => navigate("/Finances")} className="app-button">
-                Finances
+            <button onClick={() => (window.location.href = "/Finances")} className="app-button">
+              Finances
             </button>
             <button className="app-button">
-                Personal Information
+              Personal Information
             </button>
           </div>
         </div>
