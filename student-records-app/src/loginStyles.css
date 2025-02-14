@@ -1,17 +1,16 @@
-/* Import Modern Font */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
-/* General Reset */
+/* general reset */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* Full Page Styling */
+/* full styling */
 body {
   font-family: 'Poppins', sans-serif;
-  background: #f7f7ff; /* Clean, Soft White */
+  background: #f7f7ff; 
   color: #495867;
   display: flex;
   flex-direction: column;
@@ -20,7 +19,7 @@ body {
   justify-content: center;
 }
 
-/* Auth Container */
+/* auth container */
 .auth-container {
   display: flex;
   align-items: center;
@@ -31,18 +30,18 @@ body {
   padding-bottom: 80px;
 }
 
-/* Auth Box (Minimalist Card Design) */
+/* auth box */
 .auth-box {
   background: #ffffff;
   padding: 40px;
   border-radius: 12px;
-  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.05); /* Soft Shadow */
+  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.05); 
   width: 400px;
   text-align: center;
-  border: 1px solid #e0e0e0; /* Light Border */
+  border: 1px solid #e0e0e0;
 }
 
-/* Title */
+/* title */
 .auth-title {
   font-size: 26px;
   font-weight: 600;
@@ -51,7 +50,7 @@ body {
   text-transform: uppercase;
 }
 
-/* Input Fields */
+/* idnput fields */
 .auth-input {
   width: 100%;
   padding: 12px;
@@ -70,7 +69,7 @@ body {
   box-shadow: 0 0 8px rgba(254, 95, 85, 0.3);
 }
 
-/* 3D Button Effect */
+/* 3D button effect */
 .auth-button {
   background: #004385;
   color: white;
@@ -96,7 +95,7 @@ body {
   box-shadow: 0px 0px 0px #004385;
 }
 
-/* Error & Success Messages */
+/* error & success messages */
 .auth-error {
   color: #004385;
   font-size: 14px;
@@ -109,7 +108,7 @@ body {
   margin-top: 10px;
 }
 
-/* Footer Links */
+/* footer links */
 .auth-footer {
   margin-top: 15px;
   font-size: 14px;
