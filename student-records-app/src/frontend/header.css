@@ -1,4 +1,3 @@
-/* Header Styling */
 header {
   width: 100%;
   background: #ffffff;
@@ -13,7 +12,6 @@ header {
   z-index: 100;
 }
 
-/* Website Title */
 header h1 {
   font-size: 22px;
   font-weight: 600;
@@ -22,7 +20,6 @@ header h1 {
   letter-spacing: 1px;
 }
 
-/* Menu Button (Hamburger) */
 .menu-button {
   width: 35px;
   height: 30px;
@@ -36,7 +33,6 @@ header h1 {
   position: relative;
 }
 
-/* 3 lines for the hamburger menu */
 .menu-button div {
   width: 100%;
   height: 4px;
@@ -45,9 +41,8 @@ header h1 {
   transition: all 0.3s ease-in-out;
 }
 
-/* Animation to turn into "X" */
 .menu-button.open div:nth-child(1) {
-  transform: translateY(11px) rotate(45deg);
+  transform: translateY(14px) rotate(45deg);
 }
 .menu-button.open div:nth-child(2) {
   opacity: 0;
@@ -56,7 +51,6 @@ header h1 {
   transform: translateY(-11px) rotate(-45deg);
 }
 
-/* Dropdown Menu */
 .dropdown-menu {
   position: absolute;
   top: 60px;
@@ -71,25 +65,22 @@ header h1 {
   visibility: hidden;
   transform: translateY(-10px);
   transition: all 0.3s ease-in-out;
-  display: none;  /* Ensure it is hidden by default */
+  display: none;  
 }
 
-/* Show menu when open */
 .dropdown-menu.open {
   opacity: 1;
   visibility: visible;
   transform: translateY(0);
-  display: block; /* Ensure it appears when opened */
+  display: block; 
 }
 
-/* Remove bullets */
 .dropdown-menu li {
   padding: 12px 20px;
   text-align: left;
   display: block;
 }
 
-/* Links */
 .dropdown-menu li a {
   display: block;
   text-decoration: none;
@@ -98,7 +89,6 @@ header h1 {
   transition: color 0.3s ease-in-out;
 }
 
-/* Hover effect */
 .dropdown-menu li a:hover {
   background: #f0f0f0;
   color: #004385;

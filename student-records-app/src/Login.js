@@ -17,17 +17,26 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
-
+  
+    // Hardcoded login credentials
+    const hardcodedUsername = "testuser";
+    const hardcodedPassword = "mypassword";
+  
+    if (username === hardcodedUsername && password === hardcodedPassword) {
+      localStorage.setItem("token", "hardcoded-token");
+      window.location.href = "/dashboard";
+      return;
+    }
+  
     try {
       const response = await fetch("http://127.0.0.1:5000/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
       });
-
+  
       const data = await response.json();
       if (response.ok) {
-        alert("Login successful!");
         localStorage.setItem("token", data.token);
         window.location.href = "/dashboard";
       } else {
