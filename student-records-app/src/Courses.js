@@ -1,7 +1,12 @@
 import React, { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import "./frontend/courses.css";
 
 function Courses() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const previouslyRegisteredCourses = location.state?.registeredCourses || [];
+
   const allCourses = [
     "Introduction to Programming",
     "Data Structures",
@@ -16,6 +21,7 @@ function Courses() {
   const descriptions = [
     "None"
   ];
+
   const prerequisites = [
     "None",
     "COSC 111",
@@ -35,8 +41,18 @@ function Courses() {
     setExpandedCourse(expandedCourse === index ? null : index);
   };
 
-  const handleRegister = (course) => {
-    alert(`You have registered for ${course}!`);
+  const handleRegister = (course, index) => {
+    navigate("/verify-registration", {
+      state: {
+        course,
+        date: dates[index],
+        professor: professors[index],
+        room: rooms[index],
+        description: descriptions[index],
+        prerequisites: prerequisites[index],
+        registeredCourses: previouslyRegisteredCourses, 
+      },
+    });
   };
 
   return (
@@ -58,21 +74,42 @@ function Courses() {
               <div className="course-header">
                 <button
                   onClick={() => toggleCourseDetails(index)}
-                  className={`course-toggle ${expandedCourse === index ? "expanded" : ""}`}
+                  className={`course-toggle ${
+                    expandedCourse === index ? "expanded" : ""
+                  }`}
                 >
                   <div className="triangle"></div>
                 </button>
                 <span className="course-name">{course}</span>
-                <button onClick={() => handleRegister(course)} className="auth-button">Register</button>
+                <button
+                  onClick={() => handleRegister(course, index)}
+                  className="auth-button"
+                >
+                  Register
+                </button>
               </div>
-              <div className={`course-details ${expandedCourse === index ? "open" : ""}`}>
+              <div
+                className={`course-details ${
+                  expandedCourse === index ? "open" : ""
+                }`}
+              >
                 {expandedCourse === index && (
                   <>
-                    <p><strong>Date:</strong> {dates[index]}</p>
-                    <p><strong>Professor:</strong> {professors[index]}</p>
-                    <p><strong>Room:</strong> {rooms[index]}</p>
-                    <p><strong>Description:</strong> {descriptions[index]}</p>
-                    <p><strong>Pre-requisites:</strong> {prerequisites[index]}</p>
+                    <p>
+                      <strong>Date:</strong> {dates[index]}
+                    </p>
+                    <p>
+                      <strong>Professor:</strong> {professors[index]}
+                    </p>
+                    <p>
+                      <strong>Room:</strong> {rooms[index]}
+                    </p>
+                    <p>
+                      <strong>Description:</strong> {descriptions[index]}
+                    </p>
+                    <p>
+                      <strong>Pre-requisites:</strong> {prerequisites[index]}
+                    </p>
                   </>
                 )}
               </div>
