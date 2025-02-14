@@ -42,6 +42,9 @@ def login():
         return jsonify({"message": "Login successful!"}), 200
     return jsonify({"error": "Invalid credentials"}), 401
 
+@app.before_request
+def log_request():
+    print(f"Incoming {request.method} request to {request.path}")
+
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
-
