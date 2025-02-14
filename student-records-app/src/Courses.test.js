@@ -32,7 +32,6 @@ describe("Courses Component", () => {
 
     const searchInput = screen.getByPlaceholderText("Search for a course...");
     
-    // Type "web" in the search box
     fireEvent.change(searchInput, { target: { value: "web" } });
 
     // Check that only "Web Development" is displayed
