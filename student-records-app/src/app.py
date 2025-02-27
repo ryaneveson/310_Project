@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, redirect
 from flask_cors import CORS
 from pymongo import MongoClient
 import bcrypt
@@ -11,6 +11,7 @@ MONGO_URI = "mongodb+srv://samijaffri01:6XjmdnygdfRrD8dF@cluster0.fgfo7.mongodb.
 client = MongoClient(MONGO_URI)
 db = client["student_records"]  
 users_collection = db["users"]  
+students_collection = db["students"]  #need to connect this to students collection
 
 @app.route("/register", methods=["POST"])
 def register():
@@ -41,6 +42,14 @@ def login():
     if user and bcrypt.checkpw(password, user["password"].encode("utf-8")):
         return jsonify({"message": "Login successful!"}), 200
     return jsonify({"error": "Invalid credentials"}), 401
+
+#route to student profile page for a given student ID
+@app.route("/submit-student-id", methods=["POST"])
+def submit_student_id():
+    student_id = request.form.get("studentID")
+    if student_id:
+        return redirect(f"/studentProfile/{student_id}")
+    return jsonify({"error": "Student ID is required"}), 400
 
 @app.before_request
 def log_request():
