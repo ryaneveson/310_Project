@@ -10,7 +10,7 @@ const AdminDashboard = () => {
   return (
     <div className="dashboard-container">
       <div className="hero">
-        <h2>Hi There</h2>
+        <h2>Hi There Admin</h2>
         <p>
           It's{" "}
           {new Date().toLocaleDateString(undefined, {
