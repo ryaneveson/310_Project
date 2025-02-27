@@ -29,8 +29,7 @@ if (footerElement) {
 }
 
 //render the main root App
-const rootElement = document.getElementById("root");
-const root = ReactDOM.createRoot(rootElement);
+const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <App />
