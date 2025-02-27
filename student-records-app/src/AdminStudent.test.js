@@ -2,29 +2,28 @@ import { render, screen } from '@testing-library/react';
 import Dashboard from './Dashboard';
 
 test('renders AdminDashboard for admin role', () => {
-  // Set role to admin in localStorage
   localStorage.setItem('role', 'admin');
 
   render(<Dashboard />);
 
-  // Check if the AdminDashboard is rendered
-  expect(screen.getByText('Hi There')).toBeInTheDocument();
+  // this is to check if the admin page is loaded
+  expect(screen.getByText('Hi There Admin')).toBeInTheDocument();
   expect(screen.getByText('Logout')).toBeInTheDocument();
 });
 
 test('renders StudentDashboard for student role', () => {
-  // Set role to student in localStorage
+  // this is here to set the role to student now
   localStorage.setItem('role', 'student');
 
   render(<Dashboard />);
 
-  // Check if the StudentDashboard is rendered
+  // this is the test ofr student dashboard
   expect(screen.getByText('Hello, Student!')).toBeInTheDocument();
   expect(screen.getByText('Logout')).toBeInTheDocument();
 });
 
 test('redirects to login page if no role is set', () => {
-  // Remove role from localStorage
+// this is to remove the roles
   localStorage.removeItem('role');
 
   // Mock window.location.href
@@ -33,6 +32,6 @@ test('redirects to login page if no role is set', () => {
 
   render(<Dashboard />);
 
-  // Check if the user is redirected to the login page
+  // this is to check if the login is rendered
   expect(window.location.href).toBe('/');
 });
