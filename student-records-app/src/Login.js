@@ -25,12 +25,10 @@ const Login = () => {
 
     if (username === users.admin.username && password === users.admin.password) {
       console.log("Admin logged in!");
-      localStorage.setItem("token", "hardcoded-admin-token");
       localStorage.setItem("role", "admin"); // Store role
       window.location.href = "/dashboard";
     } else if (username === users.student.username && password === users.student.password) {
       console.log("Student logged in!");
-      localStorage.setItem("token", "hardcoded-student-token");
       localStorage.setItem("role", "student"); // Store role
       window.location.href = "/dashboard";
     } else {

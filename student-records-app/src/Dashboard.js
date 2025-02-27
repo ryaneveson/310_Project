@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import "./frontend/dashboardStyles.css";
 
 const handleLogout = () => {
-  localStorage.removeItem("token");
   localStorage.removeItem("role");
   window.location.href = "/";
 };
@@ -73,10 +72,9 @@ const Dashboard = () => {
   const [userRole, setUserRole] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
     const role = localStorage.getItem("role");
 
-    if (!token) {
+    if (!role) {
       window.location.href = "/";
     } else {
       setUserRole(role);
@@ -85,9 +83,9 @@ const Dashboard = () => {
 
   if (!userRole) {
     return <div>Loading...</div>;
+  }else {
+    return userRole === "admin" ? <AdminDashboard /> : <StudentDashboard />;
   }
-
-  return userRole === "admin" ? <AdminDashboard /> : <StudentDashboard />;
 };
 
 export default Dashboard;
