@@ -1,23 +1,13 @@
 import { useEffect, useState } from "react";
-import "./frontend/dashboardStyles.css"; 
+import "./frontend/dashboardStyles.css";
 
-const Dashboard = () => {
-  const [username, setUsername] = useState("");
+const handleLogout = () => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("role");
+  window.location.href = "/";
+};
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      window.location.href = "/";
-    } else {
-      setUsername("User");
-    }
-  });
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    window.location.href = "/";
-  };
-
+const AdminDashboard = () => {
   return (
     <div className="dashboard-container">
       <div className="hero">
@@ -68,6 +58,36 @@ const Dashboard = () => {
       </div>
     </div>
   );
+};
+
+const StudentDashboard = () => {
+  return (
+    <div className="dashboard-container">
+      <h2>Hello, Student!</h2>
+      <button className="logout-button" onClick={handleLogout}>Logout</button>
+    </div>
+  );
+};
+
+const Dashboard = () => {
+  const [userRole, setUserRole] = useState(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
+
+    if (!token) {
+      window.location.href = "/";
+    } else {
+      setUserRole(role);
+    }
+  }, []);
+
+  if (!userRole) {
+    return <div>Loading...</div>;
+  }
+
+  return userRole === "admin" ? <AdminDashboard /> : <StudentDashboard />;
 };
 
 export default Dashboard;

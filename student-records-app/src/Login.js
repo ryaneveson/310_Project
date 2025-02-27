@@ -17,13 +17,21 @@ const Login = () => {
     e.preventDefault();
     setError("");
 
-    // Hardcoded credentials
-    const hardcodedUsername = "testuser";
-    const hardcodedPassword = "mypassword";
+    // Hardcoded credentials with roles
+    const users = {
+      admin: { username: "admin", password: "adminpass", role: "admin" },
+      student: { username: "student", password: "studentpass", role: "student" },
+    };
 
-    if (username === hardcodedUsername && password === hardcodedPassword) {
-      console.log("Hardcoded user logged in!");
-      localStorage.setItem("token", "hardcoded-token");
+    if (username === users.admin.username && password === users.admin.password) {
+      console.log("Admin logged in!");
+      localStorage.setItem("token", "hardcoded-admin-token");
+      localStorage.setItem("role", "admin"); // Store role
+      window.location.href = "/dashboard";
+    } else if (username === users.student.username && password === users.student.password) {
+      console.log("Student logged in!");
+      localStorage.setItem("token", "hardcoded-student-token");
+      localStorage.setItem("role", "student"); // Store role
       window.location.href = "/dashboard";
     } else {
       setError("Invalid username or password!");
