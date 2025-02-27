@@ -1,0 +1,100 @@
+/* General Styling */
+#finances {
+    font-family: Arial, sans-serif;
+    margin: 20px auto;
+    max-width: 1200px;
+    padding: 2rem;
+    text-align: center;
+}
+
+/* Header */
+#finances h1 {
+    color: #004385;
+    font-size: 2rem;
+    margin-bottom: 2rem;
+}
+
+/* Box Container */
+#finances .box-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+/* Individual Boxes */
+#finances .box-container > * {
+    background-color: white;
+    padding: 1.5rem 2rem;
+    box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.05);
+    border: 2px solid #004385;
+    border-radius: 15px;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    max-width: 350px;
+    text-align: left;
+}
+
+/* Hover Effect for Boxes */
+#finances .box-container > *:hover {
+    transform: translateY(-5px);
+    box-shadow: 15px 15px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Links inside Boxes */
+#finances .box-container > a {
+    display: inline-block;
+    font-weight: bold;
+    color: #004385;
+    text-decoration: none;
+    transition: all 0.3s ease-in-out;
+    position: relative;
+}
+
+/* Underline Animation on Hover */
+#finances .box-container > a::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -2px;
+    width: 0;
+    height: 2px;
+    background: #004385;
+    transition: width 0.3s ease-in-out, left 0.3s ease-in-out;
+    transform: translateX(-50%);
+}
+
+#finances .box-container > a:hover::after {
+    width: 80%;
+}
+
+#finances .box-container > a:hover {
+    color: #002a5c;
+}
+
+/* Table Styling */
+.info-table table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 2rem;
+}
+
+.info-table th,
+.info-table td {
+    border: 1px solid #004385;
+    padding: 0.75rem;
+    text-align: left;
+}
+
+.info-table th {
+    background-color: #004385;
+    color: white;
+}
+
+/* Billing Tables */
+#finances #billing-tables h4 {
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    color: #004385;
+    font-size: 1.25rem;
+}

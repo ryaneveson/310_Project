@@ -1,0 +1,95 @@
+/* General Page Styling */
+.container {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    margin-top: 5rem;
+    text-align: center;
+}
+
+/* Form Container */
+.add-financial-container {
+    background-color: white;
+    max-width: 500px;
+    margin: auto;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border: 2px solid #004385;
+}
+
+/* Form Heading */
+.add-financial-container h2 {
+    margin-bottom: 1rem;
+    color: #004385;
+    font-size: 1.8rem;
+}
+
+/* Form Fields */
+.add-financial-container input {
+    width: 100%;
+    padding: 0.75rem;
+    margin: 0.5rem 0;
+    border: 1px solid #004385;
+    border-radius: 8px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: border 0.3s ease-in-out;
+}
+
+/* Focus Style */
+.add-financial-container input:focus {
+    outline: none;
+    border-color: #002a5c;
+    box-shadow: 0 0 5px rgba(0, 67, 133, 0.5);
+}
+
+/* Submit Button */
+.add-financial-container button {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #004385;
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    margin-top: 1rem;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+}
+
+.add-financial-container button:hover {
+    background-color: #002a5c;
+}
+
+/* Back Button */
+.back-button {
+    display: inline-block;
+    margin-top: 1rem;
+    text-decoration: none;
+    color: #004385;
+    font-weight: bold;
+    transition: color 0.3s ease-in-out;
+}
+
+.back-button:hover {
+    color: #002a5c;
+    text-decoration: underline;
+}
+
+/* Make the form inputs and button more responsive */
+@media (max-width: 600px) {
+    .add-financial-container {
+        padding: 1.5rem;
+        margin: 1rem;
+    }
+
+    .add-financial-container h2 {
+        font-size: 1.5rem;
+    }
+
+    .add-financial-container input,
+    .add-financial-container button {
+        padding: 0.65rem;
+    }
+}
