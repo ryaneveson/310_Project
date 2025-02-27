@@ -98,7 +98,7 @@ function Courses({ onRegister }) {
               <div className="course-header">
                 <button
                   onClick={() => toggleCourseDetails(index)}
-                  className={course-toggle ${expandedCourse === index ? "expanded" : ""}}
+                  className={`course-toggle ${expandedCourse === index ? "expanded" : ""}`}
                 >
                   <div className="triangle"></div>
                 </button>
