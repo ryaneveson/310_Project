@@ -8,11 +8,11 @@ function Courses() {
   const previouslyRegisteredCourses = location.state?.registeredCourses || [];
 
   const allCourses = [
-    "Introduction to Programming",
-    "Data Structures",
-    "Web Development",
-    "Database Management",
-    "Machine Learning"
+    "1 Introduction to Programming",
+    "2 Data Structures",
+    "3 Web Development",
+    "4 Database Management",
+    "5 Machine Learning"
   ];
 
   const professors = ["Scott Fazackerley", "Ramon Lawrence", "John Hopkinson", "Abdallah Mohamed", "Dr. John Doe"];
@@ -31,11 +31,21 @@ function Courses() {
   ];
 
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedYears, setSelectedYears] = useState([]);
   const [expandedCourse, setExpandedCourse] = useState(null);
 
-  const filteredCourses = allCourses.filter(course =>
-    course.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const handleYearChange = (year) => {
+    setSelectedYears(prev =>
+      prev.includes(year) ? prev.filter(y => y !== year) : [...prev, year]
+    );
+  };
+
+  const filteredCourses = allCourses.filter(course => {
+    const matchesSearch = course.toLowerCase().includes(searchTerm.toLowerCase());
+    const courseYear = course.match(/\d+/)?.[0]; // Extract the first number (year level)
+    const matchesYear = selectedYears.length === 0 || selectedYears.includes(courseYear);
+    return matchesSearch && matchesYear;
+  });
 
   const toggleCourseDetails = (index) => {
     setExpandedCourse(expandedCourse === index ? null : index);
@@ -66,6 +76,49 @@ function Courses() {
         onChange={(e) => setSearchTerm(e.target.value)}
         className="search-box"
       />
+
+      <div className="year-filter">
+        <label>
+          <input
+            type="checkbox"
+            checked={selectedYears.includes("1")}
+            onChange={() => handleYearChange("1")}
+          />
+          Year 1
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            checked={selectedYears.includes("2")}
+            onChange={() => handleYearChange("2")}
+          />
+          Year 2
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            checked={selectedYears.includes("3")}
+            onChange={() => handleYearChange("3")}
+          />
+          Year 3
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            checked={selectedYears.includes("4")}
+            onChange={() => handleYearChange("4")}
+          />
+          Year 4
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            checked={selectedYears.includes("5")}
+            onChange={() => handleYearChange("5")}
+          />
+          Year 5
+        </label>
+      </div>
 
       <ul className="courses-list">
         {filteredCourses.length > 0 ? (
