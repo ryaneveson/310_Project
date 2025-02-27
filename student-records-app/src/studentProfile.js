@@ -1,16 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import HeaderLoader from "./Header";
 import FooterLoader from "./Footer";
 
-function useQuery() {
-    return new URLSearchParams(useLocation().search);
-}
-
-function StudentProfile() {
-    const location = useLocation();
-    const query = useQuery();
-    const studentID = query.get("studentID");
+export default function StudentProfile() {
+    const { studentID } = useParams();
 
     const [studentData, setStudentData] = useState(null);
     const [notFound, setNotFound] = useState(false);
@@ -34,12 +28,12 @@ function StudentProfile() {
 
         if (student) {
             setStudentData(student);
-            setNotFound(false);
+            setNotFound(false); 
         } else {
             setStudentData(null);
             setNotFound(true);
         }
-    }, [studentID, location.search]); // Ensures re-render when query changes
+    }, [studentID]);
 
     return (
         <div>
@@ -61,5 +55,3 @@ function StudentProfile() {
         </div>
     );
 }
-
-export default StudentProfile;

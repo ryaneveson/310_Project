@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import HeaderLoader from "./Header";
 import FooterLoader from "./Footer";
 
 function StudentProfileInput() {
     const [htmlContent, setHtmlContent] = useState("");
+    const [studentID, setStudentID] = useState(""); // Add this line
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetch("/studentProfileInput.html")
@@ -12,22 +15,26 @@ function StudentProfileInput() {
             .catch(error => console.error("Error fetching HTML:", error));
     }, []);
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        const studentID = event.target.studentID.value;
-        window.location.href = `/studentProfile.html?studentID=${studentID}`;
+    const handleSubmit = () => {
+        if (studentID.trim()) {
+            navigate(`/studentProfile/${encodeURIComponent(studentID)}`);
+        } else {
+            alert("Please enter a student ID.");
+        }
     };
 
     return (
         <div>
-            <HeaderLoader />
-            <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
-            <form onSubmit={handleSubmit}>
-                <label htmlFor="studentID">Student ID: </label>
-                <input type="text" id="studentID" name="studentID" required />
-                <button type="submit">Submit</button>
-            </form>
-            <FooterLoader />
+            <HeaderLoader/>
+            <h1>Search for a Student Profile</h1>
+            <input
+                type="text"
+                placeholder="Enter Student ID"
+                value={studentID}
+                onChange={(e) => setStudentID(e.target.value)}
+            />
+            <button onClick={handleSubmit}>Go to Profile</button>
+            <FooterLoader/>
         </div>
     );
 }

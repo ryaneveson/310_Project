@@ -26,8 +26,8 @@ function App() {
         <Route path="/makePayment" element={<MakePayment />} />
         <Route path="/studentRanking" element={<StudentRanking />} />
         <Route path="/studentSearch" element={<StudentSearch />} />
-        <Route path="/studentProfileInput" element={<StudentProfileInput />} />
         <Route path="/verify-registration" element={<VerifyRegistration />} />
+        <Route path="/studentProfileInput" element={<StudentProfileInput />} />
         <Route path="/studentProfile/:studentID" element={<StudentProfile />} />
       </Routes>
     </Router>
