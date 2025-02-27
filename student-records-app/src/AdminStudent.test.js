@@ -26,7 +26,6 @@ test('redirects to login page if no role is set', () => {
 // this is to remove the roles
   localStorage.removeItem('role');
 
-  // Mock window.location.href
   delete window.location;
   window.location = { href: '' };
 
