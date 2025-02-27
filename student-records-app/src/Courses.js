@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import "./frontend/courses.css";
 
 function Courses({ onRegister }) {
+
   const allCourses = [
     "1 Introduction to Programming",
     "2 Data Structures",
@@ -13,7 +15,9 @@ function Courses({ onRegister }) {
   const professors = ["Scott Fazackerley", "Ramon Lawrence", "John Hopkinson", "Abdallah Mohamed", "Dr. John Doe"];
   const dates = ["Tue-Thu 9:30-11:00", "Mon-Wed 8:00-9:30", "Wed-Fri 3:30-5:00", "Tue-Thu 6:30-8:00", "Wed-Fri 12:30-2:00"];
   const rooms = ["ART 103", "COM 201", "SCI 114", "ASC 140", "LIB 305"];
+
   const descriptions = ["None"];
+
   const prerequisites = [
     "None",
     "COSC 111",
@@ -45,6 +49,7 @@ function Courses({ onRegister }) {
   };
 
   const handleRegister = (course, index) => {
+
     setSelectedCourse({
       course,
       date: dates[index],
@@ -56,6 +61,7 @@ function Courses({ onRegister }) {
 
     if (onRegister) {
       onRegister({
+
         course,
         date: dates[index],
         professor: professors[index],
@@ -98,7 +104,9 @@ function Courses({ onRegister }) {
               <div className="course-header">
                 <button
                   onClick={() => toggleCourseDetails(index)}
-                  className={`course-toggle ${expandedCourse === index ? "expanded" : ""}`}
+                  className={`course-toggle ${
+                    expandedCourse === index ? "expanded" : ""
+                  }`}
                 >
                   <div className="triangle"></div>
                 </button>
