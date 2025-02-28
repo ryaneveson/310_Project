@@ -170,6 +170,7 @@ function Courses({ onRegister }) {
         </div>
       </div>
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
       <ul className="courses-list">
         {filteredCourses.length > 0 ? (
@@ -237,6 +238,8 @@ function Courses({ onRegister }) {
           <p><strong>Pre-requisites:</strong> {selectedCourse.prerequisites}</p>
         </div>
       )}
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
     </div>
