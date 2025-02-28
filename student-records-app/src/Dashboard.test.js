@@ -22,7 +22,7 @@ describe("Dashboard Component", () => {
         localStorage.setItem("role", "admin");
         render(<Dashboard />);
 
-        expect(screen.getByText("Hi There")).toBeInTheDocument();
+        expect(screen.getByText("Hi There Admin")).toBeInTheDocument();
         expect(screen.getByText("Your Top Apps")).toBeInTheDocument();
         expect(screen.getByText("Logout")).toBeInTheDocument();
     });

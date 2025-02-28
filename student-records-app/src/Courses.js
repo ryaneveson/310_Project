@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+
 import "./frontend/courses.css";
 
-function Courses() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const previouslyRegisteredCourses = location.state?.registeredCourses || [];
+function Courses({ onRegister }) {
 
   const [courses, setCourses] = useState([]);
+
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedYears, setSelectedYears] = useState([]);
   const [expandedCourse, setExpandedCourse] = useState(null);
+  const [selectedCourse, setSelectedCourse] = useState(null);
 
   // Fetch courses from the backend
   useEffect(() => {
@@ -66,6 +66,7 @@ function Courses() {
         });
       })
       .catch((error) => console.error("Error registering for course:", error));
+
   };
 
   return (
@@ -147,6 +148,18 @@ function Courses() {
           <li>No courses found</li>
         )}
       </ul>
+
+      {selectedCourse && (
+        <div className="registration-details">
+          <h3>Registration Details</h3>
+          <p><strong>Course:</strong> {selectedCourse.course}</p>
+          <p><strong>Date:</strong> {selectedCourse.date}</p>
+          <p><strong>Professor:</strong> {selectedCourse.professor}</p>
+          <p><strong>Room:</strong> {selectedCourse.room}</p>
+          <p><strong>Description:</strong> {selectedCourse.description}</p>
+          <p><strong>Pre-requisites:</strong> {selectedCourse.prerequisites}</p>
+        </div>
+      )}
     </div>
   );
 }

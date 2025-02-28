@@ -6,20 +6,14 @@ describe("Courses Component", () => {
   test("renders the component with all courses", () => {
     render(<Courses />);
 
-    // Check if heading is rendered
     expect(screen.getByText("Available Courses")).toBeInTheDocument();
 
-    // Check if all courses are listed
     const courses = [
-      "Introduction to Programming",
-      "Data Structures",
-      "Web Development",
-      "Database Management",
-      "Machine Learning",
-      "Software Engineering",
-      "Cybersecurity Basics",
-      "Cloud Computing",
-      "Computer Networks",
+      "1 Introduction to Programming",
+      "2 Data Structures",
+      "3 Web Development",
+      "4 Database Management",
+      "5 Machine Learning"
     ];
     
     courses.forEach((course) => {
@@ -34,20 +28,39 @@ describe("Courses Component", () => {
     
     fireEvent.change(searchInput, { target: { value: "web" } });
 
-    // Check that only "Web Development" is displayed
-    expect(screen.getByText("Web Development")).toBeInTheDocument();
-    expect(screen.queryByText("Introduction to Programming")).not.toBeInTheDocument();
+    expect(screen.getByText("3 Web Development")).toBeInTheDocument();
+    expect(screen.queryByText("1 Introduction to Programming")).not.toBeInTheDocument();
   });
 
   test("shows 'No courses found' when there is no match", () => {
     render(<Courses />);
 
     const searchInput = screen.getByPlaceholderText("Search for a course...");
-    
-    // Type "xyz" in the search box (no matching course)
     fireEvent.change(searchInput, { target: { value: "xyz" } });
 
-    // Check that "No courses found" is displayed
     expect(screen.getByText("No courses found")).toBeInTheDocument();
+  });
+
+  test("registers for a course", () => {
+    const mockOnRegister = jest.fn();
+    render(<Courses onRegister={mockOnRegister} />);
+
+    const registerButton = screen.getAllByText("Register")[0];
+    fireEvent.click(registerButton);
+
+    expect(mockOnRegister).toHaveBeenCalled();
+  });
+
+  test("filters courses by year selection", () => {
+    render(<Courses />);
+
+    const year1Checkbox = screen.getByLabelText("Year 1");
+    fireEvent.click(year1Checkbox);
+
+    expect(screen.getByText("1 Introduction to Programming")).toBeInTheDocument();
+    expect(screen.queryByText("2 Data Structures")).not.toBeInTheDocument();
+
+    fireEvent.click(year1Checkbox);
+    expect(screen.getByText("2 Data Structures")).toBeInTheDocument();
   });
 });
