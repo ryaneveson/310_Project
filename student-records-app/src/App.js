@@ -13,7 +13,7 @@ import VerifyRegistration from "./VerifyRegistration";
 import StudentProfileInput from "./studentProfileInput";
 import StudentProfile from "./studentProfile";
 import AcademicDashboard from "./AcademicDashboard"
-
+import AddPaymentMethod from "./addPaymentMethod.js";
 
 function App() {
   return (
@@ -32,6 +32,7 @@ function App() {
         <Route path="/studentProfileInput" element={<StudentProfileInput />} />
         <Route path="/studentProfile/:studentID" element={<StudentProfile />} />
         <Route path="/academicdashboard" element={<AcademicDashboard />} />
+        <Route path="/addPaymentMethod" element={<AddPaymentMethod />} />
       </Routes>
     </Router>
   );
