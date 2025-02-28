@@ -1,33 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+
 import "./frontend/courses.css";
 
 function Courses({ onRegister }) {
 
-  const allCourses = [
-    "1 Introduction to Programming",
-    "2 Data Structures",
-    "3 Web Development",
-    "4 Database Management",
-    "5 Machine Learning"
-  ];
-
-  const professors = ["Scott Fazackerley", "Ramon Lawrence", "John Hopkinson", "Abdallah Mohamed", "Dr. John Doe"];
-  const dates = ["Tue-Thu 9:30-11:00", "Mon-Wed 8:00-9:30", "Wed-Fri 3:30-5:00", "Tue-Thu 6:30-8:00", "Wed-Fri 12:30-2:00"];
-  const rooms = ["ART 103", "COM 201", "SCI 114", "ASC 140", "LIB 305"];
-
-  const descriptions = ["None"];
-
-  const prerequisites = [
-    "None",
-    "COSC 111",
-    "COSC 222, COSC 211",
-    "COSC 416",
-    "MATH 100, MATH 101, COSC 111, COSC 121"
-  ];
+  const [courses, setCourses] = useState([]);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedYears, setSelectedYears] = useState([]);
   const [expandedCourse, setExpandedCourse] = useState(null);
+
+  // Fetch courses from the backend
+  useEffect(() => {
+    fetch("http://localhost:5000/api/courses")
+      .then((response) => response.json())
+      .then((data) => setCourses(data))
+      .catch((error) => console.error("Error fetching courses:", error));
+  }, []);
 
   const handleYearChange = (year) => {
     setSelectedYears(prev =>
@@ -35,9 +25,9 @@ function Courses({ onRegister }) {
     );
   };
 
-  const filteredCourses = allCourses.filter(course => {
-    const matchesSearch = course.toLowerCase().includes(searchTerm.toLowerCase());
-    const courseYear = course.match(/\d+/)?.[0]; // Extract year from course name
+  const filteredCourses = courses.filter((course) => {
+    const matchesSearch = course.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const courseYear = course.courseNum?.[0]; // Extract the first digit of the course number
     const matchesYear = selectedYears.length === 0 || selectedYears.includes(courseYear);
     return matchesSearch && matchesYear;
   });
@@ -47,6 +37,34 @@ function Courses({ onRegister }) {
   };
 
   const handleRegister = (course, index) => {
+    const student_id = "12345"; // Replace with the actual student ID (e.g., from login state)
+    fetch("http://localhost:5000/api/register-course", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        student_id: student_id,
+        course_name: course.name,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        alert(`You have registered for ${course.name}!`);
+        navigate("/verify-registration", {
+          state: {
+            course: course.name,
+            courseNum: course.courseNum,
+            date: course.date,
+            professor: course.professor,
+            room: course.room,
+            description: course.description,
+            prerequisites: course.prerequisites,
+            registeredCourses: previouslyRegisteredCourses,
+          },
+        });
+      })
+      .catch((error) => console.error("Error registering for course:", error));
 
     const newCourse = {
       course,
@@ -82,7 +100,7 @@ function Courses({ onRegister }) {
       />
 
       <div className="year-filter">
-        {[1, 2, 3, 4, 5].map(year => (
+        {[1, 2, 3, 4, 5].map((year) => (
           <label key={year}>
             <input
               type="checkbox"
@@ -107,7 +125,9 @@ function Courses({ onRegister }) {
                 >
                   <div className="triangle"></div>
                 </button>
-                <span className="course-name">{course}</span>
+                <span className="course-name">
+                  {course.code} {course.courseNum} - {course.name}
+                </span>
                 <button
                   onClick={() => handleRegister(course, index)}
                   className="auth-button"
@@ -115,15 +135,31 @@ function Courses({ onRegister }) {
                   Register
                 </button>
               </div>
-              {expandedCourse === index && (
-                <div className="course-details open">
-                  <p><strong>Date:</strong> {dates[index]}</p>
-                  <p><strong>Professor:</strong> {professors[index]}</p>
-                  <p><strong>Room:</strong> {rooms[index]}</p>
-                  <p><strong>Description:</strong> {descriptions[index]}</p>
-                  <p><strong>Pre-requisites:</strong> {prerequisites[index]}</p>
-                </div>
-              )}
+              <div
+                className={`course-details ${
+                  expandedCourse === index ? "open" : ""
+                }`}
+              >
+                {expandedCourse === index && (
+                  <>
+                    <p>
+                      <strong>Date:</strong> {course.date}
+                    </p>
+                    <p>
+                      <strong>Professor:</strong> {course.professor}
+                    </p>
+                    <p>
+                      <strong>Room:</strong> {course.room}
+                    </p>
+                    <p>
+                      <strong>Description:</strong> {course.description}
+                    </p>
+                    <p>
+                      <strong>Pre-requisites:</strong> {course.prerequisites}
+                    </p>
+                  </>
+                )}
+              </div>
             </li>
           ))
         ) : (

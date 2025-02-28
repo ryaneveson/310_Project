@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./frontend/studentSearch.css";
+import { useNavigate } from "react-router-dom";
 
 function StudentSearch() {
     const students = [
@@ -79,6 +80,9 @@ function StudentSearch() {
         setSearchTerm("");
     }
 
+    
+    const navigate = useNavigate(); //use navigate to go to the student profile page
+
     return (
     <div id="studentSearch" className="container">
         <aside className="sidebar" id="sidebar">
@@ -140,6 +144,7 @@ function StudentSearch() {
                             <th>First Name</th>
                             <th>Last Name</th>
                             <th>Student Number</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -148,6 +153,9 @@ function StudentSearch() {
                                 <td>{student.name}</td>
                                 <td>{student.lastName}</td>
                                 <td>{student.studentNumber}</td>
+                                <td>
+                                    <button onClick={() => navigate(`/studentProfile/${encodeURIComponent(student.studentNumber)}`)}>Go to Profile</button>
+                                </td>
                             </tr>
                         ))}
                     </tbody>

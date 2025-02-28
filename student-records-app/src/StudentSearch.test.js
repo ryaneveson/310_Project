@@ -94,4 +94,20 @@ describe("StudentSearch Component", () => {
         fireEvent.click(resetButton);
         expect(screen.getAllByRole("checkbox").every(checkbox => !checkbox.checked)).toBe(true);
     });
+
+    //I added this test for student profile navigation testing -Jaxon
+    test("navigates to student profile on button click", () => {
+        render(
+                <Routes>
+                    <Route path="/studentSearch" element={<StudentSearch />} />
+                    <Route path="/studentProfile/:studentID" element={<StudentProfile />} />
+                </Routes>
+        );
+
+        const goToProfileButton = screen.getAllByText("Go to Profile")[0];
+        fireEvent.click(goToProfileButton);
+
+        expect(screen.getByText("Student Profile")).toBeInTheDocument();
+    });
+
 });
