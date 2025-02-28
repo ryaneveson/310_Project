@@ -59,6 +59,7 @@ def get_courses():
     transformed_courses = []
     for course in courses:
         transformed_courses.append({
+            "code": course["code"],
             "name": course["courseName"],
             "courseNum": str(course["courseNum"]),  # Ensure courseNum is a string
             "professor": course["prof"],
