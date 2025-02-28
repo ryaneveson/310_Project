@@ -10,7 +10,6 @@ function Courses({ onRegister }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedYears, setSelectedYears] = useState([]);
   const [expandedCourse, setExpandedCourse] = useState(null);
-  const [selectedCourse, setSelectedCourse] = useState(null);
 
   // Fetch courses from the backend
   useEffect(() => {
@@ -67,6 +66,25 @@ function Courses({ onRegister }) {
       })
       .catch((error) => console.error("Error registering for course:", error));
 
+    const newCourse = {
+      course,
+      date: dates[index],
+      professor: professors[index],
+      room: rooms[index],
+      description: descriptions[index],
+      prerequisites: prerequisites[index],
+    };
+
+    const registeredCourses = JSON.parse(localStorage.getItem("registeredCourses")) || [];
+
+    //ensure not registering in the same course twice.
+    if(registeredCourses.some(course => course.course === newCourse.course)){
+      alert("This course is already registered.");
+    }else{
+      registeredCourses.push(newCourse);
+      localStorage.setItem("registeredCourses", JSON.stringify(registeredCourses));
+      window.location.href = "/verify-registration";
+    }
   };
 
   return (
@@ -148,18 +166,6 @@ function Courses({ onRegister }) {
           <li>No courses found</li>
         )}
       </ul>
-
-      {selectedCourse && (
-        <div className="registration-details">
-          <h3>Registration Details</h3>
-          <p><strong>Course:</strong> {selectedCourse.course}</p>
-          <p><strong>Date:</strong> {selectedCourse.date}</p>
-          <p><strong>Professor:</strong> {selectedCourse.professor}</p>
-          <p><strong>Room:</strong> {selectedCourse.room}</p>
-          <p><strong>Description:</strong> {selectedCourse.description}</p>
-          <p><strong>Pre-requisites:</strong> {selectedCourse.prerequisites}</p>
-        </div>
-      )}
     </div>
   );
 }
