@@ -27,9 +27,21 @@ function Courses({ onRegister }) {
   };
 
   const filteredCourses = courses.filter((course) => {
-    const matchesSearch = course.name.toLowerCase().includes(searchTerm.toLowerCase());
+    // Combine course code, course number, and name into a single string for searching
+    const courseCodeAndNumber = `${course.code} ${course.courseNum}`;
+    const fullCourseString = `${courseCodeAndNumber} - ${course.name}`;
+
+    // Check if the search term matches the course name, code, number, or code + number
+    const matchesSearch =
+      course.name.toLowerCase().includes(searchTerm.toLowerCase()) || // Match course name
+      courseCodeAndNumber.toLowerCase().includes(searchTerm.toLowerCase()) || // Match "COSC 121"
+      course.courseNum.toLowerCase().includes(searchTerm.toLowerCase()) || // Match just "121"
+      fullCourseString.toLowerCase().includes(searchTerm.toLowerCase()); // Match "COSC 121 - Introduction"
+
+    // Check if the course matches the selected year level
     const courseYear = course.courseNum?.[0]; // Extract the first digit of the course number
     const matchesYear = selectedYears.length === 0 || selectedYears.includes(courseYear);
+
     return matchesSearch && matchesYear;
   });
 
@@ -73,26 +85,91 @@ function Courses({ onRegister }) {
     <div className="container">
       <h2>Available Courses</h2>
 
-      <input
-        type="text"
-        placeholder="Search for a course..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        className="search-box"
-      />
+      <div className="main-content">
+        {/* Filters on the left side */}
+        <div className="filters">
+          <h3>Filter by Year</h3>
+          <div className="year-filter">
+            {[1, 2, 3, 4, 5].map((year) => (
+              <label key={year}>
+                <input
+                  type="checkbox"
+                  checked={selectedYears.includes(year.toString())}
+                  onChange={() => handleYearChange(year.toString())}
+                />
+                {year}00 level
+              </label>
+            ))}
+          </div>
+        </div>
 
-      <div className="year-filter">
-        {[1, 2, 3, 4, 5].map((year) => (
-          <label key={year}>
-            <input
-              type="checkbox"
-              checked={selectedYears.includes(year.toString())}
-              onChange={() => handleYearChange(year.toString())}
-            />
-            Year {year}
-          </label>
-        ))}
+        {/* Course list on the right side */}
+        <div className="course-list">
+          <input
+            type="text"
+            placeholder="Search for a course..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="search-box"
+          />
+
+          <ul className="courses-list">
+            {filteredCourses.length > 0 ? (
+              filteredCourses.map((course, index) => (
+                <li key={index} className="course-item">
+                  <div className="course-header">
+                    <button
+                      onClick={() => toggleCourseDetails(index)}
+                      className={`course-toggle ${
+                        expandedCourse === index ? "expanded" : ""
+                      }`}
+                    >
+                      <div className="triangle"></div>
+                    </button>
+                    <span className="course-name">
+                      {course.code} {course.courseNum} - {course.name}
+                    </span>
+                    <button
+                      onClick={() => handleRegister(course, index)}
+                      className="auth-button"
+                    >
+                      Register
+                    </button>
+                  </div>
+                  <div
+                    className={`course-details ${
+                      expandedCourse === index ? "open" : ""
+                    }`}
+                  >
+                    {expandedCourse === index && (
+                      <>
+                        <p>
+                          <strong>Date:</strong> {course.date}
+                        </p>
+                        <p>
+                          <strong>Professor:</strong> {course.professor}
+                        </p>
+                        <p>
+                          <strong>Room:</strong> {course.room}
+                        </p>
+                        <p>
+                          <strong>Description:</strong> {course.description}
+                        </p>
+                        <p>
+                          <strong>Pre-requisites:</strong> {course.prerequisites}
+                        </p>
+                      </>
+                    )}
+                  </div>
+                </li>
+              ))
+            ) : (
+              <li>No courses found</li>
+            )}
+          </ul>
+        </div>
       </div>
+<<<<<<< Updated upstream
 
       <ul className="courses-list">
         {filteredCourses.length > 0 ? (
@@ -160,6 +237,8 @@ function Courses({ onRegister }) {
           <p><strong>Pre-requisites:</strong> {selectedCourse.prerequisites}</p>
         </div>
       )}
+=======
+>>>>>>> Stashed changes
     </div>
   );
 }
