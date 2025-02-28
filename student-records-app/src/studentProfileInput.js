@@ -5,24 +5,28 @@ import FooterLoader from "./Footer";
 
 function StudentProfileInput() {
     const [htmlContent, setHtmlContent] = useState("");
-    const [studentID, setStudentID] = useState(""); // Add this line
+    const [studentID, setStudentID] = useState("");
     const navigate = useNavigate();
 
     useEffect(() => {
+        //append html form the html page
         fetch("/studentProfileInput.html")
             .then(response => response.text())
             .then(data => setHtmlContent(data))
             .catch(error => console.error("Error fetching HTML:", error));
     }, []);
 
+    //function when button is pushed, navigate to the student profile page for given id
     const handleSubmit = () => {
         if (studentID.trim()) {
+            //TODO: add code later to check if student exists in database, then navigate if so
             navigate(`/studentProfile/${encodeURIComponent(studentID)}`);
         } else {
             alert("Please enter a student ID.");
         }
     };
 
+    //get student id as an input, pass to function to navigate to student profile
     return (
         <div>
             <HeaderLoader/>
@@ -40,5 +44,3 @@ function StudentProfileInput() {
 }
 
 export default StudentProfileInput;
-
-
