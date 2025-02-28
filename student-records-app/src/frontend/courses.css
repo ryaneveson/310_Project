@@ -137,3 +137,8 @@ li {
     margin: 0;
     cursor: pointer;
 }
+.course-number {
+    font-size: 0.9em;
+    color: #666;
+    margin-left: 5px;
+  }
