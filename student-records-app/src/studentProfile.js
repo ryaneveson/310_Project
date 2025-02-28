@@ -1,22 +1,27 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import HeaderLoader from "./Header";
 import FooterLoader from "./Footer";
 
 export default function StudentProfile() {
     const { studentID } = useParams();
     const navigate = useNavigate();
-    const alertShown = useRef(false);       //keeps track of whether the alert for an invalid id has been shown, keeps the alert from being shown twice
+    const location = useLocation();
+    const alertShown = useRef(false);   //keeps track of whether the alert for an invalid id has been shown, keeps the alert from being shown twice
     
 
     const [studentData, setStudentData] = useState(null);
     const [notFound, setNotFound] = useState(false);
 
     useEffect(() => {
-        // Verify that student ID is valid
+        //verify that student ID is valid
         if (!studentID || isNaN(studentID)) {
             setStudentData(null);
-            setNotFound(true);
+            if (!alertShown.current) {
+                alert("Invalid student ID.");
+                alertShown.current = true;
+            }
+            navigate(-1); //navigate back to the previous page if id invalid
             return;
         }
 
@@ -33,7 +38,7 @@ export default function StudentProfile() {
         const student = data.find(student => student.id === parseInt(studentID));
 
         if (student) {
-            setStudentData(student);
+            setStudentData(student); //set student data if student is found
             setNotFound(false);
             alertShown.current = false; //reset alertShown when student is found
         } else {
@@ -43,11 +48,11 @@ export default function StudentProfile() {
                 alert("Student ID does not exist.");
                 alertShown.current = true;
             }
-            navigate("/studentProfileInput");
+            navigate(-1);  //navigate back if not found
         }
     }, [studentID, navigate]);
 
-    //if student exists, display their profile data. Else, display not found message
+    //display student's profile data
     //TODO: add more student data fields later depending on what we want to display
     return (
         <div>

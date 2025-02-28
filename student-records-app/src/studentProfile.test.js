@@ -39,5 +39,5 @@ test('redirects to StudentProfileInput for invalid ID', () => {
   expect(window.alert).toHaveBeenCalledWith('Student ID does not exist.');
 
   // Check if redirected to StudentProfileInput page
-  expect(screen.getByText('Student Profile Input Page')).toBeInTheDocument();
+  expect(screen.getByText('Previous Page')).toBeInTheDocument();
 });
