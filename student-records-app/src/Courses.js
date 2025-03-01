@@ -186,7 +186,7 @@ function Courses({ onRegister }) {
                   <div className="triangle"></div>
                 </button>
                 <span className="course-name">
-                  {course.code} {course.courseNum} - {course.name}
+                  {course.name} <span className="course-number">({course.courseNum})</span>
                 </span>
                 <button
                   onClick={() => handleRegister(course, index)}
