@@ -2,99 +2,55 @@ body {
     font-family: Arial, sans-serif;
     margin: 20px;
     padding: 0;
-  }
-  
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-  }
-  
-  h2 {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .main-content {
-    display: flex;
-    gap: 20px;
-  }
-  
-  /* Filters on the left side */
-  .filters {
-    width: 200px;
-    padding: 10px;
-    background: #f4f4f4;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  }
-  
-  .filters h3 {
-    margin-bottom: 10px;
-    font-size: 16px;
-  }
-  
-  .year-filter {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .year-filter label {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 14px;
-    cursor: pointer;
-  }
-  
-  .year-filter input[type="checkbox"] {
-    margin: 0;
-    cursor: pointer;
-  }
-  
-  /* Course list on the right side */
-  .course-list {
-    flex-grow: 1;
-  }
-  
-  .search-box {
+}
+input {
     width: 100%;
     padding: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     font-size: 16px;
-    border: 1px solid #ccc;
+}
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+li {
+    padding: 8px;
+    margin: 5px 0;
+    background: #f4f4f4;
     border-radius: 5px;
-  }
-  
-  .courses-list {
+    transition: background 0.3s ease;
+}
+.highlight {
+    background: yellow;
+    font-weight: bold;
+}
+
+.courses-list {
     list-style: none;
     padding: 0;
-    margin: 0;
-  }
-  
-  .course-item {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.course-item {
     padding: 10px;
     border-bottom: 1px solid #ccc;
-    background: #fff;
-    border-radius: 5px;
-    margin-bottom: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  }
-  
-  .course-header {
+}
+
+.course-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 20px;
-  }
-  
-  .course-name {
+    gap: 20px; /* Add space between course name and Register button */
+}
+
+.course-name {
     flex-grow: 1;
     text-align: left;
-  }
-  
-  .auth-button {
+}
+
+.auth-button {
     background: #004385;
     color: white;
     padding: 7px;
@@ -106,37 +62,37 @@ body {
     font-weight: bold;
     transition: all 0.3s ease-in-out;
     box-shadow: 0px 5px 0px #004385;
-  }
-  
-  .auth-button:hover {
+}
+
+.auth-button:hover {
     background: #3674b3;
     box-shadow: 0px 2px 0px #004385;
-  }
-  
-  .auth-button:active {
+}
+
+.auth-button:active {
     transform: translateY(4px);
     box-shadow: 0px 0px 0px #004385;
-  }
-  
-  .course-details {
+}
+
+.course-details {
     background: #e9e9e9;
     border-radius: 5px;
-    max-height: 0;
-    overflow: hidden;
-    opacity: 0;
-    padding: 0 10px;
-    margin-top: 0;
-    transition: max-height 0.5s ease, opacity 0.5s ease, padding 0.5s ease, margin-top 0.5s ease;
-  }
-  
-  .course-details.open {
-    max-height: 500px;
-    opacity: 1;
-    padding: 10px;
-    margin-top: 10px;
-  }
-  
-  .course-toggle {
+    max-height: 0; /* Start with no height */
+    overflow: hidden; /* Hide overflow content */
+    opacity: 0; /* Start fully transparent */
+    padding: 0 10px; /* Start with no vertical padding */
+    margin-top: 0; /* No margin when closed */
+    transition: max-height 0.5s ease, opacity 0.5s ease, padding 0.5s ease, margin-top 0.5s ease; /* Smooth transition */
+}
+
+.course-details.open {
+    max-height: 500px; /* Set a max height large enough to accommodate content */
+    opacity: 1; /* Fully visible */
+    padding: 10px; /* Add padding when open */
+    margin-top: 10px; /* Add margin when open */
+}
+
+.course-toggle {
     background: none;
     border: none;
     cursor: pointer;
@@ -146,18 +102,43 @@ body {
     align-items: center;
     justify-content: center;
     transition: transform 0.3s ease;
-  }
-  
-  .course-toggle.expanded {
-    transform: rotate(90deg);
-  }
-  
-  .triangle {
+}
+
+.course-toggle.expanded {
+    transform: rotate(90deg); /* Rotate the button when expanded */
+}
+
+.triangle {
     width: 0;
     height: 0;
     border-left: 6px solid transparent;
     border-right: 6px solid transparent;
     border-top: 10px solid #004385;
     transition: transform 0.3s ease;
-    transform: rotate(-90deg);
+    transform: rotate(-90deg); /* Initial state: pointing right */
+}
+
+.year-filter {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.year-filter label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.year-filter input[type="checkbox"] {
+    margin: 0;
+    cursor: pointer;
+}
+.course-number {
+    font-size: 0.9em;
+    color: #666;
+    margin-left: 5px;
   }
