@@ -58,7 +58,7 @@ function Courses() {
             courseNum: course.courseNum,
             date: course.date,
             professor: course.professor,
-            room: course.room,
+            room: course.dept,
             description: course.description,
             prerequisites: course.prerequisites,
             registeredCourses: previouslyRegisteredCourses,

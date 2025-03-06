@@ -59,13 +59,13 @@ def get_courses():
     transformed_courses = []
     for course in courses:
         transformed_courses.append({
-            "code": course["code"],
-            "name": course["courseName"],
-            "courseNum": str(course["courseNum"]),  # Ensure courseNum is a string
+            "dept": course["course_dept"],
+            "name": course["course_name"],
+            "courseNum": str(course["course_num"]),  # Ensure courseNum is a string
             "professor": course["prof"],
-            "date": course["date"],
-            "room": course["room"],
-            "description": "None",  # Add a placeholder if needed
+            "date": course["lecture_time"],
+            "room": course["lecture_room"],
+            #"description": "None",  # Add a placeholder if needed
             "prerequisites": course["prereq"],
         })
     return jsonify(transformed_courses)
