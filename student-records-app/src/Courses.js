@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import "./frontend/dashboardStyles.css";
+import "./frontend/courses.css";
 
 function Courses() {
   const navigate = useNavigate();
-  const [courses, setCourses] = useState([]);
-  const [userRole, setUserRole] = useState(null);
+  const location = useLocation();
+  const previouslyRegisteredCourses = location.state?.registeredCourses || [];
 
+  const [courses, setCourses] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedYears, setSelectedYears] = useState([]);
   const [expandedCourse, setExpandedCourse] = useState(null);
@@ -78,7 +79,7 @@ function Courses() {
             courseNum: course.courseNum,
             date: course.date,
             professor: course.professor,
-            room: course.room,
+            room: course.dept,
             description: course.description,
             prerequisites: course.prerequisites,
             registeredCourses: previouslyRegisteredCourses,
@@ -86,25 +87,6 @@ function Courses() {
         });
       })
       .catch((error) => console.error("Error registering for course:", error));
-
-    const newCourse = {
-      course,
-      date: dates[index],
-      professor: professors[index],
-      room: rooms[index],
-      description: descriptions[index],
-      prerequisites: prerequisites[index],
-    };
-
-    const registeredCourses = JSON.parse(localStorage.getItem("registeredCourses")) || [];
-
-    if(registeredCourses.some(course => course.course === newCourse.course)){
-      alert("This course is already registered.");
-    }else{
-      registeredCourses.push(newCourse);
-      localStorage.setItem("registeredCourses", JSON.stringify(registeredCourses));
-      window.location.href = "/verify-registration";
-    }
   };
 
   return (
@@ -130,23 +112,38 @@ function Courses() {
                 >
                   Register
                 </button>
-              )}
-              {userRole === "admin" && (
-                <div className="admin-actions">
-                  <button className="app-button">Edit Course</button>
-                  <button className="app-button">Delete Course</button>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="logout-container">
-        <button className="logout-button" onClick={handleLogout}>
-          Logout
-        </button>
-      </div>
+              </div>
+              <div
+                className={`course-details ${
+                  expandedCourse === index ? "open" : ""
+                }`}
+              >
+                {expandedCourse === index && (
+                  <>
+                    <p>
+                      <strong>Date:</strong> {course.date}
+                    </p>
+                    <p>
+                      <strong>Professor:</strong> {course.professor}
+                    </p>
+                    <p>
+                      <strong>Room:</strong> {course.room}
+                    </p>
+                    <p>
+                      <strong>Description:</strong> {course.description}
+                    </p>
+                    <p>
+                      <strong>Pre-requisites:</strong> {course.prerequisites}
+                    </p>
+                  </>
+                )}
+              </div>
+            </li>
+          ))
+        ) : (
+          <li>No courses found</li>
+        )}
+      </ul>
     </div>
   );
 }
