@@ -33,6 +33,7 @@ function App() {
         <Route path="/studentProfile/:studentID" element={<StudentProfile />} />
         <Route path="/academicdashboard" element={<AcademicDashboard />} />
         <Route path="/addPaymentMethod" element={<AddPaymentMethod />} />
+        <Route path="/createUser" element={<CreateUser />} />
       </Routes>
     </Router>
   );

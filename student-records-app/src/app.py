@@ -5,7 +5,17 @@ import bcrypt
 import os
 
 app = Flask(__name__)
-CORS(app)
+# Simplify CORS configuration
+CORS(app, supports_credentials=True, origins=["http://localhost:3000"])
+
+# Add CORS headers to all responses
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    response.headers.add('Access-Control-Allow-Credentials', 'true')
+    return response
 
 MONGO_URI = "mongodb+srv://samijaffri01:6XjmdnygdfRrD8dF@cluster0.fgfo7.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 client = MongoClient(MONGO_URI)
@@ -19,6 +29,7 @@ def register():
     data = request.json
     username = data.get("username")
     password = data.get("password").encode("utf-8")
+    role = data.get("role", "student")  # default to student if not specified
 
     if users_collection.find_one({"username": username}):
         return jsonify({"error": "Username already exists"}), 400
@@ -27,22 +38,62 @@ def register():
 
     users_collection.insert_one({
         "username": username,
-        "password": hashed_password.decode("utf-8") 
+        "password": hashed_password.decode("utf-8"),
+        "role": role
     })
 
     return jsonify({"message": "User registered successfully!"}), 201
 
-@app.route("/login", methods=["POST"])
+@app.route("/api/login", methods=["POST"])
 def login():
-    data = request.json
-    username = data.get("username")
-    password = data.get("password").encode("utf-8")
+    try:
+        data = request.json
+        print("Received login request data:", data)  # Debug log
+        
+        username = data.get("username")
+        password = data.get("password").encode("utf-8")
+        
+        print(f"Looking for user with username: {username}")  # Debug log
+        user = users_collection.find_one({"username": username})
+        print(f"Found user in database: {user}")  # Debug log
 
-    user = users_collection.find_one({"username": username})
+        if not user:
+            print("No user found with that username")  # Debug log
+            return jsonify({
+                "error": "Invalid credentials",
+                "success": False
+            }), 401
 
-    if user and bcrypt.checkpw(password, user["password"].encode("utf-8")):
-        return jsonify({"message": "Login successful!"}), 200
-    return jsonify({"error": "Invalid credentials"}), 401
+        try:
+            stored_password = user["password"].encode("utf-8")
+            is_valid = bcrypt.checkpw(password, stored_password)
+            print(f"Password verification result: {is_valid}")  # Debug log
+            
+            if is_valid:
+                return jsonify({
+                    "message": "Login successful!",
+                    "role": user.get("role", "student"),
+                    "success": True
+                }), 200
+            else:
+                return jsonify({
+                    "error": "Invalid credentials",
+                    "success": False
+                }), 401
+                
+        except Exception as e:
+            print(f"Error during password verification: {str(e)}")  # Debug log
+            return jsonify({
+                "error": "Error verifying credentials",
+                "success": False
+            }), 500
+
+    except Exception as e:
+        print(f"Unexpected error in login route: {str(e)}")  # Debug log
+        return jsonify({
+            "error": "Server error",
+            "success": False
+        }), 500
 
 #route to student profile page for a given student ID
 @app.route("/submit-student-id", methods=["POST"])
@@ -91,6 +142,12 @@ def register_course():
 @app.before_request
 def log_request():
     print(f"Incoming {request.method} request to {request.path}")
+
+@app.route("/test-user", methods=["GET"])
+def test_user():
+    user = users_collection.find_one({})  # Gets first user
+    print("Test user:", user)
+    return jsonify({"user": str(user)})
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
