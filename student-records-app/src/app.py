@@ -88,6 +88,15 @@ def register_course():
 
     return jsonify({"message": "Course registered successfully!"}), 201
 
+@app.route("/student/<string:student_id>", methods=["GET"])
+def get_student(student_id):
+
+    # Ensure the student_id is treated as a string in the query
+    student = students_collection.find_one({"student_id": str(student_id)}, {"_id": 0})
+    if student:
+        return jsonify(student)
+    return jsonify({"error": "Student ID does not exist"}), 404
+
 @app.before_request
 def log_request():
     print(f"Incoming {request.method} request to {request.path}")
