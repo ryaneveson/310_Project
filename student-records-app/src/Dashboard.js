@@ -35,16 +35,19 @@ const AdminDashboard = () => {
         </div>
 
         <div className="apps-card">
-          <h3>Your Top Apps</h3>
+          <h3>Administrative Tools</h3>
           <div className="apps-buttons">
-            <button onClick={() => (window.location.href = "/Courses")} className="app-button">
-              Academics
+            <button onClick={() => (window.location.href = "/courses")} className="app-button">
+              Course Management
             </button>
-            <button onClick={() => (window.location.href = "/Finances")} className="app-button">
-              Finances
+            <button onClick={() => (window.location.href = "/editGrades")} className="app-button">
+              Grade Management
             </button>
-            <button className="app-button">
-              Personal Information
+            <button onClick={() => (window.location.href = "/studentSearch")} className="app-button">
+              Student Search
+            </button>
+            <button onClick={() => (window.location.href = "/studentRanking")} className="app-button">
+              Student Rankings
             </button>
           </div>
         </div>
@@ -62,8 +65,59 @@ const AdminDashboard = () => {
 const StudentDashboard = () => {
   return (
     <div className="dashboard-container">
-      <h2>Hello, Student!</h2>
-      <button className="logout-button" onClick={handleLogout}>Logout</button>
+      <div className="hero">
+        <h2>Welcome, Student!</h2>
+        <p>
+          It's{" "}
+          {new Date().toLocaleDateString(undefined, {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          })}
+        </p>
+      </div>
+
+      <div className="dashboard-content">
+        <div className="info-cards">
+          <div className="card">
+            <h3>Academic Status</h3>
+            <p>Current GPA: 3.5</p>
+            <p>Credits Completed: 45</p>
+            <p>Credits Remaining: 75</p>
+          </div>
+          <div className="card">
+            <h3>Upcoming Deadlines</h3>
+            <p>Course Registration: March 15</p>
+            <p>Payment Due: March 20</p>
+            <p>Final Exams: April 10</p>
+          </div>
+        </div>
+
+        <div className="apps-card">
+          <h3>Quick Actions</h3>
+          <div className="apps-buttons">
+            <button onClick={() => (window.location.href = "/academicdashboard")} className="app-button">
+              Academic Dashboard
+            </button>
+            <button onClick={() => (window.location.href = "/courses")} className="app-button">
+              Course Registration
+            </button>
+            <button onClick={() => (window.location.href = "/finances")} className="app-button">
+              Financial Information
+            </button>
+            <button onClick={() => (window.location.href = "/studentProfileInput")} className="app-button">
+              My Profile
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="logout-container">
+        <button className="logout-button" onClick={handleLogout}>
+          Logout
+        </button>
+      </div>
     </div>
   );
 };

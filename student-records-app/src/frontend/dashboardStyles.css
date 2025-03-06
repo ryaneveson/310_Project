@@ -1,39 +1,57 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap");
 
 /* General Styles */
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background: linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.95)),
+              url('https://www.transparenttextures.com/patterns/diamond-upholstery.png'),
+              linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
+  background-attachment: fixed;
+}
+
 .dashboard-container {
-  padding: 20px;
+  padding: 80px 20px 20px 20px;
   max-width: 1200px;
   margin: auto;
   font-family: "Poppins", sans-serif;
   color: #495867;
+  position: relative;
+  min-height: calc(100vh - 100px);
 }
 
 /* Hero Section */
 .hero {
   text-align: left;
-  padding: 20px;
-  background: #f4f4f4;
+  padding: 30px;
+  background: rgba(255, 255, 255, 0.9);
   border-radius: 10px;
-  margin-bottom: 20px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
+  margin-bottom: 30px;
+  box-shadow: 0px 4px 20px rgba(0, 67, 133, 0.08);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .hero h2 {
   font-size: 28px;
   font-weight: 600;
   color: #004385;
+  margin: 0 0 10px 0;
 }
 
 .hero p {
   font-size: 16px;
   color: #577399;
+  margin: 0;
 }
 
 /* Main Content Layout */
 .dashboard-content {
   display: flex;
+  flex-direction: column;
   gap: 20px;
+  width: 100%;
 }
 
 /* Left Column - Cards */
@@ -122,26 +140,172 @@
 }
 
 .logout-button {
-  background: #004385;
+  background: linear-gradient(135deg, #004385 0%, #003366 100%);
   color: white;
-  padding: 14px;
+  padding: 14px 28px;
   border: none;
-  width: 150px;
   border-radius: 8px;
   font-size: 16px;
-  cursor: pointer;
   font-weight: bold;
-  transition: all 0.3s ease-in-out;
-  box-shadow: 0px 5px 0px #004385;
-  position: relative;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 67, 133, 0.2);
 }
 
 .logout-button:hover {
-  background: #3674b3;
-  box-shadow: 0px 2px 0px #004385;
+  background: linear-gradient(135deg, #003366 0%, #002b5b 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 67, 133, 0.3);
 }
 
-.logout-button:active {
-  transform: translateY(4px);
-  box-shadow: 0px 0px 0px #004385;
+/* Grades Section Styles */
+.grades-section {
+  margin-top: 0;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 67, 133, 0.1);
+  width: 100%;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.grades-section h3 {
+  color: #004385;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.grades-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: transparent;
+}
+
+.grades-table th {
+  background: #004385;
+  color: white;
+  font-weight: 600;
+  padding: 15px;
+  text-align: left;
+  font-size: 14px;
+}
+
+.grades-table tr:nth-child(even) {
+  background: rgba(247, 247, 255, 0.5);
+}
+
+.grades-table tr:hover {
+  background: rgba(247, 247, 255, 0.9) !important;
+}
+
+.grades-table td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 14px;
+}
+
+.gpa {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #004385;
+  margin: 0.5rem 0;
+}
+
+/* Grade Management Styles */
+.student-search {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: rgba(247, 247, 255, 0.9);
+  border-radius: 8px;
+  width: 100%;
+  box-sizing: border-box;
+  box-shadow: 0 4px 15px rgba(0, 67, 133, 0.05);
+  backdrop-filter: blur(10px);
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.search-container label {
+  font-weight: 600;
+  color: #004385;
+  min-width: 100px;
+}
+
+.student-id-input {
+  flex: 1;
+  padding: 12px;
+  border: 2px solid rgba(224, 224, 224, 0.8);
+  border-radius: 6px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  max-width: 300px;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.student-id-input:focus {
+  outline: none;
+  border-color: #004385;
+  box-shadow: 0 0 0 3px rgba(0, 67, 133, 0.1);
+  background: rgba(255, 255, 255, 1);
+}
+
+.grades-table-container {
+  margin: 2rem 0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 67, 133, 0.08);
+  background: rgba(255, 255, 255, 0.98);
+}
+
+.grade-input {
+  width: 80px;
+  padding: 8px;
+  border: 2px solid #e0e0e0;
+  border-radius: 4px;
+  text-align: center;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.grade-input:focus {
+  outline: none;
+  border-color: #004385;
+  box-shadow: 0 0 0 2px rgba(0, 67, 133, 0.1);
+}
+
+.actions-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 2rem;
+}
+
+.save-button {
+  background: linear-gradient(135deg, #004385 0%, #003366 100%);
+  color: white;
+  padding: 12px 32px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 67, 133, 0.2);
+}
+
+.save-button:hover {
+  background: linear-gradient(135deg, #003366 0%, #002b5b 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 67, 133, 0.3);
+}
+
+.save-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 67, 133, 0.2);
 }
