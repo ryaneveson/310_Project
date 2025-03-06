@@ -1,50 +1,80 @@
-import React, { useEffect, useState } from "react";
-import "./frontend/finances.css";
+import { useEffect, useState } from "react";
+import "./frontend/dashboardStyles.css";
 
-
-
-function Finances() {
-  const [htmlContent, setHtmlContent] = useState("");
+const Finances = () => {
+  const [userRole, setUserRole] = useState(null);
 
   useEffect(() => {
-    fetch("/finances.html") // path to finances.html in the public directory
-      .then((response) => response.text())
-      .then((data) => {
-        setHtmlContent(data);
-      })
-      .catch((error) => console.error("Error loading HTML content:", error));
+    const role = localStorage.getItem("role");
+    if (!role) {
+      window.location.href = "/";
+      return;
+    }
+    setUserRole(role);
   }, []);
 
-  useEffect(() => {
-    if (htmlContent) {
-      executeScripts(); // only execute scripts after content is fully loaded
-    }
-  }, [htmlContent]); // runs again when htmlContent updates
-
-  // function to execute any scripts within the fetched HTML
-  const executeScripts = () => {
-    const container = document.getElementById("finances");
-
-    if (!container) return;
-
-    const scripts = container.getElementsByTagName("script");
-    for (let script of scripts) {
-      const newScript = document.createElement("script");
-      if (script.src) {
-        newScript.src = script.src; // copy external script source
-        newScript.async = true; // ensure non-blocking execution
-      } else {
-        newScript.textContent = script.textContent; // copy inline script content
-      }
-      document.body.appendChild(newScript); // execute script in document scope
-    }
+  const handleLogout = () => {
+    localStorage.removeItem("role");
+    window.location.href = "/";
   };
 
+  if (!userRole) {
+    return <div>Loading...</div>;
+  }
+
+  if (userRole !== "student") {
+    return (
+      <div className="dashboard-container">
+        <h2>Access Denied</h2>
+        <p>This page is only accessible to students.</p>
+        <button className="logout-button" onClick={handleLogout}>
+          Logout
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <div className="container" id="finances">
-      <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
+    <div className="dashboard-container">
+      <div className="hero">
+        <h2>Financial Information</h2>
+      </div>
+      <div className="dashboard-content">
+        <div className="info-cards">
+          <div className="card">
+            <h3>Account Balance</h3>
+            <p>Current Balance: $5,000</p>
+            <p>Due Date: March 20, 2024</p>
+          </div>
+          <div className="card">
+            <h3>Payment History</h3>
+            <p>Last Payment: $2,000</p>
+            <p>Payment Date: February 15, 2024</p>
+          </div>
+        </div>
+
+        <div className="apps-card">
+          <h3>Financial Actions</h3>
+          <div className="apps-buttons">
+            <button onClick={() => (window.location.href = "/makePayment")} className="app-button">
+              Make Payment
+            </button>
+            <button onClick={() => (window.location.href = "/addPaymentMethod")} className="app-button">
+              Add Payment Method
+            </button>
+            <button className="app-button">
+              View Payment History
+            </button>
+          </div>
+        </div>
+      </div>
+      <div className="logout-container">
+        <button className="logout-button" onClick={handleLogout}>
+          Logout
+        </button>
+      </div>
     </div>
   );
-}
+};
 
 export default Finances;
