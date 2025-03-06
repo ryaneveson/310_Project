@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import "./frontend/courses.css";
+import { useNavigate } from "react-router-dom";
+import "./frontend/dashboardStyles.css";
 
 function Courses() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const previouslyRegisteredCourses = location.state?.registeredCourses || [];
-
   const [courses, setCourses] = useState([]);
+  const [userRole, setUserRole] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedYears, setSelectedYears] = useState([]);
   const [expandedCourse, setExpandedCourse] = useState(null);
@@ -20,7 +18,6 @@ function Courses() {
     }
     setUserRole(role);
 
-    // Fetch courses from the backend
     fetch("http://localhost:5000/api/courses")
       .then((response) => response.json())
       .then((data) => setCourses(data))
@@ -44,7 +41,7 @@ function Courses() {
 
   const filteredCourses = courses.filter((course) => {
     const matchesSearch = course.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const courseYear = course.courseNum?.[0]; // Extract the first digit of the course number
+    const courseYear = course.courseNum?.[0];
     const matchesYear = selectedYears.length === 0 || selectedYears.includes(courseYear);
     return matchesSearch && matchesYear;
   });
@@ -53,13 +50,13 @@ function Courses() {
     setExpandedCourse(expandedCourse === index ? null : index);
   };
 
-  const handleRegister = (course, index) => {
+  const handleRegister = (course) => {
     if (userRole !== "student") {
       alert("Only students can register for courses.");
       return;
     }
 
-    const student_id = "12345"; // Replace with the actual student ID (e.g., from login state)
+    const student_id = "12345";
     fetch("http://localhost:5000/api/register-course", {
       method: "POST",
       headers: {
@@ -79,14 +76,23 @@ function Courses() {
             courseNum: course.courseNum,
             date: course.date,
             professor: course.professor,
-            room: course.dept,
+            room: course.room,
             description: course.description,
-            prerequisites: course.prerequisites,
-            registeredCourses: previouslyRegisteredCourses,
+            prerequisites: course.prerequisites
           },
         });
       })
       .catch((error) => console.error("Error registering for course:", error));
+
+    const registeredCourses = JSON.parse(localStorage.getItem("registeredCourses")) || [];
+
+    if(registeredCourses.some(regCourse => regCourse.name === course.name)){
+      alert("This course is already registered.");
+    } else {
+      registeredCourses.push(course);
+      localStorage.setItem("registeredCourses", JSON.stringify(registeredCourses));
+      window.location.href = "/verify-registration";
+    }
   };
 
   return (
@@ -99,19 +105,27 @@ function Courses() {
         <div className="courses-list">
           {courses.map((course, index) => (
             <div key={index} className="course-card">
-              <h3>{course.name}</h3>
-              <p>Course Number: {course.courseNum}</p>
-              <p>Professor: {course.professor}</p>
-              <p>Room: {course.room}</p>
-              <p>Description: {course.description}</p>
-              <p>Prerequisites: {course.prerequisites}</p>
-              {userRole === "student" && (
-                <button
-                  onClick={() => handleRegister(course, index)}
-                  className="app-button"
-                >
-                  Register
-                </button>
+              <div className="course-header">
+                <h3>{course.name}</h3>
+                <p>Course Number: {course.courseNum}</p>
+                <p>Professor: {course.professor}</p>
+                <p>Room: {course.room}</p>
+                <p>Description: {course.description}</p>
+                <p>Prerequisites: {course.prerequisites}</p>
+                {userRole === "student" && (
+                  <button
+                    onClick={() => handleRegister(course)}
+                    className="app-button"
+                  >
+                    Register
+                  </button>
+                )}
+                {userRole === "admin" && (
+                  <div className="admin-actions">
+                    <button className="app-button">Edit Course</button>
+                    <button className="app-button">Delete Course</button>
+                  </div>
+                )}
               </div>
               <div
                 className={`course-details ${
@@ -138,12 +152,16 @@ function Courses() {
                   </>
                 )}
               </div>
-            </li>
-          ))
-        ) : (
-          <li>No courses found</li>
-        )}
-      </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="logout-container">
+        <button className="logout-button" onClick={handleLogout}>
+          Logout
+        </button>
+      </div>
     </div>
   );
 }
