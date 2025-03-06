@@ -49,6 +49,9 @@ const AdminDashboard = () => {
             <button onClick={() => (window.location.href = "/studentRanking")} className="app-button">
               Student Rankings
             </button>
+            <button onClick={() => (window.location.href = "/studentProfileInput")} className="app-button">
+              Student Export
+            </button>
           </div>
         </div>
       </div>
@@ -105,9 +108,6 @@ const StudentDashboard = () => {
             </button>
             <button onClick={() => (window.location.href = "/finances")} className="app-button">
               Financial Information
-            </button>
-            <button onClick={() => (window.location.href = "/studentProfileInput")} className="app-button">
-              My Profile
             </button>
           </div>
         </div>

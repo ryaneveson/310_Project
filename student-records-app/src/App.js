@@ -14,7 +14,6 @@ import StudentProfileInput from "./studentProfileInput";
 import StudentProfile from "./studentProfile";
 import AcademicDashboard from "./AcademicDashboard"
 import AddPaymentMethod from "./addPaymentMethod.js";
-import ViewGrades from "./ViewGrades";
 
 function App() {
   return (
@@ -34,7 +33,6 @@ function App() {
         <Route path="/studentProfile/:studentID" element={<StudentProfile />} />
         <Route path="/academicdashboard" element={<AcademicDashboard />} />
         <Route path="/addPaymentMethod" element={<AddPaymentMethod />} />
-        <Route path="/viewGrades" element={<ViewGrades />} />
       </Routes>
     </Router>
   );

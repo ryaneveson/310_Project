@@ -8,15 +8,17 @@
   
   /* sidebar styles */
   #studentSearch .sidebar {
-    width: 300px; /* fixed width for the sidebar */
+    width: 300px;
     background-color: white;
     padding: 20px;
-    box-shadow: 20px 20px 10px rgba(0, 0, 0, 0.05); /* soft shadow */
+    box-shadow: 20px 20px 10px rgba(0, 0, 0, 0.05);
     border: 1px solid #e0e0e0;
     border-radius: 25px;
     position: absolute;
     top: 7rem;
     left: 20px;
+    display: flex;
+    flex-direction: column;
   }
   
   #studentSearch .sidebar .checkboxes {
@@ -32,41 +34,39 @@
     margin-bottom: 10px;
   }
   
-  #studentSearch .sidebar #toggle-btn {
-    top: 0;
-    left: 0;
-    transform: translate(50px, 1.5rem);
-  }
-
-  #studentSearch .sidebar #reset-btn {
-    top: 0;
-    left: 0;
-    transform: translate(200px, 1.5rem);
+  #studentSearch .sidebar #toggle-btn,
+  #studentSearch .sidebar #reset-btn,
+  #studentSearch .sidebar #clear-btn {
+    position: static;
+    transform: none;
+    margin: 5px;
   }
 
   #studentSearch .btn {
     background: #004385;
     color: white;
-    padding: 8px;
+    padding: 6px 12px;
     border: none;
-    border-radius: 8px;
-    font-size: 11px;
+    border-radius: 6px;
+    font-size: 10px;
     cursor: pointer;
     font-weight: bold;
     transition: all 0.3s ease-in-out;
-    box-shadow: 0px 5px 0px #004385;
+    box-shadow: 0px 3px 0px #004385;
     position: relative;
+    width: 80px;
+    margin: 5px;
   }
 
   #studentSearch .btn:hover {
     background: #3674b3;
-    box-shadow: 0px 2px 0px #004385;
+    box-shadow: 0px 1px 0px #004385;
   }
 
   #studentSearch .sidebar #clear-btn {
     top: 0;
     left: 0;
-    transform: translate(100px, -2.75rem);
+    transform: translate(80px, -2.75rem);
   }
   
   /* student list styling */
@@ -87,11 +87,12 @@
   }
 
   #studentSearch input[type="text"] {
-    width: 100%;
+    width: calc(100% - 100px);
     padding: 0.25rem;
     margin: 1rem 0;
     border-radius: 10px;
     border: 1px solid #004385;
+    display: inline-block;
   }
   
   #studentSearch .sidebar input[type="text"] {
@@ -128,5 +129,13 @@
   
   tr:hover {
     background-color: #f1f1f1;
+  }
+  
+  /* Add button container */
+  #studentSearch .button-container {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
+    width: 100%;
   }
   
