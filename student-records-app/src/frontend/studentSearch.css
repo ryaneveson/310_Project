@@ -21,17 +21,28 @@
     flex-direction: column;
   }
   
+  #studentSearch .checkbox-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
   #studentSearch .sidebar .checkboxes {
     margin-top: 20px;
+  }
+
+  #studentSearch .sidebar label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  #studentSearch .sidebar input {
+    width: fit-content;
   }
   
   #studentSearch .sidebar h3 {
     font-size: 1.2rem;
-  }
-  
-  #studentSearch .sidebar .checkboxes label {
-    display: block;
-    margin-bottom: 10px;
   }
   
   #studentSearch .sidebar #toggle-btn,
@@ -54,7 +65,7 @@
     transition: all 0.3s ease-in-out;
     box-shadow: 0px 3px 0px #004385;
     position: relative;
-    width: 80px;
+    width: fit-content;
     margin: 5px;
   }
 
@@ -63,11 +74,7 @@
     box-shadow: 0px 1px 0px #004385;
   }
 
-  #studentSearch .sidebar #clear-btn {
-    top: 0;
-    left: 0;
-    transform: translate(80px, -2.75rem);
-  }
+  
   
   /* student list styling */
   #studentSearch article {

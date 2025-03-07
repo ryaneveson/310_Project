@@ -151,15 +151,15 @@ function StudentSearch() {
                     overflow: 'hidden'
                 }}>
                     {allClasses.map((className) => (
-                        <div key={className}>
+                        <div key={className} >
                             <label>
+                                {className}
                                 <input
                                     type="checkbox"
                                     data-testid="checkbox"
                                     checked={selectedClasses.has(className)}
                                     onChange={() => handleClassSelection(className)}
                                 />
-                                {className}
                             </label>
                             <br />
                         </div>
