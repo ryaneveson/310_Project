@@ -8,6 +8,7 @@ const Finances = () => {
   const [nextDue, setNextDue] = useState(null);
   const [lastPayment, setLastPayment] = useState(null);
   const [lastPayDate, setLastPayDate] = useState(null);
+  const [loading, setLoading] = useState(true);
   const studentId = "10000001"
 
   useEffect(() => {
@@ -38,6 +39,7 @@ const Finances = () => {
           }
         });
         setCurBalance(sum);
+        setLoading(false);
       } catch (err) {
         if (err.response && err.response.data && err.response.data.error) {
           alert(`Error: ${err.response.data.error}`);
@@ -48,6 +50,10 @@ const Finances = () => {
     };
     fetchFinances();
   }, []);
+
+  if(loading){
+    return <div>Loading...</div>;
+  }
 
   const handleLogout = () => {
     localStorage.removeItem("role");
