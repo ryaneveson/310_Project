@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, redirect
 from flask_cors import CORS
 from pymongo import MongoClient
 import bcrypt
+from datetime import datetime
 import os
 
 app = Flask(__name__)
@@ -69,6 +70,40 @@ def get_courses():
             "prerequisites": course["prereq"],
         })
     return jsonify(transformed_courses)
+
+@app.route("/api/student/courses", methods=["GET"])
+def get_student_calendar():
+    student_id = request.args.get("student_id")
+    if not student_id:
+        return jsonify({"error": "Student ID is required"}), 400
+    student = students_collection.find_one({"student_id": student_id})
+    if not student:
+        return jsonify({"error": "Student not found"}), 404
+    registered_course_names = student.get("registered_courses", [])
+    
+    courses_details = []
+    for course_id in registered_course_names:
+        course = courses_collection.find_one({"_id": course_id})
+        
+        if course:
+            class_code = f"{course.get('course_dept')} {course.get('course_num')}"
+            lecture_time = course.get("lecture_time", "")
+            #assuming lecture_time is in format like "Mon-Wed 11:00-12:30"
+            days, times = lecture_time.split(" ")
+            start_time, end_time = times.split("-")
+            days_list = days.split("-")
+             
+            for day in days_list:
+                courses_details.append({
+                    "day": day,
+                    "startTime": start_time,
+                    "endTime": end_time,
+                    "classCode": class_code,
+                    "room": course.get("lecture_room")
+                })
+    if not courses_details:
+        return jsonify({"error": "No courses found for this student"}), 404
+    return jsonify({"courses": courses_details}), 200
 
 @app.route("/api/register-course", methods=["POST"])
 def register_course():
