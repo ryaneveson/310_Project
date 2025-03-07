@@ -45,10 +45,8 @@ export default function StudentProfile() {
             setStudentData(null);
             setNotFound(true);
             if (!alertShown.current) {  //show the alert if the alert has not been shown
-                alert("Student ID does not exist.");
                 alertShown.current = true;
             }
-            navigate(-1);  //navigate back if not found
         }
     }, [studentID, navigate]);
 

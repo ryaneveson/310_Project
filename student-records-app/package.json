@@ -9,13 +9,13 @@
     "flask": "^0.2.10",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^7.2.0",
+    "react-router-dom": "^7.2.0", 
     "react-scripts": "^5.0.1",
     "web-vitals": "^4.2.4"
   },
   "jest": {
     "transform": {
-      "^.+\\.(js|jsx)$": "babel-jest"
+      "^.+\\.[t|j]sx?$": "babel-jest"
     },
     "transformIgnorePatterns": [
       "/node_modules/(?!axios)"
