@@ -9,7 +9,7 @@ app = Flask(__name__)
 # Simplify CORS configuration
 CORS(app, supports_credentials=True, origins=["http://localhost:3000"])
 
-# Add CORS headers to all responses
+# Add CORS headers 
 @app.after_request
 def after_request(response):
     response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
