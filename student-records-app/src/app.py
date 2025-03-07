@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify, redirect
 from flask_cors import CORS
 from pymongo import MongoClient
 import bcrypt
-from datetime import datetime
+from bson import ObjectId
 import os
 
 app = Flask(__name__)
@@ -155,6 +155,53 @@ def get_student_calendar():
     if not courses_details:
         return jsonify({"error": "No courses found for this student"}), 404
     return jsonify({"courses": courses_details}), 200
+
+@app.route("/api/student", methods=["GET"])
+def get_students_studentSearch():
+    students = list(students_collection.find({}, {"_id": 0}))
+    if not students:
+        return jsonify({"error": "No students found"}), 404
+    student_details = []
+    for student in students:
+        registered_grades = student.get("registered_course_grades", [])
+        completed_grades = student.get("completed_course_grades", [])
+        all_grades = registered_grades + completed_grades
+        all_grades_int = [int(grade) for grade in all_grades]
+        if all_grades_int:
+            gpa = sum(all_grades_int) / len(all_grades_int)
+        else:
+            gpa = 0
+        registered_courses = student.get("registered_courses", [])
+        completed_courses = student.get("completed_courses", [])
+        all_course_ids = registered_courses + completed_courses
+        course_codes = []
+        for course_id in all_course_ids:
+            try:
+                course = courses_collection.find_one({"_id": ObjectId(course_id)})
+                if course:
+                    # Check if both course_dept and course_num are available
+                    course_dept = course.get("course_dept", "")
+                    course_num = course.get("course_num", "")
+                    if course_dept and course_num:
+                        course_codes.append(f"{course_dept} {course_num}")
+                    else:
+                        # If course_dept or course_num is missing, handle gracefully
+                        course_codes.append("Unknown Course")
+                else:
+                    course_codes.append("Course not found")
+            except Exception as e:
+                course_codes.append("Invalid course ID")
+                print(f"Error fetching course {course_id}: {e}")
+        student_details.append({
+            "name": student.get("first_name"),
+            "lastName": student.get("last_name"),
+            "studentNumber": student.get("student_id"),
+            "gpa": gpa,
+            "classes": course_codes
+        })
+    if not student_details:
+        return jsonify({"error": "No students found"}), 404
+    return jsonify({"students": student_details}), 200
 
 @app.route("/api/register-course", methods=["POST"])
 def register_course():

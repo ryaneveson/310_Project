@@ -1,24 +1,14 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import "./frontend/studentSearch.css";
 import { useNavigate } from "react-router-dom";
 
 function StudentSearch() {
     const [userRole, setUserRole] = useState(null);
     const navigate = useNavigate();
-    const students = [
-        {name: "Alice", lastName: "Johnson", studentNumber: "10000001", gpa: 85, classes: ["Math 101", "History 201", "Science 301", "Art 101", "English 102"]},
-        {name: "Bob", lastName: "Smith", studentNumber: "10000002", gpa: 72, classes: ["Math 101", "Biology 201", "Physics 301", "Chemistry 102", "Philosophy 103"]},
-        {name: "Charlie", lastName: "Brown", studentNumber: "10000003", gpa: 80, classes: ["Math 101", "History 201", "Economics 101", "Art 101", "English 103"]},
-        {name: "David", lastName: "Davis", studentNumber: "10000004", gpa: 75, classes: ["Math 201", "History 101", "Psychology 301", "Music 102", "Biology 103"]},
-        {name: "Eva", lastName: "Wilson", studentNumber: "10000005", gpa: 92, classes: ["Chemistry 101", "Math 301", "Physics 101", "Art 101", "Literature 102"]},
-        {name: "Frank", lastName: "Miller", studentNumber: "10000006", gpa: 69, classes: ["History 101", "Computer Science 201", "Math 301", "Philosophy 102", "Sociology 103"]},
-        {name: "Grace", lastName: "Moore", studentNumber: "10000007", gpa: 78, classes: ["Physics 101", "Biology 102", "Math 101", "History 102", "Psychology 101"]},
-        {name: "Hannah", lastName: "Taylor", studentNumber: "10000008", gpa: 76, classes: ["Chemistry 101", "History 103", "Math 101", "Philosophy 104", "Biology 201"]},
-        {name: "Isaac", lastName: "Anderson", studentNumber: "10000009", gpa: 87, classes: ["Computer Science 101", "Math 301", "Physics 101", "Art 102", "Literature 103"]},
-        {name: "Jack", lastName: "Thomas", studentNumber: "10000010", gpa: 71, classes: ["Music 101", "Math 201", "Biology 102", "Art 101", "Sociology 104"]}
-    ];
-
-    const allClasses = [...new Set(students.flatMap(student => student.classes))].sort();
+    const [students, setStudents] = useState([]);
+    const [allClasses, setAllClasses] = useState([]);
+    
 
     // State management
     const [selectedClasses, setSelectedClasses] = useState(new Set());
@@ -34,6 +24,33 @@ function StudentSearch() {
             return;
         }
         setUserRole(role);
+
+        const fetchStudents = async () => {
+            try {
+              const response = await axios.get(`http://localhost:5000/api/student`);
+              const studentData = response.data.students;
+              const formattedStudents = studentData.map(student => ({
+                name: student.name,
+                lastName: student.lastName,
+                studentNumber: student.studentNumber,
+                gpa: student.gpa,
+                classes: student.classes
+              }));
+              setStudents(formattedStudents);
+
+              const allUniqueClasses = [
+                ...new Set(
+                    formattedStudents
+                        .flatMap(student => student.classes)
+                        .filter(className => /^[A-Z]{4} [0-9]{3}$/.test(className)) //excludes all courses that dont follow the standard naming convention
+                )
+            ].sort();
+              setAllClasses(allUniqueClasses);
+            } catch (err) {
+              alert("error");
+            }
+          };
+          fetchStudents();
     }, []);
 
     const handleLogout = () => {
