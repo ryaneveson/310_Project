@@ -1,15 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./frontend/studentSearch.css";
-import { useNavigate } from "react-router-dom";
 
-function StudentSearch() {
+function StudentSearch({ mockStudents = null }) {
     const [userRole, setUserRole] = useState(null);
-    const navigate = useNavigate();
     const [students, setStudents] = useState([]);
     const [allClasses, setAllClasses] = useState([]);
-    
-
     // State management
     const [selectedClasses, setSelectedClasses] = useState(new Set());
     const [searchTerm, setSearchTerm] = useState(""); 
@@ -18,6 +14,19 @@ function StudentSearch() {
     const [isSidebarVisible, setSidebarVisible] = useState(true);
 
     useEffect(() => {
+        if(mockStudents){
+            setStudents(mockStudents);
+            const allUniqueClasses = [
+                ...new Set(
+                    mockStudents
+                        .flatMap(student => student.classes)
+                        .filter(className => /^[A-Z]{4} [0-9]{3}$/.test(className)) //excludes all courses that dont follow the standard naming convention
+                )
+            ].sort();
+            setAllClasses(allUniqueClasses);
+            setUserRole("admin");
+            return;
+        }
         const role = localStorage.getItem("role");
         if (!role) {
             window.location.href = "/";
@@ -173,7 +182,7 @@ function StudentSearch() {
                                 {className}
                                 <input
                                     type="checkbox"
-                                    data-testid="checkbox"
+                                    data-testid={className}
                                     checked={selectedClasses.has(className)}
                                     onChange={() => handleClassSelection(className)}
                                 />
@@ -215,7 +224,7 @@ function StudentSearch() {
                                     <td>{student.lastName}</td>
                                     <td>{student.studentNumber}</td>
                                     <td>
-                                        <button className="btn" onClick={() => navigate(`/studentProfile/${encodeURIComponent(student.studentNumber)}`)}>
+                                        <button className="btn" onClick={() => window.location.href = `/studentProfile/${encodeURIComponent(student.studentNumber)}`}>
                                             Go to Profile
                                         </button>
                                     </td>

@@ -163,8 +163,8 @@ def get_students_studentSearch():
         return jsonify({"error": "No students found"}), 404
     student_details = []
     for student in students:
-        registered_grades = student.get("registered_course_grades", [])
-        completed_grades = student.get("completed_course_grades", [])
+        registered_grades = student.get("registered_courses_grades", [])
+        completed_grades = student.get("completed_courses_grades", [])
         all_grades = registered_grades + completed_grades
         all_grades_int = [int(grade) for grade in all_grades]
         if all_grades_int:
