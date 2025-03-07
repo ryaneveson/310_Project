@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "axios": "^1.8.1",
+    "babel-jest": "^29.7.0",
     "cra-template": "1.2.0",
     "flask": "^0.2.10",
     "react": "^18.3.1",
@@ -11,10 +13,18 @@
     "react-scripts": "^5.0.1",
     "web-vitals": "^4.2.4"
   },
+  "jest": {
+    "transform": {
+      "^.+\\.(js|jsx)$": "babel-jest"
+    },
+    "transformIgnorePatterns": [
+      "/node_modules/(?!axios)"
+    ]
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "react-scripts test --watchAll",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -36,6 +46,9 @@
     ]
   },
   "devDependencies": {
+    "@babel/core": "^7.21.11",
+    "@babel/preset-env": "^7.21.11",
+    "@babel/preset-react": "^7.21.11",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",

@@ -1,6 +1,9 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import Calendar from "./Calendar";
+const axios = require("axios");
+
+jest.mock("axios");
 
 const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 const hours = Array.from({ length: 25 }, (_, i) => 8 + i * 0.5); // 8:00 - 20:00 in 30-min increments
@@ -14,7 +17,7 @@ const testEvents = [
 
 describe("Calendar Component", () => {
   test("renders all time slots from 8:00 to 20:00", () => {
-    render(<Calendar />);
+    render(<Calendar mockEvents={testEvents}/>);
     
     hours.forEach((hour) => {
       const timeString = `${Math.floor(hour)}:${hour % 1 === 0 ? "00" : "30"}`;
@@ -23,7 +26,7 @@ describe("Calendar Component", () => {
   });
 
   test("renders all events with correct labels", () => {
-    render(<Calendar />);
+    render(<Calendar mockEvents={testEvents}/>);
     
     testEvents.forEach(({ classCode, room }) => {
         expect(screen.getByText(new RegExp(classCode, "i"))).toBeInTheDocument();
@@ -32,7 +35,7 @@ describe("Calendar Component", () => {
   });
 
   test("ensures events are in correct grid locations", () => {
-    render(<Calendar />);
+    render(<Calendar mockEvents={testEvents}/>);
     
     testEvents.forEach(({ day, startTime, endTime, classCode }) => {
       const eventElement = screen.getByText(new RegExp(classCode, "i")).closest(".event-block");

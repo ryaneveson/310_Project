@@ -1,22 +1,56 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import "./calendar.css";
 
 const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 const hours = Array.from({ length: 25 }, (_, i) => 8 + i * 0.5); // 8:00 - 20:00 PM in 30-min increments
 
-function Calendar() {
-  const [events, setEvents] = useState([
-    { day: "Monday", startTime: "9:00", endTime: "11:00", classCode: "COSC 111", room: "COM 201" },
-    { day: "Tuesday", startTime: "13:00", endTime: "14:30", classCode: "MATH 101", room: "COM 202" },
-    { day: "Thursday", startTime: "15:30", endTime: "17:00", classCode: "COSC 304", room: "COM 203" },
-    { day: "Friday", startTime: "11:00", endTime: "12:00", classCode: "COSC 310", room: "COM 204" },
-  ]);
+function Calendar({ mockEvents = null }) {
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const studentId = "10000001";
 
+  useEffect(() => {
+    if(mockEvents){
+      setEvents(mockEvents);
+      setLoading(false);
+      return;
+    }
+    const fetchCourses = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/student/courses?student_id=${studentId}`);
+        const courseData = response.data.courses;
+        // Transform the course data into a format suitable for the calendar
+        const dayMap = {
+          "Mon": "Monday",
+          "Tue": "Tuesday",
+          "Wed": "Wednesday",
+          "Thu": "Thursday",
+          "Fri": "Friday"
+        };
+        const formattedEvents = courseData.map(course => ({
+          day: dayMap[course.day] || course.day,
+          startTime: course.startTime,
+          endTime: course.endTime,
+          classCode: course.classCode,
+          room: course.room
+        }));
+        setEvents(formattedEvents);
+        setLoading(false);
+      } catch (err) {
+        setError("Error fetching courses.");
+        setLoading(false);
+      }
+    };
+    fetchCourses();
+  }, [studentId]);
   // function to convert "HH:MM" to decimal hours
   const parseTime = (timeStr) => {
     const [hours, minutes] = timeStr.split(":").map(Number);
     return hours + minutes / 60;
   };
+  //alert(JSON.stringify(events));
 
   return (
     <div className="calendar-container">
