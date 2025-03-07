@@ -1,8 +1,14 @@
 import { useEffect, useState } from "react";
+import axios from "axios";
 import "./frontend/dashboardStyles.css";
 
 const Finances = () => {
   const [userRole, setUserRole] = useState(null);
+  const [curBalance, setCurBalance] = useState(null);
+  const [nextDue, setNextDue] = useState(null);
+  const [lastPayment, setLastPayment] = useState(null);
+  const [lastPayDate, setLastPayDate] = useState(null);
+  const studentId = "10000001"
 
   useEffect(() => {
     const role = localStorage.getItem("role");
@@ -11,6 +17,36 @@ const Finances = () => {
       return;
     }
     setUserRole(role);
+
+    const fetchFinances = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/student/finances?student_id=${studentId}`);
+        const financeData = response.data.finances
+        let sum = 0
+        financeData.forEach(item => {
+          if (item.is_paid === false) {
+            sum += item.amount;
+            if (!nextDue || new Date(item.due_date) < new Date(nextDue)) {
+              setNextDue(new Date(item.due_date).toLocaleDateString('en-GB', {weekday: 'short', day: '2-digit',  month: 'short', year: 'numeric'}));
+            }
+          }
+          if (item.item_name === "payment") {
+            if (!lastPayDate || new Date(item.due_date) > new Date(lastPayDate)) {
+              setLastPayment(item.amount);
+              setLastPayDate(new Date(item.due_date).toLocaleDateString('en-GB', {weekday: 'short', day: '2-digit',  month: 'short', year: 'numeric'}));
+            }
+          }
+        });
+        setCurBalance(sum);
+      } catch (err) {
+        if (err.response && err.response.data && err.response.data.error) {
+          alert(`Error: ${err.response.data.error}`);
+        } else {
+          alert("Error fetching finances.");
+        }
+      }
+    };
+    fetchFinances();
   }, []);
 
   const handleLogout = () => {
@@ -43,13 +79,13 @@ const Finances = () => {
         <div className="info-cards">
           <div className="card">
             <h3>Account Balance</h3>
-            <p>Current Balance: $5,000</p>
-            <p>Due Date: March 20, 2024</p>
+            <p>Current Balance: ${curBalance}</p>
+            <p>Due Date: {nextDue}</p>
           </div>
           <div className="card">
             <h3>Payment History</h3>
-            <p>Last Payment: $2,000</p>
-            <p>Payment Date: February 15, 2024</p>
+            <p>Last Payment: ${lastPayment}</p>
+            <p>Payment Date: {lastPayDate}</p>
           </div>
         </div>
 
@@ -64,6 +100,9 @@ const Finances = () => {
             </button>
             <button className="app-button">
               View Payment History
+            </button>
+            <button className="app-button">
+              View Upcoming Dues
             </button>
           </div>
         </div>
