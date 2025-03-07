@@ -24,6 +24,8 @@ db = client["student_records"]
 users_collection = db["users"]  
 students_collection = db["students"] #need to connect this to students collection
 courses_collection = db["Courses"]
+finances_collection = db["Finances"]
+payment_methods_collection = db["payment_methods"]
 
 @app.route("/register", methods=["POST"])
 def register():
@@ -155,6 +157,57 @@ def get_student_calendar():
     if not courses_details:
         return jsonify({"error": "No courses found for this student"}), 404
     return jsonify({"courses": courses_details}), 200
+
+@app.route("/api/student/finances", methods=["GET"])
+def get_students_finances():
+    student_id = request.args.get("student_id")
+    if not student_id:
+        return jsonify({"error": "Student ID is required"}), 400
+    if len(student_id) != 8 or not student_id.isdigit():
+        return jsonify({"error": "Student ID must be an 8-digit number"}), 400
+    student = students_collection.find_one({"student_id": student_id})
+    if not student:
+        return jsonify({"error": "Student not found"}), 404
+    finances = list(finances_collection.find({"student_id": student["_id"]}, {"_id": 0}))
+    if not finances:
+        return jsonify({"error": "No financial records for this student"}), 404
+    finance_details = []
+    for finance in finances:
+        finance_details.append({
+            "item_name": finance.get("item_name"),
+            "amount": finance.get("amount"),
+            "due_date": finance.get("due_date"),
+            "is_paid": finance.get("is_paid")
+        })
+    if not finance_details:
+        return jsonify({"error": "No financial records for this student"}), 404
+    return jsonify({"finances": finance_details}), 200
+
+@app.route("/api/student/payment_methods", methods=["GET"])
+def get_students_payment_methods():
+    student_id = request.args.get("student_id")
+    if not student_id:
+        return jsonify({"error": "Student ID is required"}), 400
+    if len(student_id) != 8 or not student_id.isdigit():
+        return jsonify({"error": "Student ID must be an 8-digit number"}), 400
+    student = students_collection.find_one({"student_id": student_id})
+    if not student:
+        return jsonify({"error": "Student not found"}), 404
+    payment_methods = list(payment_methods_collection.find({"student_id": student["_id"]}, {"_id": 0}))
+    if not payment_methods:
+        return jsonify({"error": "No payment methods for this student"}), 404
+    payment_details = []
+    for method in payment_methods:
+        payment_details.append({
+            "card_type": method.get("card_type"),
+            "card_number": method.get("card_number"),
+            "card_name": method.get("card_name"),
+            "card_address": method.get("card_address"),
+            "expiry_date": method.get("expiry_date")
+        })
+    if not payment_details:
+        return jsonify({"error": "No payment methods for this student"}), 404
+    return jsonify({"payment_methods": payment_details}), 200
 
 @app.route("/api/student", methods=["GET"])
 def get_students_studentSearch():
