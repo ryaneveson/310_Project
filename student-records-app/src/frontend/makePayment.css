@@ -78,9 +78,9 @@
 }
 #makePayment .payment-method-input {
     padding: 0.33rem;
-    width: 12rem;
+    width: 13rem;
 }
-#makePayment .temp-input {
+#makePayment #temp-input {
     margin-top: 0.5rem;
     display: flex;
     flex-direction: column;

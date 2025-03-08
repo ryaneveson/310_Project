@@ -11,6 +11,9 @@ function MakePayment() {
   const [totalDue, setTotalDue] = useState(null);
   const [next30Due, setNext30Due] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [numVer, setNumVer] = useState(false);
+  const [cvvVer, setCvvVer] = useState(false);
+  const [expVer, setExpVer] = useState(false);
   const studentId = "10000001";
 
   useEffect(() => {
@@ -116,14 +119,34 @@ function MakePayment() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (!selectedMethod) {
-      alert("Please select a payment method.");
-      return;
-    }
     if (!paymentAmount || parseFloat(paymentAmount) <= 0) {
       alert("Please enter a valid payment amount greater than $0.");
       return;
     }
+    if (!selectedMethod) {
+      alert("Please select a payment method.");
+      return;
+    }
+    /*if (!numVer || !cvvVer || !expVer) {
+      const tempInputDiv = document.getElementById("temp-input");
+      if (tempInputDiv && !tempInputDiv.querySelector(".error-message")) {
+          tempInputDiv.innerHTML += "<p class='error-message' style='color: red;'>Invalid card details. Please check your input.</p>";
+      }
+      return;
+    }*/
+    
+    fetch("http://localhost:5000/api/add-payment", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        student_id: studentId,
+        amount: paymentAmount,
+        due_date: new Date().toISOString().split("T")[0],
+        is_paid: true
+      }),
+    }).catch((error) => alert(`Error registering for course ${error}`));
     alert(`Payment of $${paymentAmount} confirmed using ${selectedMethod} (${selectedCardNumber})`);
     window.location.href = "/Finances";
   };
@@ -177,17 +200,25 @@ function MakePayment() {
               </div>
               
               {selectedMethod && selectedMethod === method.cardType && (
-              <div className="temp-input">
-                <input
+              <div id="temp-input">
+                <label>Enter full card number:<br></br><input
                   type="text"
-                  placeholder="Enter full card number"
+                  placeholder="XXXX XXXX XXXX XXXX"
                   className="payment-method-input"
-                />
-                <input
+                  onChange={(e) => setNumVer(e.target.value === method.cardNumber)}
+                /></label>
+                <label>Enter CVV:<br></br><input
                   type="text"
-                  placeholder="Enter CVV"
+                  placeholder="CVV"
                   className="payment-method-input"
-                />
+                  onChange={(e) => setCvvVer(e.target.value === method.cvv)}
+                /></label>
+                <label>Enter Expiry:<br></br><input
+                  type="text"
+                  placeholder="MM/YY"
+                  className="payment-method-input"
+                  onChange={(e) => setExpVer(e.target.value === method.expiryDate)}
+                /></label>
               </div>
         )}
             </label>
