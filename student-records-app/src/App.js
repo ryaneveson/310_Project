@@ -13,7 +13,7 @@ import VerifyRegistration from "./VerifyRegistration";
 import StudentProfileInput from "./studentProfileInput";
 import StudentProfile from "./studentProfile";
 import AcademicDashboard from "./AcademicDashboard"
-import AddPaymentMethod from "./addPaymentMethod.js";
+import AddPaymentMethod from "./addPaymentMethod";
 import PaymentHistory from "./PaymentHistory";
 import UpcomingDue from "./UpcomingDue";
 

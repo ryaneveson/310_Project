@@ -3,6 +3,7 @@ from flask_cors import CORS
 from pymongo import MongoClient
 import bcrypt
 from bson import ObjectId
+from datetime import datetime
 import os
 
 app = Flask(__name__)
@@ -175,7 +176,7 @@ def get_students_finances():
     for finance in finances:
         finance_details.append({
             "item_name": finance.get("item_name"),
-            "amount": finance.get("amount"),
+            "amount": float(finance.get("amount", -1)),
             "due_date": finance.get("due_date"),
             "is_paid": finance.get("is_paid")
         })
@@ -203,7 +204,8 @@ def get_students_payment_methods():
             "card_number": method.get("card_number"),
             "card_name": method.get("card_name"),
             "card_address": method.get("card_address"),
-            "expiry_date": method.get("expiry_date")
+            "expiry_date": method.get("expiry_date"),
+            "cvv": method.get("cvv")
         })
     if not payment_details:
         return jsonify({"error": "No payment methods for this student"}), 404
@@ -273,6 +275,38 @@ def register_course():
     )
 
     return jsonify({"message": "Course registered successfully!"}), 201
+
+@app.route("/api/add-payment", methods=["POST"])
+def add_payment():
+    data = request.json
+    student_id = data.get("student_id")
+    amount = data.get("amount")
+    due_date = data.get("due_date")
+    is_paid = data.get("is_paid")
+    if not student_id:
+        return jsonify({"error": "Student ID is required"}), 400
+    if not amount or not due_date or not is_paid:
+        return jsonify({"error": "Data for payment not provided"}), 400
+    if len(student_id) != 8 or not student_id.isdigit():
+        return jsonify({"error": "Student ID must be an 8-digit number"}), 400
+    try:
+        due_date_obj = datetime.strptime(due_date, "%Y-%m-%d")  # Assuming input format "YYYY-MM-DD"
+    except ValueError:
+        return jsonify({"error": "Invalid due_date format. Use YYYY-MM-DD."}), 400
+    student = students_collection.find_one({"student_id": student_id})
+    if not student:
+        return jsonify({"error": "Student not found"}), 404
+    student_object_id = student["_id"]
+    new_payment = {
+        "student_id": student_object_id,
+        "item_name": "payment",
+        "amount": amount,
+        "due_date": due_date_obj,
+        "is_paid": is_paid
+    }
+    finances_collection.insert_one(new_payment)
+    return jsonify({"message": "Payment record added successfully"}), 201
+    
 
 @app.before_request
 def log_request():

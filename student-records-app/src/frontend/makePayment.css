@@ -76,3 +76,12 @@
     box-shadow: 20px 20px 10px rgba(0, 0, 0, 0.05); /* Soft Shadow */
     border-radius: 25px;
 }
+#makePayment .payment-method-input {
+    padding: 0.33rem;
+    width: 13rem;
+}
+#makePayment #temp-input {
+    margin-top: 0.5rem;
+    display: flex;
+    flex-direction: column;
+}
