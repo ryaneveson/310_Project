@@ -203,7 +203,8 @@ def get_students_payment_methods():
             "card_number": method.get("card_number"),
             "card_name": method.get("card_name"),
             "card_address": method.get("card_address"),
-            "expiry_date": method.get("expiry_date")
+            "expiry_date": method.get("expiry_date"),
+            "cvv": method.get("cvv")
         })
     if not payment_details:
         return jsonify({"error": "No payment methods for this student"}), 404

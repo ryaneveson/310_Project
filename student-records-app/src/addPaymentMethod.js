@@ -27,9 +27,9 @@ function AddPaymentMethod() {
           required
         >
           <option value="">Select</option>
-          <option value="Credit Card">Credit Card</option>
-          <option value="Debit Card">Debit Card</option>
-          <option value="PayPal">PayPal</option>
+          <option value="Visa">Credit Card</option>
+          <option value="MasterCard">Debit Card</option>
+          <option value="DebitCard">PayPal</option>
         </select>
 
         <label htmlFor="card-number">Card Number:</label>

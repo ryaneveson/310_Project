@@ -5,7 +5,7 @@ import "./frontend/makePayment.css";
 function MakePayment() {
   const [userRole, setUserRole] = useState(null);
   const [selectedMethod, setSelectedMethod] = useState(null);
-  const [selectedCardNumber, setSelectedCardNumber] = useState("")
+  const [selectedCardNumber, setSelectedCardNumber] = useState("");
   const [paymentAmount, setPaymentAmount] = useState("");
   const [billingMethods, setBillingMethods] = useState([]);
   const [totalDue, setTotalDue] = useState(null);
@@ -30,7 +30,8 @@ function MakePayment() {
           cardNumber: method.card_number,
           cardholderName: method.card_name,
           billingAddress: method.card_address,
-          expiryDate: method.expiry_date
+          expiryDate: method.expiry_date,
+          cvv: method.cvv
         }));
         setBillingMethods(formattedPaymentMethods);
 
@@ -127,6 +128,12 @@ function MakePayment() {
     window.location.href = "/Finances";
   };
 
+  function formatCardNumber(cardNumber) {
+    const cardArray = cardNumber.split(' ');
+    const lastFour = cardArray[3]; 
+    return '**** **** **** ' + lastFour;
+  }
+
   return (
     <div className="container" id="makePayment">
       <h2>How much to Pay: </h2>
@@ -164,10 +171,25 @@ function MakePayment() {
               />
               <div>
                 <h3>{method.cardType}</h3>
-                <p>{method.cardNumber}</p>
+                <p>{formatCardNumber(method.cardNumber)}</p>
                 <p>{method.cardholderName}</p>
                 <p>{method.billingAddress}</p>
               </div>
+              
+              {selectedMethod && selectedMethod === method.cardType && (
+              <div className="temp-input">
+                <input
+                  type="text"
+                  placeholder="Enter full card number"
+                  className="payment-method-input"
+                />
+                <input
+                  type="text"
+                  placeholder="Enter CVV"
+                  className="payment-method-input"
+                />
+              </div>
+        )}
             </label>
           ))}
 
