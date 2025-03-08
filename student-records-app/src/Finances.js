@@ -104,10 +104,10 @@ const Finances = () => {
             <button onClick={() => (window.location.href = "/addPaymentMethod")} className="app-button">
               Add Payment Method
             </button>
-            <button className="app-button">
+            <button onClick={() => (window.location.href = "/paymentHistory")} className="app-button">
               View Payment History
             </button>
-            <button className="app-button">
+            <button onClick={() => (window.location.href = "/upcomingDue")} className="app-button">
               View Upcoming Dues
             </button>
           </div>

@@ -14,6 +14,8 @@ import StudentProfileInput from "./studentProfileInput";
 import StudentProfile from "./studentProfile";
 import AcademicDashboard from "./AcademicDashboard"
 import AddPaymentMethod from "./addPaymentMethod.js";
+import PaymentHistory from "./PaymentHistory";
+import UpcomingDue from "./UpcomingDue";
 
 function App() {
   return (
@@ -34,6 +36,8 @@ function App() {
         <Route path="/academicdashboard" element={<AcademicDashboard />} />
         <Route path="/addPaymentMethod" element={<AddPaymentMethod />} />
         <Route path="/createUser" element={<CreateUser />} />
+        <Route path="/paymentHistory" element={<PaymentHistory />} />
+        <Route path="/upcomingDue" element={<UpcomingDue />} />
       </Routes>
     </Router>
   );
