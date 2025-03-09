@@ -293,7 +293,7 @@ def add_payment():
         due_date_obj = datetime.strptime(due_date, "%Y-%m-%d")  # Assuming input format "YYYY-MM-DD"
     except ValueError:
         return jsonify({"error": "Invalid due_date format. Use YYYY-MM-DD."}), 400
-    student = students_collection.find_one({"student_id": student_id})
+    student = students_collection.find_one({"studentNumber": student_id})
     if not student:
         return jsonify({"error": "Student not found"}), 404
     student_object_id = student["_id"]
@@ -302,10 +302,44 @@ def add_payment():
         "item_name": "payment",
         "amount": amount,
         "due_date": due_date_obj,
-        "is_paid": is_paid
+        "is_paid": bool(is_paid)
     }
     finances_collection.insert_one(new_payment)
     return jsonify({"message": "Payment record added successfully"}), 201
+    
+@app.route("/api/add-fee", methods=["POST"])
+def add_fee():
+    data = request.json
+    print(f"Received data: {data}")
+    student_id = data.get("student_id")
+    item_name = data.get("item_name")
+    amount = data.get("amount")
+    due_date = data.get("due_date")
+    if not student_id:
+        return jsonify({"error": "Student ID is required"}), 400
+    if not amount or not due_date or not item_name:
+        return jsonify({"error": "Data for payment not provided"}), 400
+    if len(student_id) != 8 or not student_id.isdigit():
+        return jsonify({"error": "Student ID must be an 8-digit number"}), 400
+    try:
+        due_date_obj = datetime.strptime(due_date, "%Y-%m-%d")  # Assuming input format "YYYY-MM-DD"
+    except ValueError:
+        return jsonify({"error": "Invalid due_date format. Use YYYY-MM-DD."}), 400
+    student = students_collection.find_one({"studentNumber": str(student_id)})
+    print(f"Found student: {student}")
+    if not student:
+        return jsonify({"error": "Student not found"}), 404
+    student_object_id = student["_id"]
+    new_fee = {
+        "student_id": student_object_id,
+        "item_name": item_name,
+        "amount": amount,
+        "due_date": due_date_obj,
+        "is_paid": bool(False)
+    }
+    result = finances_collection.insert_one(new_fee)
+    print(f"Inserted fee with ID: {result.inserted_id}")
+    return jsonify({"message": "Fee added successfully"}), 201
     
 
 @app.before_request

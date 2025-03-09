@@ -14,6 +14,7 @@ function AddFee({ mockStudents = null }) {
     const [feeAmount, setFeeAmount] = useState("");
     const [feeDate, setFeeDate] = useState("");
     const [loading, setLoading] = useState(true);
+    const [errorMessage, setErrorMessage] = useState("");
 
     useEffect(() => {
         if(mockStudents){
@@ -149,6 +150,40 @@ function AddFee({ mockStudents = null }) {
         }
     };
 
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        setErrorMessage("");
+
+        if (!feeName || !feeAmount || !feeDate || selectedStudents.length === 0) {
+            setErrorMessage("All fields are required and at least one student must be selected.");
+            return;
+        }
+
+        for (const student of selectedStudents) {
+            fetch("http://localhost:5000/api/add-fee", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    student_id: student.studentNumber,
+                    item_name: feeName,
+                    amount: parseFloat(feeAmount),
+                    due_date: feeDate,
+                }),
+            }).then(async (response) => {
+                const data = await response.json();
+                if (response.ok) {
+                  alert(`Fee added for ${student.studentNumber}`);
+                } else {
+                  alert(`Error adding fee for ${student.studentNumber}: ${data.error}`);
+                }
+              })
+            .catch((error) => alert(`Error adding fee ${error}`));
+        }
+        //window.location.href="/addFee";
+    };
+
     return (
         <div id="studentSearch">
             <aside className="sidebar" id="sidebar">
@@ -233,13 +268,12 @@ function AddFee({ mockStudents = null }) {
                 </div>
             </article>
             <article id="fee-container">
-            <form id="fee-form">
+            <form id="fee-form" onSubmit={handleSubmit}>
                 <h2>Fee details</h2><br></br>
                     <label>Fee Name:<br />
                         <input
                             type="text"
                             placeholder="Fee's Name . . ."
-                            value={searchTerm}
                             id="fee-name"
                             onChange={(e) => setFeeName(e.target.value)}
                             className="fee-box"
@@ -264,7 +298,7 @@ function AddFee({ mockStudents = null }) {
                             className="fee-box"
                         />
                     </label>
-                    <button id="fee-submit">Submit Fee</button>
+                    <button id="fee-submit" type="submit">Submit Fee</button>
                 </form>
                 <div id="selected-students">
                     <h2>Selected Students</h2>

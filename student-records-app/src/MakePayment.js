@@ -146,7 +146,7 @@ function MakePayment() {
         due_date: new Date().toISOString().split("T")[0],
         is_paid: true
       }),
-    }).catch((error) => alert(`Error registering for course ${error}`));
+    }).catch((error) => alert(`Error adding payment ${error}`));
     alert(`Payment of $${paymentAmount} confirmed using ${selectedMethod} (${selectedCardNumber})`);
     window.location.href = "/Finances";
   };
