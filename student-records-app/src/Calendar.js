@@ -5,7 +5,7 @@ import "./calendar.css";
 const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 const hours = Array.from({ length: 25 }, (_, i) => 8 + i * 0.5); // 8:00 - 20:00 PM in 30-min increments
 
-function Calendar({ mockEvents = null }) {
+function Calendar({ mockEvents = null, compact = false }) {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -21,7 +21,6 @@ function Calendar({ mockEvents = null }) {
       try {
         const response = await axios.get(`http://localhost:5000/api/student/courses?student_id=${studentId}`);
         const courseData = response.data.courses;
-        // Transform the course data into a format suitable for the calendar
         const dayMap = {
           "Mon": "Monday",
           "Tue": "Tuesday",
@@ -48,12 +47,12 @@ function Calendar({ mockEvents = null }) {
   // function to convert "HH:MM" to decimal hours
   const parseTime = (timeStr) => {
     const [hours, minutes] = timeStr.split(":").map(Number);
-    return hours + minutes / 60;
+    return hours + (minutes / 60);
   };
   //alert(JSON.stringify(events));
 
   return (
-    <div className="calendar-container">
+    <div className={`calendar-container ${compact ? 'calendar-compact' : ''}`}>
       <div className="calendar-grid">
         {/* column headers */}
         <div className="time-column">Weekly Schedule</div>
@@ -79,30 +78,49 @@ function Calendar({ mockEvents = null }) {
           </div>
         ))}
 
-        {/* event Blocks */}
         {events.map((event, index) => {
           const { day, startTime, endTime, classCode, room } = event;
           const dayIndex = days.indexOf(day);
           const startHour = parseTime(startTime);
           const endHour = parseTime(endTime);
+          
+          if (compact) {
+            const topPosition = ((startHour - 8) * 40) + 30 + "px";
+            const height = (endHour - startHour) * 40 + "px";
 
-          const topPosition = (((startHour - 8) * 80) + 50) + "px"; // each hour = 80px (2x 40px for half-hour) + 50 to account for day header
-          const height = ((endHour - startHour) * 80) + "px"; // dynamic height based on duration
+            return (
+              <div
+                key={index}
+                className="event-block"
+                style={{
+                  left: `${(dayIndex + 1) * 100 + 60}px`,
+                  top: topPosition,
+                  height: height,
+                }}
+              >
+                {classCode} <br />
+                {room}
+              </div>
+            );
+          } else {
+            const topPosition = (((startHour - 8) * 80) + 50) + "px";
+            const height = ((endHour - startHour) * 80) + "px";
 
-          return (
-            <div
-              key={index}
-              className="event-block"
-              style={{
-                gridColumnStart: dayIndex + 2, // align event to correct day
-                top: topPosition, // correct vertical position
-                height: height, // correct event duration
-              }}
-            >
-              {classCode} <br />
-              {room}
-            </div>
-          );
+            return (
+              <div
+                key={index}
+                className="event-block"
+                style={{
+                  gridColumnStart: dayIndex + 2,
+                  top: topPosition,
+                  height: height,
+                }}
+              >
+                {classCode} <br />
+                {room}
+              </div>
+            );
+          }
         })}
       </div>
     </div>

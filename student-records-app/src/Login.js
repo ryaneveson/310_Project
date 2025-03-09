@@ -23,15 +23,7 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
-
-    // First check hardcoded users
-    if ((username === users.admin.username && password === users.admin.password) ||
-        (username === users.student.username && password === users.student.password)) {
-      setStep(2);
-      return;
-    }
-
-    // If not hardcoded user, check MongoDB
+  
     try {
       const response = await fetch('http://localhost:5000/api/login', {
         method: 'POST',
@@ -45,12 +37,13 @@ const Login = () => {
           password: password
         })
       });
-
+  
       const data = await response.json();
-      console.log('Server response:', data); // Debug log
-      
+      console.log('Server response:', data);
+  
       if (data.success) {
         localStorage.setItem("role", data.role);
+        localStorage.setItem("username", data.username);
         setStep(2);
       } else {
         setError(data.error || "Invalid username or password!");
@@ -60,18 +53,21 @@ const Login = () => {
       setError("An error occurred during login. Please try again.");
     }
   };
+  
 
   const handle2FA = (e) => {
     e.preventDefault();
     if (code === "123456") {
-      const role = username === users.admin.username ? "admin" : "student";
+      const role = users[username]?.role || localStorage.getItem("role"); 
       localStorage.setItem("role", role);
+      localStorage.setItem("username", username); 
       console.log(`${role.charAt(0).toUpperCase() + role.slice(1)} logged in!`);
       window.location.href = "/dashboard";
     } else {
       setError("Invalid 2FA code!");
     }
-  };
+};
+
 
   return (
     <>

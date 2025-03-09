@@ -21,7 +21,6 @@ const Header = () => {
         <li><a href="/Dashboard">Home</a></li>
         <li><a href="/Finances">Financial Dashboard</a></li>
         <li><a href="/Courses">Courses</a></li>
-        <li><a href="/editGrades">Edit Grades</a></li>
         <li><button onClick={handleLogout} className="logout-menu-item">Logout</button></li>
       </ul>
     </header>

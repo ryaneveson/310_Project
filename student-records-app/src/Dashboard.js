@@ -1,5 +1,7 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./frontend/dashboardStyles.css";
+import ubcoImage from './frontend/img/UBCO2.jpg';
+import Calendar from './Calendar';
 
 const handleLogout = () => {
   localStorage.removeItem("role");
@@ -9,10 +11,12 @@ const handleLogout = () => {
 const AdminDashboard = () => {
   return (
     <div className="dashboard-container">
+      <div className="campus-image">
+        <img src={ubcoImage} alt="UBCO Campus" />
+      </div>
       <div className="hero">
         <h2>Hi There Admin</h2>
         <p>
-          It's{" "}
           {new Date().toLocaleDateString(undefined, {
             weekday: "long",
             year: "numeric",
@@ -61,19 +65,56 @@ const AdminDashboard = () => {
 };
 
 const StudentDashboard = () => {
+  const [quote, setQuote] = useState({ content: "", author: "" });
+  const [isLoading, setIsLoading] = useState(true);
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [username, setUsername] = useState("");
+
+  useEffect(() => {
+    const storedUsername = localStorage.getItem("username");
+    setUsername(storedUsername || "Student");
+    const fetchQuote = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch("https://api.quotable.io/random");
+        const data = await response.json();
+        setQuote(data);
+      } catch (error) {
+        console.error("Error fetching quote:", error);
+        setQuote({ content: "Knowledge is power.", author: "Francis Bacon" }); // Fallback quote
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchQuote();
+  }, []);
+
   return (
     <div className="dashboard-container">
+      <div className="campus-image">
+        <img src={ubcoImage} alt="UBCO Campus" />
+      </div>
       <div className="hero">
-        <h2>Welcome, Student!</h2>
-        <p>
-          It's{" "}
-          {new Date().toLocaleDateString(undefined, {
-            weekday: "long",
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          })}
-        </p>
+        <h2>Welcome, {username}!</h2>
+        <div className="date-quote-container">
+          <p>
+            {new Date().toLocaleDateString(undefined, {
+              weekday: "long",
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
+          </p>
+          <span className="separator">|</span>
+          {isLoading ? (
+            <p className="quote-inline">Loading quote...</p>
+          ) : (
+            <p className="quote-inline">
+              "{quote.content}" — {quote.author}
+            </p>
+          )}
+        </div>
       </div>
 
       <div className="dashboard-content">
@@ -104,10 +145,28 @@ const StudentDashboard = () => {
             <button onClick={() => (window.location.href = "/finances")} className="app-button">
               Financial Information
             </button>
+            <button onClick={() => (window.location.href = "/calendar")} className="app-button">
+              Worklist / Calendar
+            </button>
+            <button onClick={() => (window.location.href = "https://my.ubc.ca")} className="app-button">
+              myUBC
+            </button>
           </div>
         </div>
       </div>
 
+      <button 
+        className="calendar-toggle"
+        onClick={() => setIsCalendarOpen(!isCalendarOpen)}
+      >
+        <span style={{ color: '#004385', fontSize: '18px' }}>
+          {isCalendarOpen ? '▶' : '◀ '}
+        </span>
+      </button>
+
+      <div className={`calendar-panel ${isCalendarOpen ? 'open' : ''}`}>
+        <Calendar compact={true} />
+      </div>
     </div>
   );
 };
