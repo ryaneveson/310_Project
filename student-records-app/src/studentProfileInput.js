@@ -66,10 +66,6 @@ function StudentProfileInput() {
                     View Profile
                 </button>
             </div>
-
-            <button className="profile-logout-button" onClick={handleLogout}>
-                Logout
-            </button>
         </div>
     );
 }

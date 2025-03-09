@@ -113,11 +113,6 @@ const Finances = () => {
           </div>
         </div>
       </div>
-      <div className="logout-container">
-        <button className="logout-button" onClick={handleLogout}>
-          Logout
-        </button>
-      </div>
     </div>
   );
 };

@@ -4,6 +4,11 @@ import "./frontend/header.css";
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
+  const handleLogout = () => {
+    localStorage.removeItem("role");
+    window.location.href = "/";
+  };
+
   return (
     <header>
       <h1>Werkday</h1>
@@ -17,6 +22,7 @@ const Header = () => {
         <li><a href="/Finances">Financial Dashboard</a></li>
         <li><a href="/Courses">Courses</a></li>
         <li><a href="/editGrades">Edit Grades</a></li>
+        <li><button onClick={handleLogout} className="logout-menu-item">Logout</button></li>
       </ul>
     </header>
   );
