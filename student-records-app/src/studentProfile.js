@@ -25,25 +25,27 @@ export default function StudentProfile() {
             return;
         }
 
-        // Fetch student data from Flask API
-        axios.get(`http://localhost:5000/student/${studentID}`)
-            .then(response => {
-                setStudentData(response.data);
-                setNotFound(false);
-                alertShown.current = false;  // Reset alert tracking
-            })
-            .catch(error => {
-                setStudentData(null);
-                setNotFound(true);
-                if (!alertShown.current) {
-                    alert("Student ID does not exist.");
-                    alertShown.current = true;
-                }
-                navigate(-1); 
-            })
-            .finally(() => setLoading(false));
-
+        fetchStudentProfile();
     }, [studentID, navigate]);
+
+    const fetchStudentProfile = async () => {
+        try {
+            const response = await axios.get(`http://localhost:5000/api/student/studentprofile?student_id=${studentID}`);
+            setStudentData(response.data);
+            setNotFound(false);
+            alertShown.current = false; // Reset alertShown when student is found
+        } catch (err) {
+            setStudentData(null);
+            setNotFound(true);
+            if(!alertShown.current){
+                alert("Student ID does not exist.");
+                alertShown.current = true;
+            }
+            navigate(-1); //navigate back to the previous page if id invalid
+        } finally {
+            setLoading(false);
+        }
+    }
 
     //display student's profile data
     //TODO: add more student data fields later depending on what we want to display

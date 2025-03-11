@@ -5,7 +5,7 @@ import bcrypt
 import os
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": ["http://localhost:3000", "http://localhost:3001"]}})  # Allow requests from http://localhost:3000 and http://localhost:3001
 
 MONGO_URI = "mongodb+srv://samijaffri01:6XjmdnygdfRrD8dF@cluster0.fgfo7.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 client = MongoClient(MONGO_URI)
@@ -88,11 +88,15 @@ def register_course():
 
     return jsonify({"message": "Course registered successfully!"}), 201
 
-@app.route("/student/<string:student_id>", methods=["GET"])
-def get_student(student_id):
+@app.route("/api/student/studentprofile", methods=["GET"])
+def get_student_profile():
+    student_id = request.args.get("student_id")
+    if not student_id:
+        return jsonify({"error": "Student ID is required"}), 400
+    if len(student_id) != 8 or not student_id.isdigit():
+        return jsonify({"error": "Student ID must be an 8-digit number"}), 400
 
-    # Ensure the student_id is treated as a string in the query
-    student = students_collection.find_one({"student_id": str(student_id)}, {"_id": 0})
+    student = students_collection.find_one({"student_id": student_id})
     if student:
         return jsonify(student)
     return jsonify({"error": "Student ID does not exist"}), 404
@@ -100,6 +104,13 @@ def get_student(student_id):
 @app.before_request
 def log_request():
     print(f"Incoming {request.method} request to {request.path}")
+
+@app.after_request
+def add_header(response):
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type,Authorization"
+    response.headers["Access-Control-Allow-Methods"] = "GET,PUT,POST,DELETE,OPTIONS"
+    return response
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
