@@ -27,8 +27,8 @@ function AddPaymentMethod() {
           required
         >
           <option value="">Select</option>
-          <option value="Visa">Credit Card</option>
-          <option value="MasterCard">Debit Card</option>
+          <option value="Visa">Visa</option>
+          <option value="MasterCard">MasterCard</option>
           <option value="DebitCard">PayPal</option>
         </select>
 
