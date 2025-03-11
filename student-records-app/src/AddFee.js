@@ -159,28 +159,28 @@ function AddFee({ mockStudents = null }) {
             return;
         }
 
-        for (const student of selectedStudents) {
-            fetch("http://localhost:5000/api/add-fee", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    student_id: student.studentNumber,
-                    item_name: feeName,
-                    amount: parseFloat(feeAmount),
-                    due_date: feeDate,
-                }),
-            }).then(async (response) => {
-                const data = await response.json();
-                if (response.ok) {
-                  alert(`Fee added for ${student.studentNumber}`);
-                } else {
-                  alert(`Error adding fee for ${student.studentNumber}: ${data.error}`);
-                }
-              })
-            .catch((error) => alert(`Error adding fee ${error}`));
-        }
+        const studentsData = selectedStudents.map(student => ({
+            student_id: student.studentNumber,
+            item_name: feeName,
+            amount: parseFloat(feeAmount),
+            due_date: feeDate,
+        }));
+        fetch("http://localhost:5000/api/add-fee", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ students: studentsData }),
+        })
+        .then(async (response) => {
+            const data = await response.json();
+            if (response.ok) {
+                alert('Fees added successfully for selected students.');
+            } else {
+                alert(`Error adding fees: ${data.error}`);
+            }
+        })
+        .catch((error) => alert(`Error adding fees: ${error}`));
         //window.location.href="/addFee";
     };
 
