@@ -23,27 +23,38 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
-  
+
+    // First check hardcoded users
+    if ((username === users.admin.username && password === users.admin.password) ||
+        (username === users.student.username && password === users.student.password)) {
+      const role = username === users.admin.username ? "admin" : "student";
+      localStorage.setItem("role", role);
+      localStorage.setItem("username", username);
+      setStep(2);
+      return;
+    }
+
+    // If not hardcoded user, try database
     try {
-      const response = await fetch('http://localhost:5000/api/login', {
+      console.log('Attempting database login with:', { username });
+
+      const response = await fetch('http://localhost:5000/login', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          'Content-Type': 'application/json'
         },
-        mode: 'cors',
         body: JSON.stringify({
           username: username,
           password: password
         })
       });
-  
+
       const data = await response.json();
       console.log('Server response:', data);
-  
+
       if (data.success) {
-        localStorage.setItem("role", data.role);
-        localStorage.setItem("username", data.username);
+        localStorage.setItem("role", "student");
+        localStorage.setItem("username", username);
         setStep(2);
       } else {
         setError(data.error || "Invalid username or password!");
@@ -58,9 +69,7 @@ const Login = () => {
   const handle2FA = (e) => {
     e.preventDefault();
     if (code === "123456") {
-      const role = users[username]?.role || localStorage.getItem("role"); 
-      localStorage.setItem("role", role);
-      localStorage.setItem("username", username); 
+      const role = localStorage.getItem("role");
       console.log(`${role.charAt(0).toUpperCase() + role.slice(1)} logged in!`);
       window.location.href = "/dashboard";
     } else {
@@ -70,53 +79,59 @@ const Login = () => {
 
 
   return (
-    <>
-      <div className="auth-container">
-        <div className="auth-box">
-          <h2 className="auth-title">{step === 1 ? "Login" : "Enter 2FA Code"}</h2>
-          {step === 1 ? (
-            <form onSubmit={handleLogin}>
-              <input
-                type="text"
-                placeholder="Username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-                className="auth-input"
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="auth-input"
-              />
-              <button type="submit" className="auth-button">Login</button>
-            </form>
-          ) : (
-            <form onSubmit={handle2FA}>
-              <input
-                type="text"
-                placeholder="Enter 2FA Code"
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-                required
-                className="auth-input"
-              />
-              <button type="submit" className="auth-button">Verify</button>
-            </form>
-          )}
-          {error && <p className="auth-error">{error}</p>}
-          {step === 1 && (
-            <p className="auth-footer">
-              Don't have an account?{" "}
-              <Link to="/createUser" className="auth-link">Create one here</Link>
-            </p>
-          )}
+    <div className="page-container">
+      <div className="content-wrap">
+        <div className="auth-container">
+          <div className="auth-box">
+            <h2 className="auth-title">{step === 1 ? "Login" : "Enter 2FA Code"}</h2>
+            {step === 1 ? (
+              <form onSubmit={handleLogin}>
+                <input
+                  type="text"
+                  placeholder="Username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  required
+                  className="auth-input"
+                />
+                <input
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="auth-input"
+                />
+                <button type="submit" className="auth-button">Login</button>
+              </form>
+            ) : (
+              <form onSubmit={handle2FA}>
+                <input
+                  type="text"
+                  placeholder="Enter 2FA Code"
+                  value={code}
+                  onChange={(e) => setCode(e.target.value)}
+                  required
+                  className="auth-input"
+                />
+                <button type="submit" className="auth-button">Verify</button>
+              </form>
+            )}
+            {error && <p className="auth-error">{error}</p>}
+            {step === 1 && (
+              <p className="auth-footer">
+                Don't have an account?{" "}
+                <Link to="/createUser" className="auth-link">Create one here</Link>
+              </p>
+            )}
+          </div>
         </div>
       </div>
-    </>
+      
+      <footer className="footer">
+        {/* Your footer content */}
+      </footer>
+    </div>
   );
 };
 
