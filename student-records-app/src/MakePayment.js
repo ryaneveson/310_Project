@@ -92,14 +92,14 @@ function MakePayment() {
     );
   }
 
-  // Function to validate currency input
+  //function to validate currency input
   const validateCurrencyInput = (event) => {
     let value = event.target.value;
-    // Remove non-numeric characters except for the first '.'
+    //remove non-numeric characters except for the first '.'
     value = value.replace(/[^0-9.]/g, "").replace(/(\..*)\./g, "$1");
-    // Prevent multiple leading zeros
+    //prevent multiple leading zeros
     value = value.replace(/^0+(\d)/, "$1");
-    // Allow only two decimal places
+    //allow only two decimal places
     const parts = value.split(".");
     if (parts.length === 2) {
       parts[1] = parts[1].slice(0, 2);
@@ -127,13 +127,13 @@ function MakePayment() {
       alert("Please select a payment method.");
       return;
     }
-    /*if (!numVer || !cvvVer || !expVer) {
+    if (!numVer || !cvvVer || !expVer) {
       const tempInputDiv = document.getElementById("temp-input");
       if (tempInputDiv && !tempInputDiv.querySelector(".error-message")) {
           tempInputDiv.innerHTML += "<p class='error-message' style='color: red;'>Invalid card details. Please check your input.</p>";
       }
       return;
-    }*/
+    }
     
     fetch("http://localhost:5000/api/add-payment", {
       method: "POST",
@@ -146,7 +146,7 @@ function MakePayment() {
         due_date: new Date().toISOString().split("T")[0],
         is_paid: true
       }),
-    }).catch((error) => alert(`Error registering for course ${error}`));
+    }).catch((error) => alert(`Error adding payment ${error}`));
     alert(`Payment of $${paymentAmount} confirmed using ${selectedMethod} (${selectedCardNumber})`);
     window.location.href = "/Finances";
   };
