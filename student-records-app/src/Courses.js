@@ -14,10 +14,20 @@ function Courses() {
 
   // Fetch courses from the backend
   useEffect(() => {
-    fetch("http://localhost:5000/api/courses")
-      .then((response) => response.json())
-      .then((data) => setCourses(data))
-      .catch((error) => console.error("Error fetching courses:", error));
+    const fetchCourses = async () => {
+      try {
+        console.log('Fetching courses...');
+        const response = await fetch('http://localhost:5001/api/courses');
+        console.log('Response status:', response.status);
+        const data = await response.json();
+        console.log('Courses data:', data);
+        setCourses(data.courses || []);
+      } catch (error) {
+        console.error('Error fetching courses:', error);
+      }
+    };
+
+    fetchCourses();
   }, []);
 
   const handleYearChange = (year) => {

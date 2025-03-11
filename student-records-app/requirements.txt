@@ -4,3 +4,4 @@ pymongo
 bcrypt
 flask-cors
 gunicorn
+python-dotenv 

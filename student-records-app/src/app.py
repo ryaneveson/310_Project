@@ -5,8 +5,18 @@ import bcrypt
 from bson import ObjectId
 from datetime import datetime
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
+CORS(app, resources={
+    r"/*": {
+        "origins": ["http://localhost:3000", "http://frontend"],
+        "methods": ["GET", "POST", "OPTIONS"],
+        "allow_headers": ["Content-Type"]
+    }
+})
 
 # Remove any existing CORS configuration and use this simple setup
 @app.after_request
@@ -20,14 +30,50 @@ def after_request(response):
 def handle_options():
     return jsonify({}), 200
 
-MONGO_URI = "mongodb+srv://samijaffri01:6XjmdnygdfRrD8dF@cluster0.fgfo7.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-client = MongoClient(MONGO_URI)
-db = client["student_records"]
-users_collection = db["users"]
-students_collection = db["students"]
-courses_collection = db["Courses"]
-finances_collection = db["Finances"]
-payment_methods_collection = db["payment_methods"]
+# MongoDB Connection with error handling
+try:
+    MONGO_URI = os.getenv('MONGO_URI')
+    if not MONGO_URI:
+        raise ValueError("No MONGO_URI environment variable set")
+    
+    print(f"Attempting to connect to MongoDB...")
+    client = MongoClient(MONGO_URI)
+    # Force a connection attempt
+    client.admin.command('ping')
+    print("Successfully connected to MongoDB")
+    
+    db = client["student_records"]
+    users_collection = db["users"]
+    students_collection = db["students"]
+    courses_collection = db["Courses"]
+    finances_collection = db["Finances"]
+    payment_methods_collection = db["payment_methods"]
+    
+except Exception as e:
+    print(f"Error connecting to MongoDB: {str(e)}")
+    raise
+
+@app.route("/test-db", methods=["GET"])
+def test_db():
+    try:
+        # Test each collection
+        users_count = users_collection.count_documents({})
+        students_count = students_collection.count_documents({})
+        courses_count = courses_collection.count_documents({})
+        
+        return jsonify({
+            "status": "success",
+            "users_count": users_count,
+            "students_count": students_count,
+            "courses_count": courses_count,
+            "database": "student_records",
+            "collections": ["users", "students", "Courses", "Finances", "payment_methods"]
+        })
+    except Exception as e:
+        return jsonify({
+            "status": "error",
+            "message": str(e)
+        }), 500
 
 @app.route("/register", methods=["POST"])
 def register():
@@ -48,6 +94,22 @@ def register():
     })
 
     return jsonify({"message": "User registered successfully!"}), 201
+
+@app.route('/api/debug/courses', methods=['GET'])
+def debug_courses():
+    try:
+        courses = list(mongo.db.Courses.find({}, {'_id': 0}))
+        return jsonify({
+            'status': 'success',
+            'count': len(courses),
+            'courses': courses
+        })
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        })
+
 
 @app.route("/login", methods=["POST"])
 def login():
@@ -307,4 +369,4 @@ def test_user():
     return jsonify({"user": str(user)})
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    app.run(debug=True, host='0.0.0.0', port=5000)

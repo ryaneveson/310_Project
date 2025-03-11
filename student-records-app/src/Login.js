@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./frontend/loginStyles.css";
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -38,7 +40,7 @@ const Login = () => {
     try {
       console.log('Attempting database login with:', { username });
 
-      const response = await fetch('http://localhost:5000/login', {
+      const response = await fetch(`${API_URL}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -70,8 +72,14 @@ const Login = () => {
     e.preventDefault();
     if (code === "123456") {
       const role = localStorage.getItem("role");
-      console.log(`${role.charAt(0).toUpperCase() + role.slice(1)} logged in!`);
-      window.location.href = "/dashboard";
+      console.log(`${role} logged in successfully`);
+      
+      // Use window.location.href for hard redirect
+      if (role === "admin") {
+        window.location.href = "/dashboard";
+      } else if (role === "student") {
+        window.location.href = "/dashboard";
+      }
     } else {
       setError("Invalid 2FA code!");
     }
