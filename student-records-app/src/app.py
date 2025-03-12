@@ -7,23 +7,24 @@ from datetime import datetime
 import os
 
 app = Flask(__name__)
-# Simplify CORS configuration
-CORS(app, supports_credentials=True, origins=["http://localhost:3000"])
 
-# Add CORS headers 
+# Remove any existing CORS configuration and use this simple setup
 @app.after_request
 def after_request(response):
-    response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-    response.headers.add('Access-Control-Allow-Credentials', 'true')
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+    response.headers.add('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
     return response
+
+@app.route("/login", methods=['OPTIONS'])
+def handle_options():
+    return jsonify({}), 200
 
 MONGO_URI = "mongodb+srv://samijaffri01:6XjmdnygdfRrD8dF@cluster0.fgfo7.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 client = MongoClient(MONGO_URI)
-db = client["student_records"]  
-users_collection = db["users"]  
-students_collection = db["students"] #need to connect this to students collection
+db = client["student_records"]
+users_collection = db["users"]
+students_collection = db["students"]
 courses_collection = db["Courses"]
 finances_collection = db["Finances"]
 payment_methods_collection = db["payment_methods"]
@@ -48,55 +49,42 @@ def register():
 
     return jsonify({"message": "User registered successfully!"}), 201
 
-@app.route("/api/login", methods=["POST"])
+@app.route("/login", methods=["POST"])
 def login():
     try:
         data = request.json
-        print("Received login request data:", data)  # Debug log
+        print("Received login request:", data)
         
-        username = data.get("username")
-        password = data.get("password").encode("utf-8")
-        
-        print(f"Looking for user with username: {username}")  # Debug log
-        user = users_collection.find_one({"username": username})
-        print(f"Found user in database: {user}")  # Debug log
-
-        if not user:
-            print("No user found with that username")  # Debug log
-            return jsonify({
-                "error": "Invalid credentials",
-                "success": False
-            }), 401
-
-        try:
-            stored_password = user["password"].encode("utf-8")
-            is_valid = bcrypt.checkpw(password, stored_password)
-            print(f"Password verification result: {is_valid}")  # Debug log
+        if not data:
+            return jsonify({"error": "No data received"}), 400
             
-            if is_valid:
-                return jsonify({
-                    "message": "Login successful!",
-                    "role": user.get("role", "student"),
-                    "success": True
-                }), 200
-            else:
-                return jsonify({
-                    "error": "Invalid credentials",
-                    "success": False
-                }), 401
-                
-        except Exception as e:
-            print(f"Error during password verification: {str(e)}")  # Debug log
+        username = data.get("username")
+        password = data.get("password")
+        
+        if not username or not password:
+            return jsonify({"error": "Missing username or password"}), 400
+
+        print(f"Looking for user: {username}")
+        user = users_collection.find_one({"username": username})
+        print(f"Found user: {user}")
+
+        if user and bcrypt.checkpw(password.encode('utf-8'), user["password"].encode('utf-8')):
             return jsonify({
-                "error": "Error verifying credentials",
-                "success": False
-            }), 500
+                "success": True,
+                "role": "student",
+                "message": "Login successful"
+            }), 200
+        
+        return jsonify({
+            "success": False,
+            "error": "Invalid credentials"
+        }), 401
 
     except Exception as e:
-        print(f"Unexpected error in login route: {str(e)}")  # Debug log
+        print(f"Login error: {str(e)}")
         return jsonify({
-            "error": "Server error",
-            "success": False
+            "success": False,
+            "error": str(e)
         }), 500
 
 #route to student profile page for a given student ID
@@ -262,15 +250,19 @@ def get_students_studentSearch():
 def register_course():
     data = request.json
     student_id = data.get("student_id")
-    course_name = data.get("course_name")
+    course_dept = data.get("course_dept")
+    course_num = data.get("course_num")
 
-    if not student_id or not course_name:
-        return jsonify({"error": "Student ID and course name are required"}), 400
+    if not student_id or not course_dept or not course_num:
+        return jsonify({"error": "Student ID, course department, and course number are required"}), 400
+
+    # Concatenate the course department and number
+    course_identifier = f"{course_dept} {course_num}"
 
     # Add the course to the student's registered courses
     students_collection.update_one(
         {"student_id": student_id},
-        {"$push": {"registered_courses": course_name}},
+        {"$push": {"registered_courses": course_identifier}},
         upsert=True
     )
 
@@ -293,7 +285,7 @@ def add_payment():
         due_date_obj = datetime.strptime(due_date, "%Y-%m-%d")  # Assuming input format "YYYY-MM-DD"
     except ValueError:
         return jsonify({"error": "Invalid due_date format. Use YYYY-MM-DD."}), 400
-    student = students_collection.find_one({"student_id": student_id})
+    student = students_collection.find_one({"studentNumber": student_id})
     if not student:
         return jsonify({"error": "Student not found"}), 404
     student_object_id = student["_id"]
@@ -302,10 +294,53 @@ def add_payment():
         "item_name": "payment",
         "amount": amount,
         "due_date": due_date_obj,
-        "is_paid": is_paid
+        "is_paid": bool(is_paid)
     }
     finances_collection.insert_one(new_payment)
     return jsonify({"message": "Payment record added successfully"}), 201
+    
+@app.route("/api/add-fee", methods=["POST"])
+def add_fee():
+    data = request.json
+    students_data = data.get("students")
+    
+    if not students_data:
+        return jsonify({"error": "Students data is required"}), 400
+    
+    for student_data in students_data:
+        student_id = student_data.get("student_id")
+        item_name = student_data.get("item_name")
+        amount = student_data.get("amount")
+        due_date = student_data.get("due_date")
+        
+        if not student_id:
+            return jsonify({"error": "Student ID is required"}), 400
+        if not amount or not due_date or not item_name:
+            return jsonify({"error": "Data for payment not provided"}), 400
+        if len(student_id) != 8 or not student_id.isdigit():
+            return jsonify({"error": "Student ID must be an 8-digit number"}), 400
+        try:
+            due_date_obj = datetime.strptime(due_date, "%Y-%m-%d")  # Assuming input format "YYYY-MM-DD"
+        except ValueError:
+            return jsonify({"error": "Invalid due_date format. Use YYYY-MM-DD."}), 400
+        
+        student = students_collection.find_one({"student_id": str(student_id)})
+        if not student:
+            return jsonify({"error": f"Student with ID {student_id} not found"}), 404
+        
+        student_object_id = student["_id"]
+        new_fee = {
+            "student_id": student_object_id,
+            "item_name": item_name,
+            "amount": amount,
+            "due_date": due_date_obj,
+            "is_paid": False
+        }
+        
+        result = finances_collection.insert_one(new_fee)
+        print(f"Inserted fee for student {student_id} with ID: {result.inserted_id}")
+
+    return jsonify({"message": "Fees added successfully for selected students."}), 201
     
 
 @app.before_request

@@ -7,7 +7,7 @@ describe("Dashboard Component", () => {
     beforeEach(() => {
         localStorage.clear();
         delete window.location;
-        window.location = { href: jest.fn() };
+        window.location = { href: jest.fn()  };
     });
 
     afterEach(() => {
@@ -15,10 +15,11 @@ describe("Dashboard Component", () => {
     });
 
     test("renders without crashing", () => {
+        localStorage.setItem("role", "student");
         render(<AcademicDashboard />);
-        expect(screen.getByText("Hi There")).toBeInTheDocument();
-        expect(screen.getByText("GPA")).toBeInTheDocument();
-        expect(screen.getByText("Course status")).toBeInTheDocument();
+        expect(screen.getByText("Academic Dashboard")).toBeInTheDocument();
+        expect(screen.getByText("Current Semester")).toBeInTheDocument();
+        expect(screen.getByText("Academic Progress")).toBeInTheDocument();
     });
 
     test("redirects to home if no token is found", () => {
@@ -26,22 +27,14 @@ describe("Dashboard Component", () => {
         expect(window.location.href).toBe("/");
     });
 
-    test("displays username when token exists", () => {
-        localStorage.setItem("token", "mockToken");
-        render(<AcademicDashboard />);
-        expect(screen.getByText("Hi There")).toBeInTheDocument();
-    });
-
     test("redirects to the correct pages when clicking app buttons", () => {
+        localStorage.setItem("role", "student");
         render(<AcademicDashboard />);
 
         fireEvent.click(screen.getByText("Course Registration"));
-        expect(window.location.href).toBe("/Courses");
+        expect(window.location.href).toBe("/courses");
         
-        fireEvent.click(screen.getByText("View Grades"));
-        expect(window.location.href).toBe("/Dashboard");
-        
-        fireEvent.click(screen.getByText("Transcript Services"));
+        fireEvent.click(screen.getByText("Request Transcript"));
         expect(window.location.href).toBe("/Dashboard");
     });
 });

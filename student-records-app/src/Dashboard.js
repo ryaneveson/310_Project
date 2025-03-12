@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./frontend/dashboardStyles.css";
-import ubcoImage from './frontend/img/UBCO2.jpg';
+import ubcoImage from './frontend/img/UBCO6.jpg';
 import Calendar from './Calendar';
 
 const handleLogout = () => {
@@ -143,7 +143,7 @@ const StudentDashboard = () => {
               Course Registration
             </button>
             <button onClick={() => (window.location.href = "/finances")} className="app-button">
-              Financial Information
+              Financial Dashboard
             </button>
             <button onClick={() => (window.location.href = "/calendar")} className="app-button">
               Worklist / Calendar

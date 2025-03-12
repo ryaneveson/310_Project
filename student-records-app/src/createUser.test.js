@@ -2,16 +2,11 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import CreateUser from './createUser';
 import '@testing-library/jest-dom';
 
-// Mock the Link component since we're not testing navigation
-jest.mock('react-router-dom', () => ({
-  Link: () => <a href="/">Login here</a>
-}));
-
 describe('CreateUser Component', () => {
   // Mock fetch before tests
   global.fetch = jest.fn();
 
-  beforeEach(() => {
+  beforeEach(() =>  {
     fetch.mockClear();
   });
 
@@ -19,7 +14,7 @@ describe('CreateUser Component', () => {
     render(<CreateUser />);
     
     // Check if all form elements are present
-    expect(screen.getByText('Create Account')).toBeInTheDocument();
+    expect(screen.getAllByText('Create Account')).toHaveLength(2);
     expect(screen.getByPlaceholderText('Username')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('Password')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Create Account' })).toBeInTheDocument();
