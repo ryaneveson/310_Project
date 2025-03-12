@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import "./frontend/studentSearch.css";
+import "./frontend/addFee.css";
 
-function StudentSearch({ mockStudents = null }) {
+function AddFee({ mockStudents = null }) {
     const [userRole, setUserRole] = useState(null);
     const [students, setStudents] = useState([]);
+    const [selectedStudents, setSelectedStudents] = useState([]);
     const [allClasses, setAllClasses] = useState([]);
-    // State management
     const [selectedClasses, setSelectedClasses] = useState(new Set());
     const [searchTerm, setSearchTerm] = useState(""); 
-    const [maxGpa, setMaxGpa] = useState(100);
-    const [minGpa, setMinGpa] = useState(0);
     const [isSidebarVisible, setSidebarVisible] = useState(true);
+    const [feeName, setFeeName] = useState("");
+    const [feeAmount, setFeeAmount] = useState("");
+    const [feeDate, setFeeDate] = useState("");
+    const [loading, setLoading] = useState(true);
+    const [errorMessage, setErrorMessage] = useState("");
 
     useEffect(() => {
         if(mockStudents){
@@ -55,26 +58,21 @@ function StudentSearch({ mockStudents = null }) {
                 )
             ].sort();
               setAllClasses(allUniqueClasses);
+              setLoading(false);
             } catch (err) {
-              alert("error");
+              alert("error fetching students");
             }
           };
           fetchStudents();
     }, []);
 
+    if(loading){
+        return <div>Loading...</div>;
+    }
+
     const handleLogout = () => {
         localStorage.removeItem("role");
         window.location.href = "/";
-    };
-
-    const updateMaxGpa = (value) => {
-        const newMaxGpa = Math.min(100, Math.max(value, minGpa));
-        setMaxGpa(newMaxGpa);
-    };
-      
-    const updateMinGpa = (value) => {
-        const newMinGpa = Math.max(0, Math.min(value, maxGpa));
-        setMinGpa(newMinGpa);
     };
 
     const handleClassSelection = (className) => {
@@ -97,8 +95,6 @@ function StudentSearch({ mockStudents = null }) {
         `${student.name} ${student.lastName} ${student.studentNumber}`
           .toLowerCase()
           .includes(searchTerm.toLowerCase())
-    ).filter(student =>
-        student.gpa <= maxGpa && student.gpa >= minGpa
     );
 
     const toggleClasses = () => {
@@ -107,14 +103,6 @@ function StudentSearch({ mockStudents = null }) {
 
     const reset = () => {
         setSelectedClasses(new Set());
-    };
-
-    const clearMax = () => {
-        setMaxGpa(100);
-    };
-
-    const clearMin = () => {
-        setMinGpa(0);
     };
 
     const clearSearch = () => {
@@ -137,33 +125,68 @@ function StudentSearch({ mockStudents = null }) {
         );
     }
 
+    //function to validate currency input
+    const validateCurrencyInput = (event) => {
+        let value = event.target.value;
+        //remove non-numeric characters except for the first '.'
+        value = value.replace(/[^0-9.]/g, "").replace(/(\..*)\./g, "$1");
+        //prevent multiple leading zeros
+        value = value.replace(/^0+(\d)/, "$1");
+        //allow only two decimal places
+        const parts = value.split(".");
+        if (parts.length === 2) {
+        parts[1] = parts[1].slice(0, 2);
+        value = parts.join(".");
+        }
+        setFeeAmount(value);
+    };
+
+    const handleBlur = () => {
+        if (feeAmount) {
+          const numericValue = parseFloat(feeAmount);
+          if (!isNaN(numericValue)) {
+            setFeeAmount(numericValue.toFixed(2));
+          }
+        }
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        setErrorMessage("");
+
+        if (!feeName || !feeAmount || !feeDate || selectedStudents.length === 0) {
+            setErrorMessage("All fields are required and at least one student must be selected.");
+            return;
+        }
+
+        const studentsData = selectedStudents.map(student => ({
+            student_id: student.studentNumber,
+            item_name: feeName,
+            amount: parseFloat(feeAmount),
+            due_date: feeDate,
+        }));
+        fetch("http://localhost:5000/api/add-fee", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ students: studentsData }),
+        })
+        .then(async (response) => {
+            const data = await response.json();
+            if (response.ok) {
+                alert('Fees added successfully for selected students.');
+            } else {
+                alert(`Error adding fees: ${data.error}`);
+            }
+        })
+        .catch((error) => alert(`Error adding fees: ${error}`));
+        //window.location.href="/addFee";
+    };
+
     return (
         <div id="studentSearch">
             <aside className="sidebar" id="sidebar">
-                <label>Maximum Percentage Average:<br />
-                    <input
-                        type="text"
-                        placeholder="100"
-                        id="min-gpa"
-                        value={maxGpa}
-                        onChange={(e) => updateMaxGpa(e.target.value)}
-                        className="grade-box"
-                    />
-                    <button id="clear-btn" className="btn" data-testid="reset" onClick={clearMax}>Reset</button>
-                </label>
-                <br />
-                <label>Minimum Percentage Average:<br />
-                    <input
-                        type="text"
-                        placeholder="0"
-                        id="max-gpa"
-                        value={minGpa}
-                        onChange={(e) => updateMinGpa(e.target.value)}
-                        className="grade-box"
-                    />
-                    <button id="clear-btn" className="btn" data-testid="reset" onClick={clearMin}>Reset</button>
-                </label>
-                <br />
                 <div className="button-container">
                     <button id="reset-btn" className="btn" data-testid="reset" onClick={reset}>Reset All</button>
                     <button id="toggle-btn" className="btn" onClick={toggleClasses}>
@@ -180,6 +203,16 @@ function StudentSearch({ mockStudents = null }) {
                         <div key={className} >
                             <label>
                                 {className}
+                                <button className="btn" onClick={() => {
+                    const studentsInClass = students.filter(student => student.classes.includes(className));
+                    setSelectedStudents(prev => {
+                        const uniqueStudents = [...prev, ...studentsInClass].filter(
+                            (student, index, self) =>
+                                self.findIndex(s => s.studentNumber === student.studentNumber) === index
+                        );
+                        return uniqueStudents;
+                    });
+                }}>Select Students in Class</button>
                                 <input
                                     type="checkbox"
                                     data-testid={className}
@@ -207,7 +240,7 @@ function StudentSearch({ mockStudents = null }) {
                     <button id="clear-btn" className="btn" onClick={clearSearch}>Clear</button>
                 </div>
                 <div id="results">
-                    <h2>Filtered Students:</h2>
+                    <h2>Filtered Students</h2>
                     <table>
                         <thead>
                             <tr>
@@ -224,8 +257,69 @@ function StudentSearch({ mockStudents = null }) {
                                     <td>{student.lastName}</td>
                                     <td>{student.studentNumber}</td>
                                     <td>
-                                        <button className="btn" onClick={() => window.location.href = `/studentProfile/${encodeURIComponent(student.studentNumber)}`}>
-                                            Go to Profile
+                                        <button className="btn" onClick={() => setSelectedStudents(prev => [...prev, student])}>
+                                            Select Student
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+            <article id="fee-container">
+            <form id="fee-form" onSubmit={handleSubmit}>
+                <h2>Fee details</h2><br></br>
+                    <label>Fee Name:<br />
+                        <input
+                            type="text"
+                            placeholder="Fee's Name . . ."
+                            id="fee-name"
+                            onChange={(e) => setFeeName(e.target.value)}
+                            className="fee-box"
+                        />
+                    </label>
+                    <label>Fee Amount:<br />
+                        <input
+                            type="text"
+                            placeholder="0.00"
+                            id="fee-amount"
+                            onChange={validateCurrencyInput}
+                            onBlur={handleBlur}
+                            className="fee-box"
+                        />
+                    </label>
+                    <label>Fee Due Date:<br />
+                        <input
+                            type="date"
+                            placeholder="YYYY-MM-DD"
+                            id="fee-date"
+                            onChange={(e) => setFeeDate(e.target.value)}
+                            className="fee-box"
+                        />
+                    </label>
+                    <button id="fee-submit" type="submit">Submit Fee</button>
+                </form>
+                <div id="selected-students">
+                    <h2>Selected Students</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Student Number</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {selectedStudents.map((student, index) => (
+                                <tr key={index}>
+                                    <td>{student.name}</td>
+                                    <td>{student.lastName}</td>
+                                    <td>{student.studentNumber}</td>
+                                    <td>
+                                        <button className="btn" onClick={() => setSelectedStudents(prev => prev.filter(s => s.studentNumber !== student.studentNumber))}>
+                                            Remove Student
                                         </button>
                                     </td>
                                 </tr>
@@ -238,4 +332,4 @@ function StudentSearch({ mockStudents = null }) {
     );
 }
 
-export default StudentSearch;
+export default AddFee;

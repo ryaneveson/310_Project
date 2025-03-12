@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
 import "./frontend/courses.css";
 
-function Courses() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const previouslyRegisteredCourses = location.state?.registeredCourses || [];
+function Courses({ mockCourses = null}) {
 
   const [courses, setCourses] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -15,6 +11,10 @@ function Courses() {
 
   // Fetch courses from the backend
   useEffect(() => {
+    if(mockCourses){
+      setCourses(mockCourses);
+      return;
+    }
     fetch("http://localhost:5000/api/courses")
       .then((response) => response.json())
       .then((data) => setCourses(data))
@@ -64,18 +64,7 @@ function Courses() {
       .then((response) => response.json())
       .then((data) => {
         alert(`You have registered for ${course.name}!`);
-        navigate("/verify-registration", {
-          state: {
-            course: course.name,
-            courseNum: course.courseNum,
-            date: course.date,
-            professor: course.professor,
-            room: course.room,
-            description: course.description,
-            prerequisites: course.prerequisites,
-            registeredCourses: previouslyRegisteredCourses,
-          },
-        });
+        window.location.href="/academicdashboard"
       })
       .catch((error) => console.error("Error registering for course:", error));
   };
@@ -151,7 +140,6 @@ function Courses() {
             </div>
           </div>
         </div>
-
         {/* Course list on the right side */}
         <div className="course-list">
           <ul className="courses-list">
@@ -210,6 +198,7 @@ function Courses() {
           </ul>
         </div>
       </div>
+
     </div>
   );
 }

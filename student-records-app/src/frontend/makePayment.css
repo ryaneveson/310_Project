@@ -7,14 +7,6 @@
     display: inline-block;
 }
 
-#makePayment .input-container span {
-    position: absolute;
-    left: 0.5rem;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 16px;
-}
-
 #makePayment .currency-input {
     padding: 0.25rem;
     padding-left: 1.5rem; /* Adjust for dollar sign */
@@ -83,4 +75,13 @@
     color: white;
     box-shadow: 20px 20px 10px rgba(0, 0, 0, 0.05); /* Soft Shadow */
     border-radius: 25px;
+}
+#makePayment .payment-method-input {
+    padding: 0.33rem;
+    width: 13rem;
+}
+#makePayment #temp-input {
+    margin-top: 0.5rem;
+    display: flex;
+    flex-direction: column;
 }

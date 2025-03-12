@@ -19,11 +19,17 @@ body {
   color: #495867;
   position: relative;
   min-height: calc(100vh - 100px);
+  z-index: 1;
+  transition: margin-right 0.3s ease;
+}
+
+.dashboard-container.shifted {
+  margin-right: 400px;
 }
 
 /* Hero Section */
 .hero {
-  text-align: left;
+  text-align: center;
   padding: 30px;
   background: rgba(255, 255, 255, 0.9);
   border-radius: 10px;
@@ -34,8 +40,6 @@ body {
 }
 
 .hero h2 {
-  font-size: 28px;
-  font-weight: 600;
   color: #004385;
   margin: 0 0 10px 0;
 }
@@ -44,6 +48,37 @@ body {
   font-size: 16px;
   color: #577399;
   margin: 0;
+}
+
+.date-quote-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  color: #577399;
+  font-size: 16px;
+  margin-top: 8px;
+  max-width: 100%;
+  overflow: hidden;
+  flex-wrap: nowrap;
+}
+
+.separator {
+  color: #004385;
+  font-weight: 300;
+  display: inline-block;
+}
+
+.quote-inline {
+  margin: 0;
+  font-style: italic;
+  font-weight: 500;
+  color: #577399;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 600px;
+  display: inline-block;
 }
 
 /* Main Content Layout */
@@ -101,6 +136,7 @@ body {
   box-shadow: 0px 8px 24px rgba(0, 67, 133, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(10px);
+  height: 94.75%;
 }
 
 .apps-card h3 {
@@ -113,9 +149,9 @@ body {
 }
 
 .apps-buttons {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
 .app-button {
@@ -140,11 +176,6 @@ body {
   background: linear-gradient(135deg, #003366 0%, #002b5b 100%);
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(0, 67, 133, 0.2);
-}
-
-.app-button:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(0, 67, 133, 0.15);
 }
 
 /* Responsive adjustments */
@@ -343,4 +374,118 @@ body {
 .save-button:active {
   transform: translateY(0);
   box-shadow: 0 2px 4px rgba(0, 67, 133, 0.2);
+}
+
+.campus-image {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100vw;
+  height: 1050px;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.campus-image::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0) 50%,
+    rgba(255, 255, 255, 0.9) 100%,
+    rgba(255, 255, 255, 1) 100%
+  );
+}
+
+.campus-image img {
+  width: 100vw;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Quick Actions section */
+.quick-actions {
+  background: white;
+  padding: 24px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.quick-actions h3 {
+  color: #004385;
+  margin-bottom: 16px;
+}
+
+/* Remove or comment out the previous quote styles if you're not using them anymore */
+/* .quote-container {
+  ...
+} */
+
+/* Calendar Panel Styles */
+.calendar-toggle {
+  position: fixed;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #f5f5f5;
+  border: none;
+  padding: 12px 8px;
+  border-radius: 4px 0 0 4px;
+  cursor: pointer;
+  z-index: 1000;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  width: 32px; /* Set fixed width */
+  height: 60px; /* Taller button */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendar-toggle:hover {
+  background: #e8e8e8;
+}
+
+.calendar-toggle.open {
+  right: 600px; 
+}
+
+.calendar-panel {
+  position: fixed;
+  right: -600px;
+  top: 0;
+  width: 600px;
+  height: 100vh;
+  transition: right 0.3s ease;
+  z-index: 999;
+  padding: 20px;
+  overflow-y: auto;
+  box-sizing: border-box; 
+}
+
+.calendar-panel.open {
+  right: 0;
+}
+
+.triangle {
+  width: 0;
+  height: 0;
+  display: block;
+}
+
+.triangle.left {
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-right: 8px solid #004385;
+}
+
+.triangle.right {
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-left: 8px solid #004385;
 }

@@ -9,11 +9,13 @@ import MakePayment from "./MakePayment";
 import StudentRanking from './studentRanking';
 import CreateUser from "./createUser.js";
 import StudentSearch from "./StudentSearch";
-import VerifyRegistration from "./VerifyRegistration";
 import StudentProfileInput from "./studentProfileInput";
 import StudentProfile from "./studentProfile";
 import AcademicDashboard from "./AcademicDashboard"
-import AddPaymentMethod from "./addPaymentMethod.js";
+import AddPaymentMethod from "./addPaymentMethod";
+import PaymentHistory from "./PaymentHistory";
+import UpcomingDue from "./UpcomingDue";
+import AddFee from "./AddFee";
 
 function App() {
   return (
@@ -28,12 +30,14 @@ function App() {
         <Route path="/makePayment" element={<MakePayment />} />
         <Route path="/studentRanking" element={<StudentRanking />} />
         <Route path="/studentSearch" element={<StudentSearch />} />
-        <Route path="/verify-registration" element={<VerifyRegistration />} />
         <Route path="/studentProfileInput" element={<StudentProfileInput />} />
         <Route path="/studentProfile/:studentID" element={<StudentProfile />} />
         <Route path="/academicdashboard" element={<AcademicDashboard />} />
         <Route path="/addPaymentMethod" element={<AddPaymentMethod />} />
         <Route path="/createUser" element={<CreateUser />} />
+        <Route path="/paymentHistory" element={<PaymentHistory />} />
+        <Route path="/upcomingDue" element={<UpcomingDue />} />
+        <Route path="/addFee" element={<AddFee />} />
       </Routes>
     </Router>
   );
