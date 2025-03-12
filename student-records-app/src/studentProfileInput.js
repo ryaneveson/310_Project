@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
 import "./frontend/studentProfileInput.css";
-import { useNavigate } from "react-router-dom";
 
 function StudentProfileInput() {
     const [userRole, setUserRole] = useState(null);
     const [studentID, setStudentID] = useState("");
-    const navigate = useNavigate();
 
     useEffect(() => {
         const role = localStorage.getItem("role");
@@ -23,7 +21,7 @@ function StudentProfileInput() {
 
     const handleSubmit = () => {
         if (studentID.trim()) {
-            navigate(`/studentProfile/${encodeURIComponent(studentID)}`);
+            window.location.href = `/studentProfile/${encodeURIComponent(studentID)}`;
         } else {
             alert("Please enter a student ID.");
         }
@@ -62,8 +60,8 @@ function StudentProfileInput() {
                     onChange={(e) => setStudentID(e.target.value)}
                     className="profile-search-input"
                 />
-                <button onClick={handleSubmit} className="profile-search-button">
-                    View Profile
+                <button id="profileInput-submit" onClick={handleSubmit} className="profile-search-button">
+                    <label htmlFor="profileInput-submit">View Profile</label>
                 </button>
             </div>
         </div>

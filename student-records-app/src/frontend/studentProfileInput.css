@@ -67,6 +67,9 @@
     cursor: pointer;
     transition: all 0.3s ease;
 }
+.profile-search-button label{
+    color: white;
+}
 
 .profile-search-button:hover {
     background: #003366;
