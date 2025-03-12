@@ -156,7 +156,7 @@ function Courses({ mockCourses = null}) {
                       <div className="triangle"></div>
                     </button>
                     <span className="course-name">
-                      {course.code} {course.courseNum} - {course.name}
+                      {course.dept} {course.courseNum} - {course.name}
                     </span>
                     <button
                       onClick={() => handleRegister(course, index)}
