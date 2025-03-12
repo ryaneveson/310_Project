@@ -9,7 +9,6 @@ import MakePayment from "./MakePayment";
 import StudentRanking from './studentRanking';
 import CreateUser from "./createUser.js";
 import StudentSearch from "./StudentSearch";
-import VerifyRegistration from "./VerifyRegistration";
 import StudentProfileInput from "./studentProfileInput";
 import StudentProfile from "./studentProfile";
 import AcademicDashboard from "./AcademicDashboard"
@@ -31,7 +30,6 @@ function App() {
         <Route path="/makePayment" element={<MakePayment />} />
         <Route path="/studentRanking" element={<StudentRanking />} />
         <Route path="/studentSearch" element={<StudentSearch />} />
-        <Route path="/verify-registration" element={<VerifyRegistration />} />
         <Route path="/studentProfileInput" element={<StudentProfileInput />} />
         <Route path="/studentProfile/:studentID" element={<StudentProfile />} />
         <Route path="/academicdashboard" element={<AcademicDashboard />} />

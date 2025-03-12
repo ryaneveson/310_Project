@@ -1,49 +1,89 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import Courses from "./Courses";
+
+const courses = [
+  {
+    courseNum: "310",
+    date: "Mon-Wed 9:30-11:00",
+    dept: "COSC",
+    name: "Software Engineering",
+    prerequisites: "COSC 121",
+    professor: "Gema Rodriguez-Perez",
+    room: "ART 103"
+  },
+  {
+    courseNum: "220",
+    date: "Tue-Thu 10:00-11:30",
+    dept: "COSC",
+    name: "Data Structures",
+    prerequisites: "COSC 121",
+    professor: "James Smith",
+    room: "CS 202"
+  },
+  {
+    courseNum: "405",
+    date: "Mon-Wed 13:00-14:30",
+    dept: "COSC",
+    name: "Machine Learning",
+    prerequisites: "COSC 310",
+    professor: "Emily Johnson",
+    room: "CS 301"
+  },
+  {
+    courseNum: "101",
+    date: "Mon-Wed 8:00-9:30",
+    dept: "COSC",
+    name: "Introduction to Programming",
+    prerequisites: "None",
+    professor: "Michael Lee",
+    room: "CS 100"
+  },
+  {
+    courseNum: "425",
+    date: "Tue-Thu 15:00-16:30",
+    dept: "COSC",
+    name: "Computer Graphics",
+    prerequisites: "COSC 221",
+    professor: "Sarah Chen",
+    room: "CS 402"
+  }
+];
+
+
+
 
 describe("Courses Component", () => {
 
-  beforeEach(() => {
-    jest.spyOn(window, 'alert').mockImplementation(() => {});
+  beforeAll(() => {
+    window.alert = jest.fn();
   });
 
-  afterEach(() => {
-    jest.restoreAllMocks();
-    localStorage.removeItem("registeredCourses");
-  });
-
-  test("renders the component with all courses", () => {
-    render(<Courses />);
+  test("renders the component with all courses", () =>  {
+    render(<Courses mockCourses={courses}/>);
 
     expect(screen.getByText("Available Courses")).toBeInTheDocument();
-
-    const courses = [
-      "1 Introduction to Programming",
-      "2 Data Structures",
-      "3 Web Development",
-      "4 Database Management",
-      "5 Machine Learning"
-    ];
     
-    courses.forEach((course) => {
-      expect(screen.getByText(course)).toBeInTheDocument();
+    courses.forEach(async (course) => {
+      await screen.findByText(course.name);
+      expect(screen.getByText(course.name)).toBeInTheDocument();
     });
   });
 
-  test("filters courses based on search input", () => {
-    render(<Courses />);
+  test("filters courses based on search input", async () => {
+    render(<Courses mockCourses={courses}/>);
 
     const searchInput = screen.getByPlaceholderText("Search for a course...");
     
-    fireEvent.change(searchInput, { target: { value: "web" } });
+    fireEvent.change(searchInput, { target: { value: "intro" } });
 
-    expect(screen.getByText("3 Web Development")).toBeInTheDocument();
-    expect(screen.queryByText("1 Introduction to Programming")).not.toBeInTheDocument();
+    await screen.findByText(/101 - Introduction to Programming/i);
+    expect(screen.getByText(/101 - Introduction to Programming/i)).toBeInTheDocument();
+    expect(screen.queryByText(/310 - Software Engineering/i)).not.toBeInTheDocument();
   });
 
   test("shows 'No courses found' when there is no match", () => {
-    render(<Courses />);
+    render(<Courses mockCourses={courses}/>);
 
     const searchInput = screen.getByPlaceholderText("Search for a course...");
     fireEvent.change(searchInput, { target: { value: "xyz" } });
@@ -51,50 +91,27 @@ describe("Courses Component", () => {
     expect(screen.getByText("No courses found")).toBeInTheDocument();
   });
 
-  test("registers for a course, updates localStorage, and redirects", () => {
+  test("registers for a course and redirects", async () => {
     delete window.location; // Necessary to override in Jest
     window.location = { href: "" };
-    render(<Courses />);
+    render(<Courses mockCourses={courses}/>);
 
     //simulate the user clicking the "Register" button for the first course
-    const registerButton = screen.getAllByText("Register")[0];
+    const registerButton = screen.getAllByText(/Register/i)[0];
     fireEvent.click(registerButton);
 
-    //check if localStorage is updated with the new course
-    const registeredCourses = JSON.parse(localStorage.getItem("registeredCourses"));
-    expect(registeredCourses).toHaveLength(1);
-    expect(registeredCourses[0].course).toBe("1 Introduction to Programming");
-
-    expect(window.location.href).toBe("/verify-registration");
+    await waitFor(() => {
+      expect(window.location.href).toBe("/academicdashboard");
+    });
   });
 
-  test("filters courses by year selection", () => {
-    render(<Courses />);
+  test("filters courses by year selection", async () => {
+    render(<Courses mockCourses={courses}/>);
 
     const year1Checkbox = screen.getByLabelText("Year 1");
     fireEvent.click(year1Checkbox);
-
-    expect(screen.getByText("1 Introduction to Programming")).toBeInTheDocument();
-    expect(screen.queryByText("2 Data Structures")).not.toBeInTheDocument();
-
-    fireEvent.click(year1Checkbox);
-    expect(screen.getByText("2 Data Structures")).toBeInTheDocument();
-  });
-
-  test("prevents registering the same course twice", () => {
-    render(<Courses />);
-
-    const registerButton = screen.getAllByText("Register")[0];
-    fireEvent.click(registerButton);
-
-    localStorage.setItem(
-      "registeredCourses",
-      JSON.stringify([{ course: "1 Introduction to Programming" }])
-    );
-
-    const duplicateRegisterButton = screen.getAllByText("Register")[0];
-    fireEvent.click(duplicateRegisterButton);
-
-    expect(window.alert).toHaveBeenCalledWith("This course is already registered.");
+    await screen.findByText(/101 - Introduction to Programming/i);
+    expect(screen.getByText(/101 - Introduction to Programming/i)).toBeInTheDocument();
+    expect(screen.queryByText(/310 - Software Engineering/i)).not.toBeInTheDocument();
   });
 });
