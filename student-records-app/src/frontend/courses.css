@@ -98,6 +98,9 @@ h2 {
   align-items: center;
   justify-content: center;
 }
+.auth-button label{
+  color: white;
+}
 
 .auth-button:hover {
   background: #3674b3;
