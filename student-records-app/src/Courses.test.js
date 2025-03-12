@@ -108,7 +108,7 @@ describe("Courses Component", () => {
   test("filters courses by year selection", async () => {
     render(<Courses mockCourses={courses}/>);
 
-    const year1Checkbox = screen.getByLabelText("Year 1");
+    const year1Checkbox = screen.getByLabelText("100 Level");
     fireEvent.click(year1Checkbox);
     await screen.findByText(/101 - Introduction to Programming/i);
     expect(screen.getByText(/101 - Introduction to Programming/i)).toBeInTheDocument();
