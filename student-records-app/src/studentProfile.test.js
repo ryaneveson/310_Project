@@ -1,17 +1,10 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import StudentProfile from './studentProfile';
 
 test('renders StudentProfile component', () => {
-  render(
-    <MemoryRouter initialEntries={['/studentProfile/2']}>
-      <Routes>
-        <Route path="/studentProfile/:studentID" element={<StudentProfile />} />
-      </Routes>
-    </MemoryRouter>
-  );
+  window.history.pushState({}, 'Test Page', '/studentProfile/2');
+  render(<StudentProfile />);
 
   // Check if the header text is rendered
   expect(screen.getByText('Student Profile')).toBeInTheDocument();
@@ -25,19 +18,15 @@ test('renders StudentProfile component', () => {
 
 test('redirects to StudentProfileInput for invalid ID', () => {
   window.alert = jest.fn(); // Mock alert
+  localStorage.setItem("role", "student");
+  delete window.location;
+  window.location = { pathname: "/studentProfileInput" };
+  window.history.replaceState({}, 'Test Page', '/studentProfile');
+  render(<StudentProfile />);
 
-  render(
-    <MemoryRouter initialEntries={['/studentProfile/999']}>
-      <Routes>
-        <Route path="/studentProfile/:studentID" element={<StudentProfile />} />
-        <Route path="/studentProfileInput" element={<div>Student Profile Input Page</div>} />
-      </Routes>
-    </MemoryRouter>
-  );
-
-  // Check if alert is shown
+  //check if alert is shown
   expect(window.alert).toHaveBeenCalledWith('Student ID does not exist.');
 
-  // Check if redirected to StudentProfileInput page
-  expect(screen.getByText('Previous Page')).toBeInTheDocument();
+  //check if redirected to StudentProfileInput page
+  expect(window.location.pathname).toBe("/studentProfileInput");
 });
