@@ -219,6 +219,5 @@ label {
 .filters {
   width: 200px;
   display: flex;
-  flex-direction: column;
-  gap: 20px; /* Spacing between filter boxes */
+  flex-direction: column; /* Spacing between filter boxes */
 }
