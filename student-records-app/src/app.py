@@ -250,15 +250,19 @@ def get_students_studentSearch():
 def register_course():
     data = request.json
     student_id = data.get("student_id")
-    course_name = data.get("course_name")
+    course_dept = data.get("course_dept")
+    course_num = data.get("course_num")
 
-    if not student_id or not course_name:
-        return jsonify({"error": "Student ID and course name are required"}), 400
+    if not student_id or not course_dept or not course_num:
+        return jsonify({"error": "Student ID, course department, and course number are required"}), 400
+
+    # Concatenate the course department and number
+    course_identifier = f"{course_dept} {course_num}"
 
     # Add the course to the student's registered courses
     students_collection.update_one(
         {"student_id": student_id},
-        {"$push": {"registered_courses": course_name}},
+        {"$push": {"registered_courses": course_identifier}},
         upsert=True
     )
 
