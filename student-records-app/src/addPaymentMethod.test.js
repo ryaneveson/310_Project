@@ -27,28 +27,31 @@ describe("AddPaymentMethod", () => {
     const submitButton = screen.getByRole("button", { name: /Add Payment Method/i });
 
     // Simulate user input
-    fireEvent.change(paymentMethodSelect, { target: { value: "Credit Card" } });
+    fireEvent.change(paymentMethodSelect, { target: { value: "Visa" } });
     fireEvent.change(cardNumberInput, { target: { value: "1234567812345678" } });
     fireEvent.change(expiryDateInput, { target: { value: "2025-12" } });
     fireEvent.change(cvvInput, { target: { value: "123" } });
     fireEvent.change(billingAddressInput, { target: { value: "123 Main St" } });
+
+    // Test if the console.log was called (Mocking console.log)
+    const mockConsole = jest.spyOn(console, "log");
 
     // Simulate form submission
     fireEvent.click(submitButton);
 
     // Wait for the form to process and check if values are logged or submitted
     await waitFor(() => {
-      expect(screen.queryByText(/Payment Method/i)).toBeInTheDocument();
+      expect(screen.queryByText(/Payment Method:/i)).toBeInTheDocument();
     });
 
-    // Test if the console.log was called (Mocking console.log)
-    const mockConsole = jest.spyOn(console, "log");
-    expect(mockConsole).toHaveBeenCalledWith({
-      paymentMethod: "Credit Card",
-      cardNumber: "1234567812345678",
-      expiryDate: "2025-12",
-      cvv: "123",
-      billingAddress: "123 Main St",
+    await waitFor(() => {
+      expect(mockConsole).toHaveBeenCalledWith({
+        paymentMethod: "Visa",
+        cardNumber: "1234567812345678",
+        expiryDate: "2025-12",
+        cvv: "123",
+        billingAddress: "123 Main St",
+      });
     });
   });
 

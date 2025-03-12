@@ -143,7 +143,7 @@ const StudentDashboard = () => {
               Course Registration
             </button>
             <button onClick={() => (window.location.href = "/finances")} className="app-button">
-              Financial Information
+              Financial Dashboard
             </button>
             <button onClick={() => (window.location.href = "/calendar")} className="app-button">
               Worklist / Calendar

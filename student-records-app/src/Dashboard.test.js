@@ -23,35 +23,39 @@ describe("Dashboard Component", () => {
         render(<Dashboard />);
 
         expect(screen.getByText("Hi There Admin")).toBeInTheDocument();
-        expect(screen.getByText("Your Top Apps")).toBeInTheDocument();
-        expect(screen.getByText("Logout")).toBeInTheDocument();
+        expect(screen.getByText("Administrative Tools")).toBeInTheDocument();
+        expect(screen.getByText("Awaiting Your Action")).toBeInTheDocument();
     });
 
-    test("renders student dashboard when role is student", () => {
+    test("redirects to the correct admin pages when clicking app buttons", () => {
+        localStorage.setItem("role", "admin");
+        render(<Dashboard />);
+
+        fireEvent.click(screen.getByText("Course Management"));
+        expect(window.location.href).toBe("/courses");
+
+        fireEvent.click(screen.getByText("Grade Management"));
+        expect(window.location.href).toBe("/editGrades");
+    });
+
+    test("renders student dashboard when role is admin", () => {
+        localStorage.setItem("role", "student");
+        localStorage.setItem("username", "student");
+        render(<Dashboard />);
+
+        expect(screen.getByText("Welcome, student!")).toBeInTheDocument();
+        expect(screen.getByText("Quick Actions")).toBeInTheDocument();
+        expect(screen.getByText("Academic Status")).toBeInTheDocument();
+    });
+
+    test("redirects to the correct student pages when clicking app buttons", () => {
         localStorage.setItem("role", "student");
         render(<Dashboard />);
 
-        expect(screen.getByText("Hello, Student!")).toBeInTheDocument();
-        expect(screen.getByText("Logout")).toBeInTheDocument();
-    });
+        fireEvent.click(screen.getByText("Academic Dashboard"));
+        expect(window.location.href).toBe("/academicdashboard");
 
-    test("redirects to the correct pages when clicking app buttons", () => {
-        localStorage.setItem("role", "admin");
-        render(<Dashboard />);
-
-        fireEvent.click(screen.getByText("Academics"));
-        expect(window.location.href).toBe("/Courses");
-
-        fireEvent.click(screen.getByText("Finances"));
-        expect(window.location.href).toBe("/Finances");
-    });
-
-    test("logs out and redirects to home when logout button is clicked", () => {
-        localStorage.setItem("role", "admin");
-        render(<Dashboard />);
-
-        fireEvent.click(screen.getByText("Logout"));
-        expect(localStorage.getItem("role")).toBeNull();
-        expect(window.location.href).toBe("/");
+        fireEvent.click(screen.getByText("Financial Dashboard"));
+        expect(window.location.href).toBe("/finances");
     });
 });

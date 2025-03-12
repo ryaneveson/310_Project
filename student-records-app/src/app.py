@@ -312,15 +312,19 @@ def get_students_studentSearch():
 def register_course():
     data = request.json
     student_id = data.get("student_id")
-    course_name = data.get("course_name")
+    course_dept = data.get("course_dept")
+    course_num = data.get("course_num")
 
-    if not student_id or not course_name:
-        return jsonify({"error": "Student ID and course name are required"}), 400
+    if not student_id or not course_dept or not course_num:
+        return jsonify({"error": "Student ID, course department, and course number are required"}), 400
+
+    # Concatenate the course department and number
+    course_identifier = f"{course_dept} {course_num}"
 
     # Add the course to the student's registered courses
     students_collection.update_one(
         {"student_id": student_id},
-        {"$push": {"registered_courses": course_name}},
+        {"$push": {"registered_courses": course_identifier}},
         upsert=True
     )
 
@@ -343,7 +347,7 @@ def add_payment():
         due_date_obj = datetime.strptime(due_date, "%Y-%m-%d")  # Assuming input format "YYYY-MM-DD"
     except ValueError:
         return jsonify({"error": "Invalid due_date format. Use YYYY-MM-DD."}), 400
-    student = students_collection.find_one({"student_id": student_id})
+    student = students_collection.find_one({"studentNumber": student_id})
     if not student:
         return jsonify({"error": "Student not found"}), 404
     student_object_id = student["_id"]
@@ -352,10 +356,53 @@ def add_payment():
         "item_name": "payment",
         "amount": amount,
         "due_date": due_date_obj,
-        "is_paid": is_paid
+        "is_paid": bool(is_paid)
     }
     finances_collection.insert_one(new_payment)
     return jsonify({"message": "Payment record added successfully"}), 201
+    
+@app.route("/api/add-fee", methods=["POST"])
+def add_fee():
+    data = request.json
+    students_data = data.get("students")
+    
+    if not students_data:
+        return jsonify({"error": "Students data is required"}), 400
+    
+    for student_data in students_data:
+        student_id = student_data.get("student_id")
+        item_name = student_data.get("item_name")
+        amount = student_data.get("amount")
+        due_date = student_data.get("due_date")
+        
+        if not student_id:
+            return jsonify({"error": "Student ID is required"}), 400
+        if not amount or not due_date or not item_name:
+            return jsonify({"error": "Data for payment not provided"}), 400
+        if len(student_id) != 8 or not student_id.isdigit():
+            return jsonify({"error": "Student ID must be an 8-digit number"}), 400
+        try:
+            due_date_obj = datetime.strptime(due_date, "%Y-%m-%d")  # Assuming input format "YYYY-MM-DD"
+        except ValueError:
+            return jsonify({"error": "Invalid due_date format. Use YYYY-MM-DD."}), 400
+        
+        student = students_collection.find_one({"student_id": str(student_id)})
+        if not student:
+            return jsonify({"error": f"Student with ID {student_id} not found"}), 404
+        
+        student_object_id = student["_id"]
+        new_fee = {
+            "student_id": student_object_id,
+            "item_name": item_name,
+            "amount": amount,
+            "due_date": due_date_obj,
+            "is_paid": False
+        }
+        
+        result = finances_collection.insert_one(new_fee)
+        print(f"Inserted fee for student {student_id} with ID: {result.inserted_id}")
+
+    return jsonify({"message": "Fees added successfully for selected students."}), 201
     
 
 @app.before_request
