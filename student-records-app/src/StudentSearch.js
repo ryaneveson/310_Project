@@ -1,24 +1,15 @@
 import React, { useState, useEffect } from "react";
 import "./frontend/studentSearch.css";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function StudentSearch() {
     const [userRole, setUserRole] = useState(null);
     const navigate = useNavigate();
-    const students = [
-        {name: "Alice", lastName: "Johnson", studentNumber: "10000001", gpa: 85, classes: ["Math 101", "History 201", "Science 301", "Art 101", "English 102"]},
-        {name: "Bob", lastName: "Smith", studentNumber: "10000002", gpa: 72, classes: ["Math 101", "Biology 201", "Physics 301", "Chemistry 102", "Philosophy 103"]},
-        {name: "Charlie", lastName: "Brown", studentNumber: "10000003", gpa: 80, classes: ["Math 101", "History 201", "Economics 101", "Art 101", "English 103"]},
-        {name: "David", lastName: "Davis", studentNumber: "10000004", gpa: 75, classes: ["Math 201", "History 101", "Psychology 301", "Music 102", "Biology 103"]},
-        {name: "Eva", lastName: "Wilson", studentNumber: "10000005", gpa: 92, classes: ["Chemistry 101", "Math 301", "Physics 101", "Art 101", "Literature 102"]},
-        {name: "Frank", lastName: "Miller", studentNumber: "10000006", gpa: 69, classes: ["History 101", "Computer Science 201", "Math 301", "Philosophy 102", "Sociology 103"]},
-        {name: "Grace", lastName: "Moore", studentNumber: "10000007", gpa: 78, classes: ["Physics 101", "Biology 102", "Math 101", "History 102", "Psychology 101"]},
-        {name: "Hannah", lastName: "Taylor", studentNumber: "10000008", gpa: 76, classes: ["Chemistry 101", "History 103", "Math 101", "Philosophy 104", "Biology 201"]},
-        {name: "Isaac", lastName: "Anderson", studentNumber: "10000009", gpa: 87, classes: ["Computer Science 101", "Math 301", "Physics 101", "Art 102", "Literature 103"]},
-        {name: "Jack", lastName: "Thomas", studentNumber: "10000010", gpa: 71, classes: ["Music 101", "Math 201", "Biology 102", "Art 101", "Sociology 104"]}
-    ];
-
-    const allClasses = [...new Set(students.flatMap(student => student.classes))].sort();
+    const [selectedStudents, setSelectedStudents] = useState([]);
+    const [students, setStudents] = useState([]);
+    const [allClasses, setAllClasses] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     // State management
     const [selectedClasses, setSelectedClasses] = useState(new Set());
@@ -34,6 +25,36 @@ function StudentSearch() {
             return;
         }
         setUserRole(role);
+
+        const fetchStudents = async () => {
+            try {
+                const response = await axios.get(`http://localhost:5000/api/student`);
+                const studentData = response.data.students;
+                const formattedStudents = studentData.map(student => ({
+                    name: student.name,
+                    lastName: student.lastName,
+                    studentNumber: student.studentNumber,
+                    gpa: student.gpa,
+                    classes: student.classes
+                }));
+                setStudents(formattedStudents);
+
+                // Extract unique classes from all students
+                const uniqueClasses = [...new Set(
+                    formattedStudents
+                        .flatMap(student => student.classes)
+                        .filter(className => /^[A-Z]{4} [0-9]{3}$/.test(className))
+                )].sort();
+                setAllClasses(uniqueClasses);
+                setLoading(false);
+            } catch (err) {
+                console.error("Error fetching students:", err);
+                alert("Error fetching students");
+                setLoading(false);
+            }
+        };
+
+        fetchStudents();
     }, []);
 
     const handleLogout = () => {
@@ -95,10 +116,21 @@ function StudentSearch() {
         setSearchTerm("");
     };
 
-    const exportToJson = () => {
-        const dataStr = JSON.stringify(filteredStudents, null, 2);
+    const exportSelectedToJson = () => {
+        const dataStr = JSON.stringify(selectedStudents, null, 2);
         const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-        const exportFileDefaultName = 'students.json';
+        const exportFileDefaultName = 'selected_students.json';
+
+        const linkElement = document.createElement('a');
+        linkElement.setAttribute('href', dataUri);
+        linkElement.setAttribute('download', exportFileDefaultName);
+        linkElement.click();
+    };
+
+    const exportAllStudentsToJson = () => {
+        const dataStr = JSON.stringify(students, null, 2);
+        const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+        const exportFileDefaultName = 'all_students.json';
 
         const linkElement = document.createElement('a');
         linkElement.setAttribute('href', dataUri);
@@ -120,6 +152,10 @@ function StudentSearch() {
                 </button>
             </div>
         );
+    }
+
+    if (loading) {
+        return <div>Loading...</div>;
     }
 
     return (
@@ -188,7 +224,7 @@ function StudentSearch() {
                         />
                     </label>
                     <button id="clear-btn" className="btn" onClick={clearSearch}>Clear</button>
-                    <button id="export-btn" className="btn" onClick={exportToJson}>Export to JSON</button>
+                    <button id="export-all-btn" className="btn" onClick={exportAllStudentsToJson}>Export All Students</button>
                 </div>
                 <div id="results">
                     <h2>Filtered Students:</h2>
@@ -208,6 +244,11 @@ function StudentSearch() {
                                     <td>{student.lastName}</td>
                                     <td>{student.studentNumber}</td>
                                     <td>
+                                        <button className="btn" onClick={() => {
+                                            setSelectedStudents(prev => [...prev, student]);
+                                        }}>
+                                            Select Student
+                                        </button>
                                         <button className="btn" onClick={() => navigate(`/studentProfile/${encodeURIComponent(student.studentNumber)}`)}>
                                             Go to Profile
                                         </button>
@@ -217,6 +258,36 @@ function StudentSearch() {
                         </tbody>
                     </table>
                 </div>
+            </article>
+            <article id="selected-students">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <h2>Selected Students</h2>
+                    <button className="btn" onClick={exportSelectedToJson}>Export Selected</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Student Number</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {selectedStudents.map((student, index) => (
+                            <tr key={index}>
+                                <td>{student.name}</td>
+                                <td>{student.lastName}</td>
+                                <td>{student.studentNumber}</td>
+                                <td>
+                                    <button className="btn" onClick={() => setSelectedStudents(prev => prev.filter(s => s.studentNumber !== student.studentNumber))}>
+                                        Remove Student
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             </article>
         </div>
     );
