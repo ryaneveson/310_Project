@@ -8,7 +8,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the application code and environment variables
 COPY src/app.py .
-COPY .env .
+COPY Backend.env .
 
 # Set environment variables
 ENV FLASK_ENV=development
