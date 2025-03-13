@@ -38,7 +38,7 @@ function App() {
         <Route path="/createUser" element={<CreateUser />} />
         <Route path="/paymentHistory" element={<PaymentHistory />} />
         <Route path="/upcomingDue" element={<UpcomingDue />} />
-        <Route path="/addFee" element={<AddFee />} />
+        <Route path="/addFee" element={<AddFee />} /> 
       </Routes>
     </Router>
   );
