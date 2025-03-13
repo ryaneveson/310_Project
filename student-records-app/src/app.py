@@ -7,13 +7,16 @@ from datetime import datetime
 from dotenv import load_dotenv
 import os
 
-load_dotenv()
+load_dotenv("Backend.env")
+load_dotenv("Frontend.env")
 app = Flask(__name__)
+CORS(app)
 
 mongo_uri = os.getenv("MONGO_URI")
+print(mongo_uri)
 app.config["MONGO_URI"] = mongo_uri
 
-client = MongoClient(app)
+client = MongoClient(mongo_uri)
 
 @app.route('/')
 def home():
@@ -109,6 +112,7 @@ def submit_student_id():
 
 @app.route("/api/courses", methods=["GET"])
 def get_courses():
+    print("hello")
     courses = list(courses_collection.find({}, {"_id": 0}))  # Exclude MongoDB _id field
     # Transform the data to match the frontend's expected schema
     transformed_courses = []
@@ -366,4 +370,4 @@ def test_user():
     return jsonify({"user": str(user)})
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    app.run(debug=True, host="0.0.0.0", port=5000)
