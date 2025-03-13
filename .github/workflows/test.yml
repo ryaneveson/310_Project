@@ -53,4 +53,4 @@ jobs:
       - name: Run tests
         run: |
           cd student-records-app
-          npm test
+          CI=true npm test
