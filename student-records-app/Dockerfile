@@ -26,7 +26,7 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/build /usr/share/nginx/html
 
 # Copy Frontend.env for React app environment variables
-COPY Frontend.env /app/.env
+COPY src/Frontend.env /app/Frontend.env
 
 # Expose port 80 for the app
 EXPOSE 80

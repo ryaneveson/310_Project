@@ -21,7 +21,7 @@ services:
     depends_on:
       - mongo
     environment:
-      - MONGO_URI=${MONGO_URI}
+      - MONGO_URI="mongodb+srv://samijaffri01:6XjmdnygdfRrD8dF@cluster0.fgfo7.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
       - FLASK_ENV=development
       - FLASK_APP=app.py
     env_file:
