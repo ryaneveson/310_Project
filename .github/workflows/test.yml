@@ -39,7 +39,7 @@ jobs:
       - name: Start the backend server
         run: |
           cd student-records-app/src
-          python app.py &
+          nohup python app.py &
         env:
           FLASK_APP: app.py  # Set any environment variables required for your Python app
 
