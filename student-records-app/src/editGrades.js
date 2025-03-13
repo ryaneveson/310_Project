@@ -1,77 +1,136 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import "./frontend/dashboardStyles.css";
 import ReactDOM from "react-dom/client";
 import HeaderLoader from "./Header";
 import FooterLoader from "./Footer";
 
-
 //function called when "Save Changes: button is clicked, returns"
-function EditGrades() {
-    // State to store grades
-    //later these will come from database
-    const [grades, setGrades] = useState({
-      "Intro to Programming": 92,
-      "Data Structures": 89,
-      "Web Development": 85,
-      "Software Engineering": 90,
-      "Computer Networks": 95,
-    });
-  
-    // Function to handle input changes
-    //updates new grade value for a class while preserving the previous data
-    function handleInputChange(subject, value) {
-      setGrades((prevGrades) => ({
-        ...prevGrades,
-        [subject]: Number(value),
-      }));
-    }
-  
-    // Function to save updated grades
-    function saveGrades() {
-      console.log("Updated Grades:", grades);
-      alert("Grades saved successfully!\n");
-    }
-  
-    return (
-      //hand back html with grade values inserted
-      //eventually I want to save grades to database, and then pull them again in the html file to display
-      <div>
-        <h2>Student: John Doe</h2>
-        <h3>Grade Report</h3>
+const EditGrades = () => {
+  const [userRole, setUserRole] = useState(null);
+  const [studentId, setStudentId] = useState("");
+  // State to store grades
+  const [grades, setGrades] = useState({
+    "Intro to Programming": 92,
+    "Data Structures": 89,
+    "Web Development": 85,
+    "Software Engineering": 90,
+    "Computer Networks": 95,
+  });
 
-    
-    <label for="student-id">Enter Student ID:</label>
-    <input type="text" id="student-id" placeholder="Enter Student ID"></input>
-  
-        <table border="1">
-          <thead>
-            <tr>
-              <th>Subject</th>
-              <th>Grade (%)</th>
-              <th>Edit Grade</th>
-            </tr>
-          </thead>
-          <tbody>
-            {Object.entries(grades).map(([subject, grade]) => (
-              <tr key={subject}>
-                <td>{subject}</td>
-                <td>{grade}</td>
-                <td>
-                  <input
-                    type="number"
-                    className="grade-input"
-                    value={grade}
-                    onChange={(e) => handleInputChange(subject, e.target.value)}
-                  />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-  
-        <button onClick={saveGrades}>Save Changes</button>
+  useEffect(() => {
+    const role = localStorage.getItem("role");
+    if (!role) {
+      window.location.href = "/";
+      return;
+    }
+    setUserRole(role);
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("role");
+    window.location.href = "/";
+  };
+
+  // Function to handle input changes
+  function handleInputChange(subject, value) {
+    setGrades((prevGrades) => ({
+      ...prevGrades,
+      [subject]: Number(value),
+    }));
+  }
+
+  const handleStudentIdChange = (e) => {
+    setStudentId(e.target.value);
+  };
+
+  // Function to save updated grades
+  function saveGrades() {
+    if (!studentId) {
+      alert("Please enter a Student ID");
+      return;
+    }
+    console.log("Updated Grades:", grades);
+    alert(`Grades saved successfully for student ID: ${studentId}`);
+  }
+
+  if (!userRole) {
+    return <div>Loading...</div>;
+  }
+
+  if (userRole !== "admin") {
+    return (
+      <div className="dashboard-container">
+        <h2>Access Denied</h2>
+        <p>This page is only accessible to administrators.</p>
+        <button className="logout-button" onClick={handleLogout}>
+          Logout
+        </button>
       </div>
     );
   }
+
+  return (
+    <div className="dashboard-container">
+      <div className="hero">
+        <h2>Grade Management</h2>
+        <p>Update and manage student grades</p>
+      </div>
+      <div className="dashboard-content">
+        <div className="grades-section">
+          <div className="student-search">
+            <div className="search-container">
+              <label htmlFor="student-id">Student ID:</label>
+              <input
+                type="text"
+                id="student-id"
+                value={studentId}
+                onChange={handleStudentIdChange}
+                placeholder="Enter Student ID"
+                className="student-id-input"
+              />
+            </div>
+          </div>
+
+          <div className="grades-table-container">
+            <table className="grades-table">
+              <thead>
+                <tr>
+                  <th>Subject</th>
+                  <th>Current Grade (%)</th>
+                  <th>New Grade</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Object.entries(grades).map(([subject, grade]) => (
+                  <tr key={subject}>
+                    <td>{subject}</td>
+                    <td>{grade}%</td>
+                    <td>
+                      <input
+                        type="number"
+                        min="0"
+                        max="100"
+                        className="grade-input"
+                        value={grade}
+                        onChange={(e) => handleInputChange(subject, e.target.value)}
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="actions-container">
+            <button onClick={saveGrades} className="save-button">
+              Save Changes
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // Render the EditGrades component inside the #edit-grades div
 const editGradesElement = document.getElementById("edit-grades");

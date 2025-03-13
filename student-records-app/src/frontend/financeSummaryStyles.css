@@ -1,0 +1,36 @@
+.summary-page .summary-container {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+}
+.summary-table {
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0px 8px 24px rgba(0, 67, 133, 0.08);
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+}
+.summary-table table{
+    border: 1px solid var(--primary);
+    border-collapse: collapse;
+}
+.summary-table th {
+    background-color: rgba(255, 255, 255, 0.95);
+    color: #004385;
+    border: 1px solid var(--primary);
+    padding: 0.5rem 50px;
+}
+.summary-table td {
+    padding: 0.33rem;
+    border: 1px solid var(--primary);
+    text-align: center;
+}
+.summary-table h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #004385;
+    margin-bottom: 20px;
+    border-bottom: 2px solid rgba(0, 67, 133, 0.1);
+    padding-bottom: 8px;
+}

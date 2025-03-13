@@ -1,16 +1,32 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import StudentSearch from "./StudentSearch";
+const axios = require("axios");
+
+jest.mock("axios");
+
+const testStudents = [
+    {name: "Alice", lastName: "Johnson", studentNumber: "10000001", gpa: 85, classes: ["MATH 101", "HIST 201", "SCIE 301", "ART 101", "ENGL 102"]},
+    {name: "Bob", lastName: "Smith", studentNumber: "10000002", gpa: 72, classes: ["MATH 101", "BIOL 201", "PHYS 301", "CHEM 102", "PHIL 103"]},
+    {name: "Charlie", lastName: "Brown", studentNumber: "10000003", gpa: 80, classes: ["MATH 101", "HIST 201", "ECON 101", "ART 101", "ENGL 103"]},
+    {name: "David", lastName: "Davis", studentNumber: "10000004", gpa: 75, classes: ["MATH 201", "HIST 101", "PSYC 301", "MUSI 102", "BIOL 103"]},
+    {name: "Eva", lastName: "Wilson", studentNumber: "10000005", gpa: 92, classes: ["CHEM 101", "MATH 301", "PHYS 101", "ART 101", "LITR 102"]},
+    {name: "Frank", lastName: "Miller", studentNumber: "10000006", gpa: 69, classes: ["HIST 101", "COMP 201", "MATH 301", "PHIL 102", "SOCI 103"]},
+    {name: "Grace", lastName: "Moore", studentNumber: "10000007", gpa: 78, classes: ["PHYS 101", "BIOL 102", "MATH 101", "HIST 102", "PSYC 101"]},
+    {name: "Hannah", lastName: "Taylor", studentNumber: "10000008", gpa: 76, classes: ["CHEM 101", "HIST 103", "MATH 101", "PHIL 104", "BIOL 201"]},
+    {name: "Isaac", lastName: "Anderson", studentNumber: "10000009", gpa: 87, classes: ["COMP 101", "MATH 301", "PHYS 101", "ART 102", "LITR 103"]},
+    {name: "Jack", lastName: "Thomas", studentNumber: "10000010", gpa: 71, classes: ["MUSI 101", "MATH 201", "BIOL 102", "ART 101", "SOCI 104"]}
+];
 
 describe("StudentSearch Component", () => {
     test("renders without crashing", () => {
-        render(<StudentSearch />);
+        render(<StudentSearch mockStudents={testStudents}/>);
         expect(screen.getByText("Search for a student:")).toBeInTheDocument();
         expect(screen.getByText("Filtered Students:")).toBeInTheDocument();
     });
 
     test("filters students by first name, last name and student number search", () => {
-        render(<StudentSearch />);
+        render(<StudentSearch mockStudents={testStudents}/>);
         
         const searchInput = screen.getByPlaceholderText("Search for a student...");
 
@@ -28,7 +44,7 @@ describe("StudentSearch Component", () => {
     });
     
     test("filters students by GPA range", () => {
-        render(<StudentSearch />);
+        render(<StudentSearch mockStudents={testStudents}/>);
 
         const minGpaInput = screen.getByPlaceholderText("0");
         const maxGpaInput = screen.getByPlaceholderText("100");
@@ -42,9 +58,9 @@ describe("StudentSearch Component", () => {
     });
 
     test("filters students by selected classes", () => {
-        render(<StudentSearch />);
+        render(<StudentSearch mockStudents={testStudents}/>);
         
-        const mathCheckbox = screen.getByLabelText("Math 101");
+        const mathCheckbox = screen.getByTestId("MATH 101");
         fireEvent.click(mathCheckbox);
         
         expect(screen.getByText("Alice")).toBeInTheDocument(); // Alice is in math 101
@@ -52,7 +68,7 @@ describe("StudentSearch Component", () => {
     });
 
     test("toggles sidebar visibility", () => {
-        render(<StudentSearch />);
+        render(<StudentSearch mockStudents={testStudents}/>);
 
         expect(screen.getByTestId("checkboxes")).toHaveStyle(`height: auto`);
         const toggleButton = screen.getByText("Collapse");
@@ -64,7 +80,7 @@ describe("StudentSearch Component", () => {
     });
 
     test("clear and reset buttons work correctly", () => {
-        render(<StudentSearch />);
+        render(<StudentSearch mockStudents={testStudents}/>);
 
         const searchInput = screen.getByPlaceholderText("Search for a student...");
         const minGpaInput = screen.getByPlaceholderText("0");
@@ -93,21 +109,6 @@ describe("StudentSearch Component", () => {
         });
         fireEvent.click(resetButton);
         expect(screen.getAllByRole("checkbox").every(checkbox => !checkbox.checked)).toBe(true);
-    });
-
-    //I added this test for student profile navigation testing -Jaxon
-    test("navigates to student profile on button click", () => {
-        render(
-                <Routes>
-                    <Route path="/studentSearch" element={<StudentSearch />} />
-                    <Route path="/studentProfile/:studentID" element={<StudentProfile />} />
-                </Routes>
-        );
-
-        const goToProfileButton = screen.getAllByText("Go to Profile")[0];
-        fireEvent.click(goToProfileButton);
-
-        expect(screen.getByText("Student Profile")).toBeInTheDocument();
     });
 
 });

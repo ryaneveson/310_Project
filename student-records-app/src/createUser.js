@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import "./frontend/loginStyles.css";
 
 const CreateUser = () => {
@@ -58,7 +57,7 @@ const CreateUser = () => {
         {success && <p className="auth-success">{success}</p>}
         <p className="auth-footer">
           Already have an account?{" "}
-          <Link to="/" className="auth-link">Login here</Link>
+          <a href="/" className="auth-link">Login here</a>
         </p>
       </div>
     </div>
