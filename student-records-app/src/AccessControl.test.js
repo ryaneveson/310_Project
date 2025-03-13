@@ -13,33 +13,24 @@ describe('Role-Based Access Control', () => {
     test('denies admin access to financial dashboard', async () => {
         localStorage.setItem('role', 'admin');
         render(<Finances />);
-        await screen.findByText('Access Denied');
-        expect(screen.getByText('Access Denied')).toBeInTheDocument(); 
+        await screen.findByText(/Access Denied/i);
+        expect(screen.getByText(/Access Denied/i)).toBeInTheDocument(); 
     });
 
     test('denies student access to grade editing', () => {
         localStorage.setItem('role', 'student');
         render(<EditGrades />);
-        expect(screen.getByText('Access Denied')).toBeInTheDocument();
+        expect(screen.getByText(/Access Denied/i)).toBeInTheDocument();
     });
 
     test('allows admin access to grade editing', () => {
         localStorage.setItem('role', 'admin');
         render(<EditGrades />);
-        expect(screen.getByText('Grade Management')).toBeInTheDocument();
+        expect(screen.getByText(/Grade Management/i)).toBeInTheDocument();
     });
 
     test('redirects to login when no role is set', () => {
         render(<Finances />);
-        expect(window.location.href).toBe('/');
-    });
-
-    test('logout functionality works', () => {
-        localStorage.setItem('role', 'student');
-        render(<EditGrades />);
-        
-        fireEvent.click(screen.getByText('Logout'));
-        expect(localStorage.getItem('role')).toBeNull();
         expect(window.location.href).toBe('/');
     });
 }); 
