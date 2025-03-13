@@ -20,12 +20,14 @@ const testStudents = [
 
 describe("StudentSearch Component", () => {
     test("renders without crashing", () => {
+        localStorage.setItem("role","admin");
         render(<StudentSearch mockStudents={testStudents}/>);
         expect(screen.getByText("Search for a student:")).toBeInTheDocument();
         expect(screen.getByText("Filtered Students:")).toBeInTheDocument();
     });
 
     test("filters students by first name, last name and student number search", () => {
+        localStorage.setItem("role","admin");
         render(<StudentSearch mockStudents={testStudents}/>);
         
         const searchInput = screen.getByPlaceholderText("Search for a student...");
@@ -44,6 +46,7 @@ describe("StudentSearch Component", () => {
     });
     
     test("filters students by GPA range", () => {
+        localStorage.setItem("role","admin");
         render(<StudentSearch mockStudents={testStudents}/>);
 
         const minGpaInput = screen.getByPlaceholderText("0");
@@ -58,9 +61,10 @@ describe("StudentSearch Component", () => {
     });
 
     test("filters students by selected classes", () => {
+        localStorage.setItem("role","admin");
         render(<StudentSearch mockStudents={testStudents}/>);
         
-        const mathCheckbox = screen.getByTestId("MATH 101");
+        const mathCheckbox = screen.getByLabelText("MATH 101");
         fireEvent.click(mathCheckbox);
         
         expect(screen.getByText("Alice")).toBeInTheDocument(); // Alice is in math 101
@@ -68,6 +72,7 @@ describe("StudentSearch Component", () => {
     });
 
     test("toggles sidebar visibility", () => {
+        localStorage.setItem("role","admin");
         render(<StudentSearch mockStudents={testStudents}/>);
 
         expect(screen.getByTestId("checkboxes")).toHaveStyle(`height: auto`);
@@ -80,6 +85,7 @@ describe("StudentSearch Component", () => {
     });
 
     test("clear and reset buttons work correctly", () => {
+        localStorage.setItem("role","admin");
         render(<StudentSearch mockStudents={testStudents}/>);
 
         const searchInput = screen.getByPlaceholderText("Search for a student...");

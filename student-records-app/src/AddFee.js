@@ -109,6 +109,17 @@ function AddFee({ mockStudents = null }) {
         setSearchTerm("");
     };
 
+    const exportSelectedToJson = () => {
+        const dataStr = JSON.stringify(selectedStudents, null, 2);
+        const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+        const exportFileDefaultName = 'selected_students.json';
+
+        const linkElement = document.createElement('a');
+        linkElement.setAttribute('href', dataUri);
+        linkElement.setAttribute('download', exportFileDefaultName);
+        linkElement.click();
+    };
+
     if (!userRole) {
         return <div>Loading...</div>;
     }
@@ -301,7 +312,10 @@ function AddFee({ mockStudents = null }) {
                     <button id="fee-submit" type="submit">Submit Fee</button>
                 </form>
                 <div id="selected-students">
-                    <h2>Selected Students</h2>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <h2>Selected Students</h2>
+                        <button className="btn" onClick={exportSelectedToJson}>Export to JSON</button>
+                    </div>
                     <table>
                         <thead>
                             <tr>
