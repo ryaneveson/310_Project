@@ -4,9 +4,23 @@ from pymongo import MongoClient
 import bcrypt
 from bson import ObjectId
 from datetime import datetime
+from dotenv import load_dotenv
 import os
 
+load_dotenv()
 app = Flask(__name__)
+
+mongo_uri = os.getenv("MONGO_URI")
+app.config["MONGO_URI"] = mongo_uri
+
+client = MongoClient(app)
+
+@app.route('/')
+def home():
+    return "Welcome to the Flask app!"
+
+if __name__ == '__main__':
+    app.run(debug=True)
 
 # Remove any existing CORS configuration and use this simple setup
 @app.after_request
@@ -20,8 +34,6 @@ def after_request(response):
 def handle_options():
     return jsonify({}), 200
 
-MONGO_URI = "mongodb+srv://samijaffri01:6XjmdnygdfRrD8dF@cluster0.fgfo7.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-client = MongoClient(MONGO_URI)
 db = client["student_records"]
 users_collection = db["users"]
 students_collection = db["students"]
