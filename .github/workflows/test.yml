@@ -26,7 +26,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.12.0'
+          python-version: '3.12'
 
       # Install Python dependencies (if you have a requirements.txt file)
       - name: Install Python dependencies
@@ -39,7 +39,7 @@ jobs:
       - name: Start the backend server
         run: |
           cd student-records-app/src
-          python app.py &
+          nohup python app.py &
         env:
           FLASK_APP: app.py  # Set any environment variables required for your Python app
 
@@ -53,4 +53,4 @@ jobs:
       - name: Run tests
         run: |
           cd student-records-app
-          npm test
+          CI=true npm test
