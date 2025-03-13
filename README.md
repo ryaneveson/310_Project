@@ -1,8 +1,8 @@
-# Student Records App - Setup Guide
+# Werkday - Setup Guide
 
 ## Overview
 
-The **Student Records App** is a web-based platform that enables administrators to manage student profiles, course enrollment, and grading, while students can enroll in courses, track their academic progress, and manage personal information.
+**Werkday** is a web platform that provides administrators and students the ability to manage their academic workflows wheter that be course enrollment, grading, finances (i.e. tuition payment), or official document collection. 
 
 ### Current Project Status (Milestone 2 Completion - 60%)
 
