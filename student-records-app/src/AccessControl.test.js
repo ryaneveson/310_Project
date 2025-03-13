@@ -40,6 +40,6 @@ describe('Role-Based Access Control', () => {
         
         fireEvent.click(screen.getByText('Logout'));
         expect(localStorage.getItem('role')).toBeNull();
-        expect(window.location.href).toBe('/');
+        expect(window.location.href).toBe('/'); 
     });
 }); 
