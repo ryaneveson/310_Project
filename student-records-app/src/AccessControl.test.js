@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import Finances from './Finances';
-import EditGrades from './EditGrades';
+import EditGrades from './editGrades';
 
 describe('Role-Based Access Control', () => {
     beforeEach(() => {
@@ -14,7 +14,7 @@ describe('Role-Based Access Control', () => {
         localStorage.setItem('role', 'admin');
         render(<Finances />);
         await screen.findByText('Access Denied');
-        expect(screen.getByText('Access Denied')).toBeInTheDocument();
+        expect(screen.getByText('Access Denied')).toBeInTheDocument(); 
     });
 
     test('denies student access to grade editing', () => {
