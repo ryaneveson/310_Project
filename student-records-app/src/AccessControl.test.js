@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import Finances from './Finances';
-import EditGrades from './EditGrades';
+import EditGrades from './editGrades';
 
 describe('Role-Based Access Control', () => {
     beforeEach(() => {
