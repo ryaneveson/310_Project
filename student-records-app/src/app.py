@@ -274,8 +274,6 @@ def get_student_profile():
     student_id = request.args.get("student_id")
     if not student_id:
         return jsonify({"error": "Student ID is required"}), 400
-    if len(student_id) != 8 or not student_id.isdigit():
-        return jsonify({"error": "Student ID must be an 8-digit number"}), 400
 
     student = students_collection.find_one({"student_id": student_id})
     if student:

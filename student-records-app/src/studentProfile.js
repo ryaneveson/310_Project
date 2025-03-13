@@ -11,13 +11,12 @@ export default function StudentProfile() {
     const [studentData, setStudentData] = useState(null);
     const [notFound, setNotFound] = useState(false);
     const [loading, setLoading] = useState(true);
+    const pathParts = window.location.pathname.split("/");
+    const studentId = pathParts[pathParts.length - 1];
 
 
     useEffect(() => {
-        const pathParts = window.location.pathname.split("/");
-        const studentId = pathParts[pathParts.length - 1];
         //verify that student ID is valid
-
         if (!studentId || pathParts.length<3) {
             setStudentData(null);
             if(!alertShown.current){
@@ -52,6 +51,7 @@ export default function StudentProfile() {
 
         //Working: finding student in database
         fetchStudentProfile();
+    }, []);
 
         const fetchStudentProfile = async () => {
             try {
@@ -70,7 +70,7 @@ export default function StudentProfile() {
             alertShown.current = false; // Reset alertShown when student is found
             setLoading(false);
         }
-    }, []);
+    
     //display student's profile data
     //TODO: add more student data fields later depending on what we want to display
     return (
