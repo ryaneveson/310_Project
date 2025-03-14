@@ -23,17 +23,20 @@ jobs:
       # Install dependencies
       - name: Install dependencies
         run: |
+          cd student-records-app
           npm install
 
       # Generate Changelog and Bump Version using standard-version
       - name: Generate Changelog and Bump Version
         run: |
+          cd student-records-app
           npm install --save-dev standard-version
           npx standard-version
 
       # Push the version bump back to the repository
       - name: Push version changes
         run: |
+          cd student-records-app
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
           git push --follow-tags
