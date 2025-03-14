@@ -55,7 +55,7 @@ export default function StudentProfile() {
             if (!studentId || pathParts.length<3) {
                 setStudentData(null);
                 if(!alertShown.current){
-                    alert("Error, try again.");
+                    alert("Error fetching student profile.");
                     alertShown.current = true;
                 }
                 window.location.href = "/studentProfileInput";
