@@ -268,18 +268,6 @@ def register_course():
 
     return jsonify({"message": "Course registered successfully!"}), 201
 
-
-@app.route("/api/student/studentprofile", methods=["GET"])
-def get_student_profile():
-    student_id = request.args.get("student_id")
-    if not student_id:
-        return jsonify({"error": "Student ID is required"}), 400
-
-    student = students_collection.find_one({"student_id": student_id})
-    if student:
-        return jsonify(student)
-    return jsonify({"error": "Student ID does not exist"}), 404
-
 @app.route("/api/add-payment", methods=["POST"])
 def add_payment():
     data = request.json
@@ -353,18 +341,11 @@ def add_fee():
         print(f"Inserted fee for student {student_id} with ID: {result.inserted_id}")
 
     return jsonify({"message": "Fees added successfully for selected students."}), 201
+    
 
 @app.before_request
 def log_request():
     print(f"Incoming {request.method} request to {request.path}")
-
-
-@app.after_request
-def add_header(response):
-    response.headers["Access-Control-Allow-Origin"] = "*"
-    response.headers["Access-Control-Allow-Headers"] = "Content-Type,Authorization"
-    response.headers["Access-Control-Allow-Methods"] = "GET,PUT,POST,DELETE,OPTIONS"
-    return response
 
 @app.route("/test-user", methods=["GET"])
 def test_user():
@@ -374,3 +355,15 @@ def test_user():
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
+
+@app.route("/api/student/studentprofile", methods=["GET"])
+def get_student_profile():
+    student_id = request.args.get("student_id")
+    if not student_id:
+        return jsonify({"error": "Student ID is required"}), 400
+
+    student = students_collection.find_one({"student_id": student_id})
+    if student:
+        return jsonify(student)
+    return jsonify({"error": "Student ID does not exist"}), 404
+    
