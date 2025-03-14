@@ -38,6 +38,13 @@ jobs:
           npm install --save-dev standard-version
           npx standard-version
 
+      # Checkout the main branch to commit changes
+      - name: Checkout main branch
+        run: |
+          git fetch origin
+          git checkout main  # Ensure we are on the main branch
+          git pull origin main  # Ensure we're up to date with the main branch
+
       # Push the version bump back to the repository
       - name: Push version changes
         run: |
