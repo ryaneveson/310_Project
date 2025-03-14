@@ -13,6 +13,9 @@
     "react-scripts": "^5.0.1",
     "web-vitals": "^4.2.4"
   },
+  "standard-version": {
+    "releaseAs": "minor"
+  },
   "jest": {
     "transform": {
       "^.+\\.[t|j]sx?$": "babel-jest"
