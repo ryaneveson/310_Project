@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import "./frontend/financeSummaryStyles.css";
 
-const UpcomingDue = () => {
+const UpcomingDue = ({mockDues=null}) => {
   const [userRole, setUserRole] = useState(null);
   const [loading, setLoading] = useState(true);
   const [upcoming, setUpcoming] = useState([]);
@@ -15,6 +15,17 @@ const UpcomingDue = () => {
       return;
     }
     setUserRole(role);
+
+    if(mockDues){
+      const formattedUpcoming = mockDues.filter(item => !(item.item_name === "payment") && new Date(item.due_date) > new Date()).map(item => ({
+        name: item.item_name,
+        date: new Date(item.due_date).toLocaleDateString('en-GB', {weekday: 'short', day: '2-digit',  month: 'short', year: 'numeric'}),
+        amount: item.amount
+      }));
+      setUpcoming(formattedUpcoming);
+      setLoading(false);
+      return;
+    }
 
     const fetchFinances = async () => {
         try {
@@ -79,7 +90,7 @@ const UpcomingDue = () => {
                         <th>Amount</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody data-testid="upcoming-table">
                     {upcoming.map((item, index) => (
                     <tr key={index}>
                         <td className="summary-name">{item.name}</td>
