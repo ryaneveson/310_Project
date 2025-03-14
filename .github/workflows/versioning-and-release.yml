@@ -39,6 +39,12 @@ jobs:
           npm install --save-dev standard-version
           npx standard-version
 
+      - name: Create Git tag
+        run: |
+          cd student-records-app
+          VERSION=$(node -p "require('./package.json').version")
+          git tag -a "v$VERSION" -m "Release $VERSION"
+
       # Check if there are changes to commit (only if CHANGELOG.md, package.json, or package-lock.json changed)
       - name: Check if there are changes to commit
         run: |
