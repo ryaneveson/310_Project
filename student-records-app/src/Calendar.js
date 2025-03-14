@@ -52,7 +52,7 @@ function Calendar({ mockEvents = null, compact = false }) {
   //alert(JSON.stringify(events));
 
   return (
-    <div className={`calendar-container ${compact ? 'calendar-compact' : ''}`}>
+    <div data-testid="calendar-container" className={`calendar-container ${compact ? 'calendar-compact' : ''}`}>
       <div className="calendar-grid">
         {/* column headers */}
         <div className="time-column">Weekly Schedule</div>
@@ -92,6 +92,7 @@ function Calendar({ mockEvents = null, compact = false }) {
               <div
                 key={index}
                 className="event-block"
+                data-testid="event-block"
                 style={{
                   left: `${(dayIndex + 1) * 100 + 60}px`,
                   top: topPosition,
