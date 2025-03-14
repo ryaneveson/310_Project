@@ -20,7 +20,8 @@ def after_request(response):
 def handle_options():
     return jsonify({}), 200
 
-MONGO_URI = "mongodb+srv://samijaffri01:6XjmdnygdfRrD8dF@cluster0.fgfo7.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+MONGO_URI = os.getenv("MONGO_URI")
+print(MONGO_URI)
 client = MongoClient(MONGO_URI)
 db = client["student_records"]
 users_collection = db["users"]

@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  # Backend service (Flask + React)
+  app:
+    build:
+      context: ./  # Make sure the context is the correct root folder
+    container_name: student-records-app
+    environment:
+      - FLASK_APP=src/app.py
+      - FLASK_ENV=development
+      - MONGO_URI=${MONGO_URI}  # MongoDB connection string from .env
+    ports:
+      - "5000:5000"  # Flask runs on port 5000 by default
+      - "3000:3000"  # React runs on port 3000 by default
+    volumes:
+      - ./student-records-app/src:/app  # Sync source code for easy dev iteration
+    networks:
+      - student-network
+    command: bash -c "npm install && npm start & python app.py"   # Run both React and Flask
+
+networks:
+  student-network:
+    driver: bridge
+
+
