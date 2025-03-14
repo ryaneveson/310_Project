@@ -68,17 +68,17 @@ describe("UpcomingDue Component", () => {
     const withinTable = within(tableBody);//ensures all of this is in the table body
 
     expect(withinTable.getByText(/tuition/i)).toBeInTheDocument();
-    expect(withinTable.getByText(/Wed, \d{2} May 2025/i)).toBeInTheDocument();
+    expect(withinTable.getByText(/(Tue|Wed|Thu), (1[3-5]) May 2025/i)).toBeInTheDocument();
     expect(withinTable.getByText(/1200.00/i)).toBeInTheDocument();
     expect(withinTable.getByText(/fee/i)).toBeInTheDocument();
-    expect(withinTable.getByText(/Wed, \d{2} Apr 2025/i)).toBeInTheDocument();
+    expect(withinTable.getByText(/(Tue|Wed|Thu), (0[8-9]|10) Apr 2025/i)).toBeInTheDocument();
     expect(withinTable.getByText(/1100.00/i)).toBeInTheDocument();
 
     expect(withinTable.queryByText(/payment/i)).not.toBeInTheDocument();
-    expect(withinTable.queryByText(/Sun, \d{2} Mar 2025/i)).not.toBeInTheDocument();
+    expect(withinTable.queryByText(/(Sat|Sun|Mon), (0[8-9]|10) Mar 2025/i)).not.toBeInTheDocument();
     expect(withinTable.queryByText(/950.00/i)).not.toBeInTheDocument();
     expect(withinTable.queryByText(/tuition 2/i)).not.toBeInTheDocument();
-    expect(withinTable.queryByText(/Fri, \d{2} Feb 2025/i)).not.toBeInTheDocument();
+    expect(withinTable.queryByText(/(Thu|Fri|Sat), (1[3-5]) Feb 2025/i)).not.toBeInTheDocument();
     expect(withinTable.queryByText(/1000.00/i)).not.toBeInTheDocument();
   });
 

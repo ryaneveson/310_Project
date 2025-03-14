@@ -32,9 +32,9 @@ describe("Finances Component", () => {
     render(<Finances />);
     await waitFor(() => {
       expect(screen.getByText(/Current Balance: \$200/i)).toBeInTheDocument();
-      expect(screen.getByText(/Due Date: Wed, \d{2} Mar 2025/i)).toBeInTheDocument();
+      expect(screen.getByText(/Due Date: (Tue|Wed|Thu), (1[8-9]|20) Mar 2025/i)).toBeInTheDocument();
       expect(screen.getByText(/Last Payment: \$30/i)).toBeInTheDocument();
-      expect(screen.getByText(/Payment Date: Sun, \d{2} Mar 2025/i)).toBeInTheDocument();
+      expect(screen.getByText(/Payment Date: (Sat|Sun|Mon), (0[8-9]|10) Mar 2025/i)).toBeInTheDocument();
     });
   });
 
