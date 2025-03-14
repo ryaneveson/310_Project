@@ -44,7 +44,11 @@ jobs:
         run: |
           cd student-records-app
           VERSION=$(node -p "require('./package.json').version")
-          git tag -a "v$VERSION" -m "Release $VERSION"
+          if git rev-parse "v$VERSION" >/dev/null 2>&1; then
+            echo "Tag v$VERSION already exists. Skipping tag creation.";
+          else
+            git tag -a "v$VERSION" -m "Release $VERSION";
+          fi
       
       # Push the version bump back to the  repository and tag
       - name: Push version changes and tag
