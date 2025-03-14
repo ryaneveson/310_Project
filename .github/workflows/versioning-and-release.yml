@@ -39,25 +39,20 @@ jobs:
           npm install --save-dev standard-version
           npx standard-version
 
+      # Create a Git tag for the new version
       - name: Create Git tag
         run: |
           cd student-records-app
           VERSION=$(node -p "require('./package.json').version")
           git tag -a "v$VERSION" -m "Release $VERSION"
-
-      # Check if there are changes to commit (only if CHANGELOG.md, package.json, or package-lock.json changed)
-      - name: Check if there are changes to commit
-        run: |
-          cd student-records-app
-          git diff --quiet || echo "Changes detected"
       
-      # Push the version bump back to the repository only if there are changes
-      - name: Push version changes
+      # Push the version bump back to the repository and tag
+      - name: Push version changes and tag
         run: |
           cd student-records-app
-          git diff --quiet || (git add package.json package-lock.json CHANGELOG.md && git commit -m "chore(release): version bump" && git push origin main --follow-tags)
+          git push origin main --follow-tags
 
-      # Create GitHub release
+      # Create GitHub release using the tag
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
