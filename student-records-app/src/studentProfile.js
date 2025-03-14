@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import HeaderLoader from "./Header";
 import "./frontend/studentProfile.css";
 
 export default function StudentProfile() {
-    const navigate = useNavigate();
     const alertShown = useRef(false);   //keeps track of whether the alert for an invalid id has been shown, keeps the alert from being shown twice
 
     const [studentData, setStudentData] = useState(null);
@@ -16,42 +14,24 @@ export default function StudentProfile() {
 
 
     useEffect(() => {
-        //verify that student ID is valid
-        if (!studentId || pathParts.length<3) {
-            setStudentData(null);
-            if(!alertShown.current){
-                alert("Error, try again.");
-                alertShown.current = true;
-            }
-            window.location.href = "/studentProfileInput";
-            return;
-        }
-        else if (studentId.length !== 8) {
-            setStudentData(null);
-            if (!alertShown.current) {
-                alert("Invalid student ID.");
-                alertShown.current = true;
-            }
-            window.location.href = "/studentProfileInput";
-            return;
-        }
-
+        validateStudentId();
+    
         //dummy student data for now
             //TODO: change registered_courses to work with ObjectId from database instead of course name
-        const data = [
-            { student_id: "10000001", name: "John Jover", email: "johnjover@johnmail.com", gender: "Male", registered_courses: ["Course 1", "Course 2", "Course 3", "Course 4"], registered_courses_grades: [85, 82, 77, 91], degree: "B.Sc.", major: "Computer Science", current_gpa: 83.75 },
-        ];
+        const data = [{ student_id: "10000001", name: "John Jover", email: "johnjover@johnmail.com", gender: "Male", registered_courses: ["Course 1", "Course 2", "Course 3", "Course 4"], registered_courses_grades: [85, 82, 77, 91], degree: "B.Sc.", major: "Computer Science", current_gpa: 83.75 }];
+
+        //TODO: pull from database instead of dummy data
+            //uncomment this when I can get the database connection to work
+        /*fetchStudentProfile();*/
 
         //find the student, from dummy data for now
         const student = data.find(student => student.student_id);
         setStudentData(student);
         setLoading(false);
-
-        //TODO: pull from database instead of dummy data
-            //un-comment when I can get the database connection to work
-        /*fetchStudentProfile();*/
     }, []);
 
+
+//methods
         //pull student data from database
         const fetchStudentProfile = async () => {
             try {
@@ -65,14 +45,37 @@ export default function StudentProfile() {
                 }
                 window.location.href = "/studentProfileInput";
             }
-
             setNotFound(false);
             alertShown.current = false; // Reset alertShown when student is found
             setLoading(false);
         }
+
+        //validate student ID is retrieved correctly and is the correct length
+        const validateStudentId = async () => { 
+            if (!studentId || pathParts.length<3) {
+                setStudentData(null);
+                if(!alertShown.current){
+                    alert("Error, try again.");
+                    alertShown.current = true;
+                }
+                window.location.href = "/studentProfileInput";
+                return;
+            }
+            else if (studentId.length !== 8) {
+                setStudentData(null);
+                if (!alertShown.current) {
+                    alert("Invalid student ID.");
+                    alertShown.current = true;
+                }
+                window.location.href = "/studentProfileInput";
+                return;
+            }
+        }
     
+
+//return
     //display student's profile data
-    //TODO: add more student data fields later depending on what we want to display
+    //TODO: add student data for completed courses
     return (
         <div>
             <HeaderLoader />
