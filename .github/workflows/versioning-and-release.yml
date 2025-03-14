@@ -33,12 +33,19 @@ jobs:
           npm install --save-dev standard-version
           npx standard-version
 
+      - name: Configure Git user
+        run: |
+          git config --global user.name "evan-pasenau"
+          git config --global user.email "evan.pas@icloud.com"
+
       # Push the version bump back to the repository
       - name: Push version changes
         run: |
           cd student-records-app
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@github.com"
+          git config --global user.name "evan-pasenau"
+          git config --global user.email "evan.pas@icloud.com"
+          git add package.json package-lock.json CHANGELOG.md
+          git commit -m "chore(release): version bump"
           git push --follow-tags
 
       # Create GitHub release
