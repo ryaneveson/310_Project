@@ -16,6 +16,7 @@ jobs:
 
       - name: Configure Git user
         run: |
+          cd student-records-app
           git config --global user.name "evan-pasenau"
           git config --global user.email "evan.pas@icloud.com"
 
