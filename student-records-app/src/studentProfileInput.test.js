@@ -24,11 +24,11 @@ test('navigates to student profile on submit', () => {
   const button = screen.getByLabelText(/View Profile/i);
 
   // Simulate user input
-  fireEvent.change(input, { target: { value: '123' } });
+  fireEvent.change(input, { target: { value: '10000001' } });
   fireEvent.click(button);
 
   // Check if the URL is updated
-  expect(window.location.href).toBe("/studentProfile/123");
+  expect(window.location.href).toBe("/studentProfile/10000001");
 });
 
 test('shows alert for empty student ID', () => {

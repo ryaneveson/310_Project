@@ -20,7 +20,7 @@ def after_request(response):
 def handle_options():
     return jsonify({}), 200
 
-MONGO_URI = "mongodb+srv://samijaffri01:6XjmdnygdfRrD8dF@cluster0.fgfo7.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+MONGO_URI = os.getenv("MONGO_URI")
 client = MongoClient(MONGO_URI)
 db = client["student_records"]
 users_collection = db["users"]
@@ -354,4 +354,16 @@ def test_user():
     return jsonify({"user": str(user)})
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+  app.run(debug=True, host="0.0.0.0", port=5000)
+
+@app.route("/api/student/studentprofile", methods=["GET"])
+def get_student_profile():
+    student_id = request.args.get("student_id")
+    if not student_id:
+        return jsonify({"error": "Student ID is required"}), 400
+
+    student = students_collection.find_one({"student_id": student_id})
+    if student:
+        return jsonify(student)
+    return jsonify({"error": "Student ID does not exist"}), 404
+    
