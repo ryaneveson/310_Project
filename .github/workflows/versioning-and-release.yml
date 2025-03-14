@@ -44,6 +44,8 @@ jobs:
           cd student-records-app
           git config --global user.name "evan-pasenau"
           git config --global user.email "evan.pas@icloud.com"
+          git add package.json package-lock.json CHANGELOG.md
+          git commit -m "chore(release): version bump"
           git push --follow-tags
 
       # Create GitHub release
