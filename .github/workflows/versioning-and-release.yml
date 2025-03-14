@@ -38,6 +38,12 @@ jobs:
           npm install --save-dev standard-version
           npx standard-version
 
+      - name: Check if CHANGELOG.md exists
+        run: |
+          cd student-records-app
+          if [ ! -f CHANGELOG.md ]; then echo "CHANGELOG.md file does not exist"; exit 1; fi
+
+
       # Checkout the main branch to commit changes
       - name: Checkout main branch
         run: |
