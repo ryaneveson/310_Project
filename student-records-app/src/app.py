@@ -71,7 +71,7 @@ def login():
         if user and bcrypt.checkpw(password.encode('utf-8'), user["password"].encode('utf-8')):
             return jsonify({
                 "success": True,
-                "role": "student",
+                "role": user["role"],
                 "message": "Login successful"
             }), 200
         
