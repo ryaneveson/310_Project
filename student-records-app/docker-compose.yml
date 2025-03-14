@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: ./  # Ensure this is your project root
+    container_name: student-records-app
+    environment:
+      - MONGO_URI=${MONGO_URI}
+    ports:
+      - "5000:5000"  # Flask
+      - "3000:3000"  # React
+    volumes:
+      - ./src:/student-records-app/src
+      - ./package.json:/student-records-app/package.json
+      - ./public:/student-records-app/public
+      - ./.env:/student-records-app/.env
+    networks:
+      - student-network
+    command: bash -c "npm install && npm start & python src/app.py"
+
+networks:
+  student-network:
+    driver: bridge

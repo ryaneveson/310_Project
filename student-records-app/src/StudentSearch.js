@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import "./frontend/studentSearch.css";
+import axios from "axios";
 
-function StudentSearch({ mockStudents = null }) {
+function StudentSearch({mockStudents = null}) {
     const [userRole, setUserRole] = useState(null);
+    const [selectedStudents, setSelectedStudents] = useState([]);
     const [students, setStudents] = useState([]);
     const [allClasses, setAllClasses] = useState([]);
+    const [loading, setLoading] = useState(true);
+
     // State management
     const [selectedClasses, setSelectedClasses] = useState(new Set());
     const [searchTerm, setSearchTerm] = useState(""); 
@@ -14,6 +17,13 @@ function StudentSearch({ mockStudents = null }) {
     const [isSidebarVisible, setSidebarVisible] = useState(true);
 
     useEffect(() => {
+        const role = localStorage.getItem("role");
+        if (!role) {
+            window.location.href = "/";
+            return;
+        }
+        setUserRole(role);
+
         if(mockStudents){
             setStudents(mockStudents);
             const allUniqueClasses = [
@@ -24,42 +34,40 @@ function StudentSearch({ mockStudents = null }) {
                 )
             ].sort();
             setAllClasses(allUniqueClasses);
-            setUserRole("admin");
+            setLoading(false);
             return;
         }
-        const role = localStorage.getItem("role");
-        if (!role) {
-            window.location.href = "/";
-            return;
-        }
-        setUserRole(role);
+        console.log(mockStudents);
 
         const fetchStudents = async () => {
             try {
-              const response = await axios.get(`http://localhost:5000/api/student`);
-              const studentData = response.data.students;
-              const formattedStudents = studentData.map(student => ({
-                name: student.name,
-                lastName: student.lastName,
-                studentNumber: student.studentNumber,
-                gpa: student.gpa,
-                classes: student.classes
-              }));
-              setStudents(formattedStudents);
+                const response = await axios.get(`http://localhost:5000/api/student`);
+                const studentData = response.data.students;
+                const formattedStudents = studentData.map(student => ({
+                    name: student.name,
+                    lastName: student.lastName,
+                    studentNumber: student.studentNumber,
+                    gpa: student.gpa,
+                    classes: student.classes
+                }));
+                setStudents(formattedStudents);
 
-              const allUniqueClasses = [
-                ...new Set(
+                // Extract unique classes from all students
+                const uniqueClasses = [...new Set(
                     formattedStudents
                         .flatMap(student => student.classes)
-                        .filter(className => /^[A-Z]{4} [0-9]{3}$/.test(className)) //excludes all courses that dont follow the standard naming convention
-                )
-            ].sort();
-              setAllClasses(allUniqueClasses);
+                        .filter(className => /^[A-Z]{4} [0-9]{3}$/.test(className))
+                )].sort();
+                setAllClasses(uniqueClasses);
+                setLoading(false);
             } catch (err) {
-              alert("error");
+                console.error("Error fetching students:", err);
+                alert("Error fetching students");
+                setLoading(false);
             }
-          };
-          fetchStudents();
+        };
+
+        fetchStudents();
     }, []);
 
     const handleLogout = () => {
@@ -121,6 +129,28 @@ function StudentSearch({ mockStudents = null }) {
         setSearchTerm("");
     };
 
+    const exportSelectedToJson = () => {
+        const dataStr = JSON.stringify(selectedStudents, null, 2);
+        const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+        const exportFileDefaultName = 'selected_students.json';
+
+        const linkElement = document.createElement('a');
+        linkElement.setAttribute('href', dataUri);
+        linkElement.setAttribute('download', exportFileDefaultName);
+        linkElement.click();
+    };
+
+    const exportAllStudentsToJson = () => {
+        const dataStr = JSON.stringify(students, null, 2);
+        const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+        const exportFileDefaultName = 'all_students.json';
+
+        const linkElement = document.createElement('a');
+        linkElement.setAttribute('href', dataUri);
+        linkElement.setAttribute('download', exportFileDefaultName);
+        linkElement.click();
+    };
+
     if (!userRole) {
         return <div>Loading...</div>;
     }
@@ -137,6 +167,10 @@ function StudentSearch({ mockStudents = null }) {
         );
     }
 
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
     return (
         <div id="studentSearch">
             <aside className="sidebar" id="sidebar">
@@ -149,8 +183,8 @@ function StudentSearch({ mockStudents = null }) {
                         onChange={(e) => updateMaxGpa(e.target.value)}
                         className="grade-box"
                     />
-                    <button id="clear-btn" className="btn" data-testid="reset" onClick={clearMax}>Reset</button>
                 </label>
+                <button id="clear-btn" className="btn" data-testid="reset" onClick={clearMax}>Reset</button>
                 <br />
                 <label>Minimum Percentage Average:<br />
                     <input
@@ -161,15 +195,13 @@ function StudentSearch({ mockStudents = null }) {
                         onChange={(e) => updateMinGpa(e.target.value)}
                         className="grade-box"
                     />
-                    <button id="clear-btn" className="btn" data-testid="reset" onClick={clearMin}>Reset</button>
                 </label>
+                <button id="clear-btn" className="btn" data-testid="reset" onClick={clearMin}>Reset</button>
                 <br />
-                <div className="button-container">
-                    <button id="reset-btn" className="btn" data-testid="reset" onClick={reset}>Reset All</button>
-                    <button id="toggle-btn" className="btn" onClick={toggleClasses}>
-                        {isSidebarVisible ? 'Collapse' : 'Expand'}
-                    </button>
-                </div>
+                <button id="reset-btn" className="btn" data-testid="reset" onClick={reset}>Reset All</button>
+                <button id="toggle-btn" className="btn" onClick={toggleClasses}>
+                    {isSidebarVisible ? 'Collapse' : 'Expand'}
+                </button>
                 <h3>Classes</h3>
                 <div className="checkboxes" data-testid="checkboxes" style={{
                     height: isSidebarVisible ? 'auto' : '0',
@@ -177,15 +209,15 @@ function StudentSearch({ mockStudents = null }) {
                     overflow: 'hidden'
                 }}>
                     {allClasses.map((className) => (
-                        <div key={className} >
+                        <div key={className}>
                             <label>
-                                {className}
                                 <input
                                     type="checkbox"
-                                    data-testid={className}
+                                    data-testid="checkbox"
                                     checked={selectedClasses.has(className)}
                                     onChange={() => handleClassSelection(className)}
                                 />
+                                {className}
                             </label>
                             <br />
                         </div>
@@ -205,6 +237,7 @@ function StudentSearch({ mockStudents = null }) {
                         />
                     </label>
                     <button id="clear-btn" className="btn" onClick={clearSearch}>Clear</button>
+                    <button id="export-all-btn" className="btn" onClick={exportAllStudentsToJson}>Export All Students</button>
                 </div>
                 <div id="results">
                     <h2>Filtered Students:</h2>
@@ -224,7 +257,12 @@ function StudentSearch({ mockStudents = null }) {
                                     <td>{student.lastName}</td>
                                     <td>{student.studentNumber}</td>
                                     <td>
-                                        <button className="btn" onClick={() => window.location.href = `/studentProfile/${encodeURIComponent(student.studentNumber)}`}>
+                                        <button className="btn" onClick={() => {
+                                            setSelectedStudents(prev => [...prev, student]);
+                                        }}>
+                                            Select Student
+                                        </button>
+                                        <button className="btn" onClick={() => window.location.href=`/studentProfile/${encodeURIComponent(student.studentNumber)}`}>
                                             Go to Profile
                                         </button>
                                     </td>
@@ -233,6 +271,36 @@ function StudentSearch({ mockStudents = null }) {
                         </tbody>
                     </table>
                 </div>
+            </article>
+            <article id="selected-students">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <h2>Selected Students</h2>
+                    <button className="btn" onClick={exportSelectedToJson}>Export Selected</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Student Number</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {selectedStudents.map((student, index) => (
+                            <tr key={index}>
+                                <td>{student.name}</td>
+                                <td>{student.lastName}</td>
+                                <td>{student.studentNumber}</td>
+                                <td>
+                                    <button className="btn" onClick={() => setSelectedStudents(prev => prev.filter(s => s.studentNumber !== student.studentNumber))}>
+                                        Remove Student
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             </article>
         </div>
     );
