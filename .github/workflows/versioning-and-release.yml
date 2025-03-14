@@ -14,9 +14,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      # Configure Git user
       - name: Configure Git user
         run: |
-          cd student-records-app
           git config --global user.name "evan-pasenau"
           git config --global user.email "evan.pas@icloud.com"
 
@@ -26,7 +26,7 @@ jobs:
         with:
           node-version: '20'
 
-      # Install dependencies 
+      # Install dependencies
       - name: Install dependencies
         run: |
           cd student-records-app
@@ -39,26 +39,17 @@ jobs:
           npm install --save-dev standard-version
           npx standard-version
 
-      - name: Check if CHANGELOG.md exists
+      # Check if there are changes to commit (only if CHANGELOG.md, package.json, or package-lock.json changed)
+      - name: Check if there are changes to commit
         run: |
           cd student-records-app
-          if [ ! -f CHANGELOG.md ]; then echo "CHANGELOG.md file does not exist"; exit 1; fi
-
-
-      # Checkout the main branch to commit changes
-      - name: Checkout main branch
-        run: |
-          git fetch origin
-          git checkout main  # Ensure we are on the main branch
-          git pull origin main  # Ensure we're up to date with the main branch
-
-      # Push the version bump back to the repository
+          git diff --quiet || echo "Changes detected"
+      
+      # Push the version bump back to the repository only if there are changes
       - name: Push version changes
         run: |
           cd student-records-app
-          git add package.json package-lock.json CHANGELOG.md 
-          git commit -m "chore(release): version bump"
-          git push --follow-tags
+          git diff --quiet || (git add package.json package-lock.json CHANGELOG.md && git commit -m "chore(release): version bump" && git push origin main --follow-tags)
 
       # Create GitHub release
       - name: Create GitHub Release
