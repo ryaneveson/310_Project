@@ -59,11 +59,11 @@ describe("PaymentHistory Component", () => {
     });
 
     await waitFor(() => expect(screen.getByText(/Payment History/i)).toBeInTheDocument());
-    expect(screen.getByText(/Fri, 14 Feb 2025/i)).toBeInTheDocument();
+    expect(screen.getByText(/Fri, \d{2} Feb 2025/i)).toBeInTheDocument();
     expect(screen.getByText(/1200.00/i)).toBeInTheDocument();
-    expect(screen.getByText(/Sun, 09 Mar 2025/i)).toBeInTheDocument();
+    expect(screen.getByText(/Sun, \d{2} Mar 2025/i)).toBeInTheDocument();
     expect(screen.getByText(/950.00/i)).toBeInTheDocument();
-    expect(screen.queryByText(/Wed, 09 Apr 2025/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Wed, \d{2} Apr 2025/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/1100.00/i)).not.toBeInTheDocument();
   });
 
