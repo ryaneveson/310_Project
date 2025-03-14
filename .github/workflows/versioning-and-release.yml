@@ -49,7 +49,7 @@ jobs:
       - name: Push version changes
         run: |
           cd student-records-app
-          git add package.json package-lock.json CHANGELOG.md
+          git add package.json package-lock.json CHANGELOG.md 
           git commit -m "chore(release): version bump"
           git push --follow-tags
 
