@@ -20,7 +20,7 @@ const Header = () => {
       <ul className={`dropdown-menu ${menuOpen ? "open" : ""}`}>
         <li><a href="/Dashboard">Home</a></li>
         <li><a href="/Finances">Financial Dashboard</a></li>
-        <li><a href="/Courses">Courses</a></li>
+        <li><a href="/academicdashboard">Academic Dashboard</a></li>
         <li><button onClick={handleLogout} className="logout-menu-item">Logout</button></li>
       </ul>
     </header>
