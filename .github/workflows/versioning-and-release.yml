@@ -25,7 +25,7 @@ jobs:
         with:
           node-version: '20'
 
-      # Install dependencies
+      # Install dependencies 
       - name: Install dependencies
         run: |
           cd student-records-app
