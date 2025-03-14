@@ -33,6 +33,11 @@ jobs:
           npm install --save-dev standard-version
           npx standard-version
 
+      - name: Configure Git user
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+
       # Push the version bump back to the repository
       - name: Push version changes
         run: |
