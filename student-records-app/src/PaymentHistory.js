@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import "./frontend/financeSummaryStyles.css";
 
-const PaymentHistory = () => {
+const PaymentHistory = ({mockPayments=null}) => {
   const [userRole, setUserRole] = useState(null);
   const [loading, setLoading] = useState(true);
   const [payments, setPayments] = useState([]);
@@ -15,6 +15,16 @@ const PaymentHistory = () => {
       return;
     }
     setUserRole(role);
+
+    if(mockPayments){
+      const formattedPayments = mockPayments.filter(item => item.item_name === "payment").map(item => ({
+        date: new Date(item.due_date).toLocaleDateString('en-GB', {weekday: 'short', day: '2-digit',  month: 'short', year: 'numeric'}),
+        amount: item.amount
+      }));
+      setPayments(formattedPayments);
+      setLoading(false);
+      return;
+    }
 
     const fetchFinances = async () => {
         try {
