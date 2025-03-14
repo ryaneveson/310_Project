@@ -15,26 +15,10 @@ const Login = () => {
       .then((data) => (document.getElementById("footer").innerHTML = data));
   }, []);
 
-  const users = {
-    admin: { username: "admin", password: "adminpass", role: "admin" },
-    student: { username: "student", password: "studentpass", role: "student" },
-  };
-
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
 
-    // First check hardcoded users
-    if ((username === users.admin.username && password === users.admin.password) ||
-        (username === users.student.username && password === users.student.password)) {
-      const role = username === users.admin.username ? "admin" : "student";
-      localStorage.setItem("role", role);
-      localStorage.setItem("username", username);
-      setStep(2);
-      return;
-    }
-
-    // If not hardcoded user, try database
     try {
       console.log('Attempting database login with:', { username });
 
@@ -53,8 +37,23 @@ const Login = () => {
       console.log('Server response:', data);
 
       if (data.success) {
-        localStorage.setItem("role", "student");
+        // Clear any existing role first
+        localStorage.removeItem("role");
+        localStorage.removeItem("username");
+        
+        // Set the new role and username
+        localStorage.setItem("role", data.role);
         localStorage.setItem("username", username);
+        
+        // Verify the role was set correctly
+        const storedRole = localStorage.getItem("role");
+        console.log('Verified stored role:', storedRole);
+        
+        if (storedRole !== data.role) {
+          setError("Error: Role not stored correctly");
+          return;
+        }
+
         setStep(2);
       } else {
         setError(data.error || "Invalid username or password!");
@@ -65,18 +64,23 @@ const Login = () => {
     }
   };
   
-
   const handle2FA = (e) => {
     e.preventDefault();
     if (code === "123456") {
       const role = localStorage.getItem("role");
+      console.log('Current role in localStorage before redirect:', role);
+      
+      if (!role) {
+        setError("Error: No role found in localStorage");
+        return;
+      }
+
       console.log(`${role.charAt(0).toUpperCase() + role.slice(1)} logged in!`);
       window.location.href = "/dashboard";
     } else {
       setError("Invalid 2FA code!");
     }
-};
-
+  };
 
   return (
     <div className="page-container">
