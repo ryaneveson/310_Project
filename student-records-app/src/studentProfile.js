@@ -18,7 +18,7 @@ export default function StudentProfile() {
     
         //dummy student data for now
             //TODO: change registered_courses to work with ObjectId from database instead of course name
-        const data = [{ student_id: "10000001", name: "John Jover", email: "johnjover@johnmail.com", gender: "Male", registered_courses: ["Course 1", "Course 2", "Course 3", "Course 4"], registered_courses_grades: [85, 82, 77, 91], degree: "B.Sc.", major: "Computer Science", current_gpa: 83.75 }];
+        const data = [{ student_id: "10000001", name: "John Jover", email: "johnjover@johnmail.com", gender: "Male", registered_courses: ["Course 1", "Course 2", "Course 3", "Course 4"], registered_courses_grades: [85, 82, 77, 91], degree: "B.Sc.", major: "Computer Science", gpa: 83.75 }];
 
         //TODO: pull from database instead of dummy data
             //uncomment this when I can get the database connection to work
@@ -118,7 +118,7 @@ export default function StudentProfile() {
                                 </tr>
                                 <tr>
                                     <td><strong>GPA:</strong></td>
-                                    <td>{studentData.current_gpa}</td>
+                                    <td>{studentData.gpa}</td>
                                 </tr>
                             </tbody>
                         </table>
