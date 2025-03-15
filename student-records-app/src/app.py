@@ -341,7 +341,62 @@ def add_fee():
         print(f"Inserted fee for student {student_id} with ID: {result.inserted_id}")
 
     return jsonify({"message": "Fees added successfully for selected students."}), 201
+
+@app.route("/api/add-student", methods=["POST"])
+def add_student():
+    print("hellow world")
+    # Get data from the request body
+    data = request.get_json()
+
+    # Ensure required fields are present in the request
+    required_fields = ["firstname", "lastname", "email", "gender", "degree", "major"]
+    for field in required_fields:
+        if field not in data:
+            return jsonify({"error": f"{field} is required."}), 400
+        
+    last_student = students_collection.find().sort("student_id", -1).limit(1)
+    if last_student.alive:
+        last_student_id = last_student[0]["student_id"]
+    else:
+        last_student_id = "10000000"
+    student_id = str(int(last_student_id) + 1)
+
+    # Create the student document
+    student_doc = {
+        "student_id": student_id,
+        "first_name": data["firstname"],
+        "last_name": data["lastname"],
+        "email": data["email"],
+        "gender": data["gender"],
+        "registered_courses": [],
+        "registered_courses_grades": [],
+        "completed_courses": [],
+        "completed_courses_grades": [],
+        "degree": data["degree"],
+        "major": data["major"]
+    }
+
+    # Insert the student document into the MongoDB collection
+    try:
+        result = students_collection.insert_one(student_doc)
+        return jsonify({"message": "Student added successfully.", "student_id": student_id}), 201
+    except Exception as e:
+        return jsonify({"error": f"Error adding student: {str(e)}"}), 500
     
+@app.route("/api/delete-students", methods=["POST"])
+def delete_students():
+    data = request.get_json()
+    student_numbers = data.get("studentNumbers", [])
+    if not student_numbers:
+        return jsonify({"error": "No student numbers provided."}), 400
+    try:
+        result = students_collection.delete_many({"student_id": {"$in": student_numbers}})
+        if result.deleted_count > 0:
+            return jsonify({"message": f"{result.deleted_count} student(s) deleted successfully."}), 200
+        else:
+            return jsonify({"error": "No students found with the provided IDs."}), 404
+    except Exception as e:
+        return jsonify({"error": f"Error deleting students: {str(e)}"}), 500
 
 @app.before_request
 def log_request():
@@ -366,4 +421,3 @@ def get_student_profile():
     if student:
         return jsonify(student)
     return jsonify({"error": "Student ID does not exist"}), 404
-    
