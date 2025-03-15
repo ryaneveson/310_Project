@@ -100,8 +100,30 @@ function ManageStudents({ mockStudents = null }) {
         }
     };
 
-    const deleteStudents = (e) => {
-
+    const deleteStudents = () => {
+        if (selectedStudents.length === 0) {
+            alert("No students selected to delete.");
+            return;
+        }
+        const studentIdsToDelete = selectedStudents.map(student => student.studentNumber);
+        fetch("http://localhost:5000/api/delete-students", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ studentNumbers: studentIdsToDelete }),
+          })
+            .then(async (response) => {
+              const data = await response.json();
+              if (response.ok) {
+                alert('Students deleted successfully.');
+                window.location.href="/manageStudents";
+                setSelectedStudents([]);
+              } else {
+                alert(`Error deleting students: ${data.error || 'Unknown error'}`);
+              }
+            })
+            .catch((error) => alert(`Error deleting students: ${error.message || 'Unknown error'}`));
     };
 
     const handleSubmit = (e) => {
@@ -135,13 +157,7 @@ function ManageStudents({ mockStudents = null }) {
             const data = await response.json();
             if (response.ok) {
                 alert('Student added successfully.');
-                setNewStudentFirstname("");
-                setNewStudentLastname("");
-                setNewStudentEmail("");
-                setNewStudentGender(null);
-                setNewStudentOtherGender("");
-                setNewStudentDegree("");
-                setNewStudentMajor("");
+                window.location.href="/manageStudents"
             } else {
                 alert(`Error adding student1: ${data.error || 'Unknown error'}`);
             }
@@ -164,6 +180,7 @@ function ManageStudents({ mockStudents = null }) {
                         />
                     </label>
                     <button id="clear-btn" className="btn" onClick={clearSearch}>Clear</button>
+                    <button className="btn" onClick={() => {const confirmed = window.confirm(`Are you sure you want to delete All students?`); if (!confirmed) return; setSelectedStudents(students); deleteStudents();}}>Delete All Students</button>
                 </div>
                 <div id="results">
                     <h2>Filtered Students</h2>
@@ -212,7 +229,7 @@ function ManageStudents({ mockStudents = null }) {
                     <label>Last Name:
                         <input
                             type="text"
-                            placeholder="Student Lastname . . ."
+                            placeholder="Students Lastname . . ."
                             value={newStudentLastname}
                             id="student-lastname"
                             onChange={(e) => setNewStudentLastname(e.target.value)}

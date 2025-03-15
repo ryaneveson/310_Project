@@ -382,6 +382,21 @@ def add_student():
         return jsonify({"message": "Student added successfully.", "student_id": student_id}), 201
     except Exception as e:
         return jsonify({"error": f"Error adding student: {str(e)}"}), 500
+    
+@app.route("/api/delete-students", methods=["POST"])
+def delete_students():
+    data = request.get_json()
+    student_numbers = data.get("studentNumbers", [])
+    if not student_numbers:
+        return jsonify({"error": "No student numbers provided."}), 400
+    try:
+        result = students_collection.delete_many({"student_id": {"$in": student_numbers}})
+        if result.deleted_count > 0:
+            return jsonify({"message": f"{result.deleted_count} student(s) deleted successfully."}), 200
+        else:
+            return jsonify({"error": "No students found with the provided IDs."}), 404
+    except Exception as e:
+        return jsonify({"error": f"Error deleting students: {str(e)}"}), 500
 
 @app.before_request
 def log_request():
