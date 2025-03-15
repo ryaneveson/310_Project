@@ -14,9 +14,15 @@ function AddFee({ mockStudents = null }) {
     const [feeAmount, setFeeAmount] = useState("");
     const [feeDate, setFeeDate] = useState("");
     const [loading, setLoading] = useState(true);
-    const [errorMessage, setErrorMessage] = useState("");
 
     useEffect(() => {
+        const role = localStorage.getItem("role");
+        if (!role) {
+            window.location.href = "/";
+            return;
+        }
+        setUserRole(role);
+
         if(mockStudents){
             setStudents(mockStudents);
             const allUniqueClasses = [
@@ -27,15 +33,9 @@ function AddFee({ mockStudents = null }) {
                 )
             ].sort();
             setAllClasses(allUniqueClasses);
-            setUserRole("admin");
+            setLoading(false);
             return;
         }
-        const role = localStorage.getItem("role");
-        if (!role) {
-            window.location.href = "/";
-            return;
-        }
-        setUserRole(role);
 
         const fetchStudents = async () => {
             try {
@@ -163,10 +163,9 @@ function AddFee({ mockStudents = null }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        setErrorMessage("");
 
         if (!feeName || !feeAmount || !feeDate || selectedStudents.length === 0) {
-            setErrorMessage("All fields are required and at least one student must be selected.");
+            alert("All fields are required and at least one student must be selected.");
             return;
         }
 

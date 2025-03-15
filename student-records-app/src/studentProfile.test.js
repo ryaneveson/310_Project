@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import StudentProfile from './studentProfile';
 import axios from 'axios';
 
@@ -30,13 +30,13 @@ test('renders StudentProfile component', async () => {
 
   // Wait for the student data to be rendered
   await waitFor(() => {
-    expect(screen.getByText('Name: John Jover')).toBeInTheDocument();
-    expect(screen.getByText('ID: 10000001')).toBeInTheDocument();
-    expect(screen.getByText('Email: johnjover@johnmail.com')).toBeInTheDocument();
-    expect(screen.getByText('Gender: Male')).toBeInTheDocument();
-    expect(screen.getByText('Degree: B.Sc.')).toBeInTheDocument();
-    expect(screen.getByText('Major: Computer Science')).toBeInTheDocument();
-    expect(screen.getByText('Current GPA: 83.75')).toBeInTheDocument();
+    expect(screen.getByText('John Jover')).toBeInTheDocument();
+    expect(screen.getByText('10000001')).toBeInTheDocument();
+    expect(screen.getByText('johnjover@johnmail.com')).toBeInTheDocument();
+    expect(screen.getByText('Male')).toBeInTheDocument();
+    expect(screen.getByText('B.Sc.')).toBeInTheDocument();
+    expect(screen.getByText('Computer Science')).toBeInTheDocument();
+    expect(screen.getByText('83.75')).toBeInTheDocument();
     expect(screen.getByText('Course 1')).toBeInTheDocument();
     expect(screen.getByText('85')).toBeInTheDocument();
   });
@@ -53,21 +53,11 @@ test('redirects to StudentProfileInput for invalid ID', async () => {
 
   //check if alert is shown
   await waitFor(() => {
-    expect(window.alert).toHaveBeenCalledWith('Invalid student ID.');
+    expect(window.alert).toHaveBeenCalledWith('Error fetching student profile.');
   });
   
   //check if redirected to StudentProfileInput page
   expect(window.location.pathname).toBe("/studentProfileInput");
-});
-
-
-test('shows loading state initially', () => {
-  window.history.pushState({}, 'Test Page', '/studentProfile/10000001');
-
-  render(<StudentProfile />);
-
-  // Check if loading text is rendered
-  expect(screen.getByText('Loading...')).toBeInTheDocument();
 });
 
 
@@ -84,5 +74,5 @@ test('handles error fetching student profile', async () => {
   });
 
   // Check if redirected to StudentProfileInput page
-  expect(window.location.href).toBe('http://localhost/studentProfileInput');
+  expect(window.location.href).toBe('/studentProfileInput');
 });

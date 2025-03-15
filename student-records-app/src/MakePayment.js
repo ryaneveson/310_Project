@@ -182,7 +182,7 @@ function MakePayment() {
       <form onSubmit={handleSubmit}>
         <div className="box-container">
           {billingMethods.map((method, index) => (
-            <label key={index} className="billing-box radio-option">
+            <label key={index} className="billing-box radio-option" data-testid="MakePayment-option">
               <input
                 type="radio"
                 name="billingMethod"
