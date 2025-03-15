@@ -105,6 +105,48 @@ function ManageStudents({ mockStudents = null }) {
     };
 
     const handleSubmit = (e) => {
+        e.preventDefault();
+
+        if (!newStudentFirstname || !newStudentLastname || !newStudentEmail || (!newStudentGender && !newStudentOtherGender) || !newStudentDegree || !newStudentMajor) {
+            alert("All fields are required.");
+            return;
+        }
+        let newGender = newStudentGender;
+        if (!newGender || newGender === "Other") {
+            newGender = newStudentOtherGender;
+        }
+
+        const studentData = {
+            firstname: newStudentFirstname,
+            lastname: newStudentLastname,
+            email: newStudentEmail,
+            gender: newGender,
+            degree: newStudentDegree,
+            major: newStudentMajor
+        };
+        fetch("http://localhost:5000/api/add-student", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(studentData),
+        })
+        .then(async (response) => {
+            const data = await response.json();
+            if (response.ok) {
+                alert('Student added successfully.');
+                setNewStudentFirstname("");
+                setNewStudentLastname("");
+                setNewStudentEmail("");
+                setNewStudentGender(null);
+                setNewStudentOtherGender("");
+                setNewStudentDegree("");
+                setNewStudentMajor("");
+            } else {
+                alert(`Error adding student1: ${data.error || 'Unknown error'}`);
+            }
+        })
+        .catch((error) => alert(`Error adding student: ${error.message || 'Unknown error'}`));
     };
 
     return (
@@ -162,14 +204,16 @@ function ManageStudents({ mockStudents = null }) {
                             type="text"
                             placeholder="Students Firstname . . ."
                             id="student-firstname"
+                            value={newStudentFirstname}
                             onChange={(e) => setNewStudentFirstname(e.target.value)}
                             className="student-box"
                         />
                     </label>
-                    <label>First Name:
+                    <label>Last Name:
                         <input
                             type="text"
                             placeholder="Student Lastname . . ."
+                            value={newStudentLastname}
                             id="student-lastname"
                             onChange={(e) => setNewStudentLastname(e.target.value)}
                             className="student-box"
@@ -179,6 +223,7 @@ function ManageStudents({ mockStudents = null }) {
                         <input
                             type="text"
                             placeholder="example@gmail.com"
+                            value={newStudentEmail}
                             id="student-email"
                             onChange={(e) => setNewStudentEmail(e.target.value)}
                             className="student-box"
@@ -200,6 +245,7 @@ function ManageStudents({ mockStudents = null }) {
                         <input
                             type="text"
                             placeholder="Students Degree . . ."
+                            value={newStudentDegree}
                             id="stuent-degree"
                             onChange={(e) => setNewStudentDegree(e.target.value)}
                             className="student-box"
@@ -209,6 +255,7 @@ function ManageStudents({ mockStudents = null }) {
                         <input
                             type="text"
                             placeholder="Students Major . . ."
+                            value={newStudentMajor}
                             id="stuent-major"
                             onChange={(e) => setNewStudentMajor(e.target.value)}
                             className="student-box"

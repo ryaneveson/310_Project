@@ -186,12 +186,12 @@ function AddFee({ mockStudents = null }) {
             const data = await response.json();
             if (response.ok) {
                 alert('Fees added successfully for selected students.');
+                window.location.href="/addFee";
             } else {
                 alert(`Error adding fees: ${data.error}`);
             }
         })
         .catch((error) => alert(`Error adding fees: ${error}`));
-        //window.location.href="/addFee";
     };
 
     return (
