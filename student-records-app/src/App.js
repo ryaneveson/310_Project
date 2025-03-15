@@ -16,6 +16,7 @@ import AddPaymentMethod from "./addPaymentMethod";
 import PaymentHistory from "./PaymentHistory";
 import UpcomingDue from "./UpcomingDue";
 import AddFee from "./AddFee";
+import ManageStudents from "./ManageStudents";
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
         <Route path="/paymentHistory" element={<PaymentHistory />} />
         <Route path="/upcomingDue" element={<UpcomingDue />} />
         <Route path="/addFee" element={<AddFee />} />
+        <Route path="/manageStudents" element={<ManageStudents />} /> 
       </Routes>
     </Router>
   );
