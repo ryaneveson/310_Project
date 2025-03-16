@@ -8,17 +8,15 @@ import os
 
 app = Flask(__name__)
 
-# Remove any existing CORS configuration and use this simple setup
-@app.after_request
-def after_request(response):
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
-    response.headers.add('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-    return response
-
-@app.route("/login", methods=['OPTIONS'])
-def handle_options():
-    return jsonify({}), 200
+# Configure CORS
+CORS(app, 
+     resources={r"/*": {
+         "origins": ["http://localhost:3000"],
+         "methods": ["GET", "POST", "OPTIONS"],
+         "allow_headers": ["Content-Type"],
+         "expose_headers": ["Content-Type"],
+         "supports_credentials": True
+     }})
 
 MONGO_URI = os.getenv("MONGO_URI")
 client = MongoClient(MONGO_URI)
@@ -29,63 +27,76 @@ courses_collection = db["Courses"]
 finances_collection = db["Finances"]
 payment_methods_collection = db["payment_methods"]
 
+# Global OPTIONS handler for all routes
+@app.route('/', defaults={'path': ''}, methods=['OPTIONS'])
+@app.route('/<path:path>', methods=['OPTIONS'])
+def handle_options(path):
+    return '', 204
+
 @app.route("/register", methods=["POST"])
 def register():
     data = request.json
     username = data.get("username")
-    password = data.get("password").encode("utf-8")
-    role = data.get("role", "student")  # default to student if not specified
+    password = data.get("password")
+    student_id = data.get("student_id")
 
-    if users_collection.find_one({"username": username}):
+    if not all([username, password, student_id]):
+        return jsonify({"error": "Username, password, and student ID are required"}), 400
+
+    # Check if student exists and doesn't have an account
+    student = students_collection.find_one({"student_id": student_id})
+    if not student:
+        return jsonify({"error": "Invalid student ID"}), 404
+    
+    if student.get("username") or student.get("password"):
+        return jsonify({"error": "Account already exists for this student"}), 400
+
+    # Check if username is already taken by another student
+    existing_user = students_collection.find_one({"username": username})
+    if existing_user:
         return jsonify({"error": "Username already exists"}), 400
 
-    hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
-
-    users_collection.insert_one({
-        "username": username,
-        "password": hashed_password.decode("utf-8"),
-        "role": role
-    })
-
-    return jsonify({"message": "User registered successfully!"}), 201
+    # Update student record with new username and password
+    try:
+        students_collection.update_one(
+            {"student_id": student_id},
+            {"$set": {
+                "username": username,
+                "password": password
+            }}
+        )
+        return jsonify({"message": "Account created successfully!"}), 201
+    except Exception as e:
+        return jsonify({"error": f"Error creating account: {str(e)}"}), 500
 
 @app.route("/login", methods=["POST"])
 def login():
     try:
         data = request.json
-        print("Received login request:", data)
-        
-        if not data:
-            return jsonify({"error": "No data received"}), 400
-            
         username = data.get("username")
         password = data.get("password")
-        
+
         if not username or not password:
             return jsonify({"error": "Missing username or password"}), 400
 
-        print(f"Looking for user: {username}")
-        user = users_collection.find_one({"username": username})
-        print(f"Found user: {user}")
+        # Find student with matching username
+        student = students_collection.find_one({"username": username})
 
-        if user and bcrypt.checkpw(password.encode('utf-8'), user["password"].encode('utf-8')):
+        # Simple string comparison for password
+        if student and student.get("password") == password:
             return jsonify({
                 "success": True,
-                "role": user["role"],
+                "role": student.get("role", "student"),
+                "student_id": student.get("student_id"),
+                "username": student["username"],
                 "message": "Login successful"
             }), 200
-        
-        return jsonify({
-            "success": False,
-            "error": "Invalid credentials"
-        }), 401
+
+        return jsonify({"success": False, "error": "Invalid credentials"}), 401
 
     except Exception as e:
-        print(f"Login error: {str(e)}")
-        return jsonify({
-            "success": False,
-            "error": str(e)
-        }), 500
+        print("Login error:", str(e))
+        return jsonify({"success": False, "error": str(e)}), 500
 
 #route to student profile page for a given student ID
 @app.route("/submit-student-id", methods=["POST"])
@@ -179,7 +190,7 @@ def get_students_payment_methods():
         return jsonify({"error": "Student ID is required"}), 400
     if len(student_id) != 8 or not student_id.isdigit():
         return jsonify({"error": "Student ID must be an 8-digit number"}), 400
-    student = students_collection.find_one({"student_id": student_id})
+    student = students_collection.find_one({"student_id": student["_id"]}, {"_id": 0})
     if not student:
         return jsonify({"error": "Student not found"}), 404
     payment_methods = list(payment_methods_collection.find({"student_id": student["_id"]}, {"_id": 0}))
@@ -344,7 +355,7 @@ def add_fee():
 
 @app.route("/api/add-student", methods=["POST"])
 def add_student():
-    print("hellow world")
+    print("Adding new student...")
     # Get data from the request body
     data = request.get_json()
 
@@ -354,6 +365,7 @@ def add_student():
         if field not in data:
             return jsonify({"error": f"{field} is required."}), 400
         
+    # Get the next available student ID
     last_student = students_collection.find().sort("student_id", -1).limit(1)
     if last_student.alive:
         last_student_id = last_student[0]["student_id"]
@@ -361,7 +373,7 @@ def add_student():
         last_student_id = "10000000"
     student_id = str(int(last_student_id) + 1)
 
-    # Create the student document
+    # Create the student document with new fields
     student_doc = {
         "student_id": student_id,
         "first_name": data["firstname"],
@@ -373,13 +385,19 @@ def add_student():
         "completed_courses": [],
         "completed_courses_grades": [],
         "degree": data["degree"],
-        "major": data["major"]
+        "major": data["major"],
+        "username": "", 
+        "password": "",  
+        "role": "student"  
     }
 
     # Insert the student document into the MongoDB collection
     try:
         result = students_collection.insert_one(student_doc)
-        return jsonify({"message": "Student added successfully.", "student_id": student_id}), 201
+        return jsonify({
+            "message": "Student added successfully.", 
+            "student_id": student_id
+        }), 201
     except Exception as e:
         return jsonify({"error": f"Error adding student: {str(e)}"}), 500
     
@@ -409,7 +427,7 @@ def test_user():
     return jsonify({"user": str(user)})
 
 if __name__ == "__main__":
-  app.run(debug=True, host="0.0.0.0", port=5000)
+    app.run(debug=True, host="0.0.0.0", port=5000)
 
 @app.route("/api/student/studentprofile", methods=["GET"])
 def get_student_profile():
@@ -421,3 +439,36 @@ def get_student_profile():
     if student:
         return jsonify(student)
     return jsonify({"error": "Student ID does not exist"}), 404
+
+@app.route("/api/verify-student", methods=["POST"])
+def verify_student():
+    data = request.json
+    student_id = data.get("student_id")
+    
+    if not student_id:
+        return jsonify({"success": False, "error": "Student ID is required"}), 400
+        
+    # Check if student exists and doesn't have an account yet
+    student = students_collection.find_one({
+        "student_id": student_id,
+        "username": {"$in": [None, ""]}  # Check if username is empty or doesn't exist
+    })
+    
+    if student:
+        return jsonify({
+            "success": True,
+            "message": "Student verified successfully"
+        })
+    else:
+        # Check if student exists but already has an account
+        existing_student = students_collection.find_one({"student_id": student_id})
+        if existing_student:
+            return jsonify({
+                "success": False,
+                "error": "An account already exists for this student"
+            }), 400
+        else:
+            return jsonify({
+                "success": False,
+                "error": "Student ID not found"
+            }), 404
