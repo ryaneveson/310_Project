@@ -10,7 +10,6 @@ export default function StudentProfile() {
     const [notFound, setNotFound] = useState(false);
     const [loading, setLoading] = useState(true);
     const [edit, setEdit] = useState(false);
-    const [oldStudent, setOldStudent] = useState(null);
     const pathParts = window.location.pathname.split("/");
     const studentId = pathParts[pathParts.length - 1];
 
@@ -18,12 +17,11 @@ export default function StudentProfile() {
     useEffect(() => {
         validateStudentId();
         fetchStudentProfile();
-        setLoading(false);
     }, []);
 
 
 //methods
-    const handleChange = () => {
+    const handleChange = async () => {
         if(edit){
             let inputError = false;
             if(!studentData.first_name){ showError("first_name", "Can not be empty"); inputError = true;}
@@ -34,8 +32,33 @@ export default function StudentProfile() {
             if(!studentData.degree){ showError("degree", "Can not be empty"); inputError = true;}
             if(!studentData.major){ showError("major", "Can not be empty"); inputError = true;}
             if(inputError) return;
-        }else{
-            setOldStudent(studentData);
+
+            const formData = {
+                student_id: studentData.student_id,
+                first_name: studentData.first_name,
+                last_name: studentData.last_name,
+                email: studentData.email,
+                gender: studentData.gender,
+                degree: studentData.degree,
+                major: studentData.major
+            };
+            fetch("http://localhost:5000/api/edit-student", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(formData),
+            })
+            .then(async (response) => {
+                const data = await response.json();
+                if (response.ok) {
+                    alert('Student updated successfully.');
+                    window.location.href=`/studentProfile/${studentId}`;
+                } else {
+                    alert(`Error adding student1: ${data.error || 'Unknown error'}`);
+                }
+            })
+            .catch((error) => alert(`Error adding student: ${error.message || 'Unknown error'}`));
         }
 
         setEdit(!edit);
@@ -44,11 +67,18 @@ export default function StudentProfile() {
     const showError = (elementId, message) => {
         const element = document.getElementById(elementId);
         if (!element) return;
-        const error = document.createElement("span");
-        error.textContent = message;
-        error.className = "error-message";
-        element.appendChild(error);
+        let existingError = element.querySelector(".error-message");
+        
+        if (existingError) {
+            existingError.textContent = message;
+        } else {
+            const error = document.createElement("span");
+            error.textContent = message;
+            error.className = "error-message";
+            element.appendChild(error);
+        }
     };
+    
 
     const handleInputChange = (field, value) => {
         setStudentData((prev) => ({
@@ -74,14 +104,15 @@ export default function StudentProfile() {
                     gpa: studentData.gpa.toFixed(1)
                 };
                 setStudentData(formattedStudent);
+                setNotFound(false);
             } catch (err) {
+                setNotFound(true);
                 if (!alertShown.current) {
                     alert(`Error fetching student profile.${studentId.trim()}.`);
                     alertShown.current = true;
                 }
                 //window.location.href = "/studentProfileInput";
             }
-            setNotFound(false);
             alertShown.current = false; // Reset alertShown when student is found
             setLoading(false);
         }

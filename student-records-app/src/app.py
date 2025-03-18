@@ -1,12 +1,14 @@
-from flask import Flask, request, jsonify, redirect
+from flask import Flask, request, jsonify, redirect, make_response
 from flask_cors import CORS
 from pymongo import MongoClient
 import bcrypt
 from bson import ObjectId
 from datetime import datetime
+from flask_cors import CORS
 import os
 
 app = Flask(__name__)
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # Remove any existing CORS configuration and use this simple setup
 @app.after_request
@@ -397,6 +399,28 @@ def delete_students():
             return jsonify({"error": "No students found with the provided IDs."}), 404
     except Exception as e:
         return jsonify({"error": f"Error deleting students: {str(e)}"}), 500
+    
+@app.route("/api/edit-student", methods=["POST"])
+def edit_student():
+    data = request.get_json()
+    if not all(key in data for key in ["student_id", "first_name", "last_name", "email", "gender", "degree", "major"]):
+        return jsonify({"error": "Missing required fields"}), 400
+    update_data = {
+        "first_name": data["first_name"],
+        "last_name": data["last_name"],
+        "email": data["email"],
+        "gender": data["gender"],
+        "degree": data["degree"],
+        "major": data["major"]
+    }
+    result = students_collection.update_one(
+        {"student_id": str(data["student_id"])},
+        {"$set": update_data}
+    )
+    print(update_data)
+    if result.modified_count == 0:
+        return jsonify({"error": "Student not found or no changes made"}), 404
+    return jsonify({"message": "Student updated successfully"}), 200
     
 @app.route("/api/student/studentprofile", methods=["GET"])
 def get_student_profile():
