@@ -27,6 +27,7 @@ export default function StudentProfile() {
         //find the student, from dummy data for now
         const student = data.find(student => student.student_id);
         setStudentData(student);
+        fetchStudentProfile();
         setLoading(false);
     }, []);
 
@@ -35,15 +36,26 @@ export default function StudentProfile() {
         //pull student data from database
         const fetchStudentProfile = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/api/student/studentprofile?student_id=${studentId}`);
-                setStudentData(response.data);
+                const response = await axios.get(`http://localhost:5000/api/student/studentprofile?student_id=${studentId.trim()}`);
+                const studentData = response.data.student;
+                const formattedStudent = {
+                    student_id: studentData.student_id,
+                    name: studentData.name,
+                    email: studentData.email,
+                    gender: studentData.gender,
+                    registered_courses: studentData.registered_courses,
+                    registered_courses_grades: studentData.registered_courses_grades,
+                    degree: studentData.degree,
+                    major: studentData.major,
+                    gpa: studentData.gpa
+                };
+                setStudentData(formattedStudent);
             } catch (err) {
-                setStudentData(null);
                 if (!alertShown.current) {
-                    alert("Error fetching student profile.");
+                    alert(`Error fetching student profile.${studentId.trim()}.`);
                     alertShown.current = true;
                 }
-                window.location.href = "/studentProfileInput";
+                //window.location.href = "/studentProfileInput";
             }
             setNotFound(false);
             alertShown.current = false; // Reset alertShown when student is found

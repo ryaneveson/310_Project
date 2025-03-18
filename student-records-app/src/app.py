@@ -397,6 +397,63 @@ def delete_students():
             return jsonify({"error": "No students found with the provided IDs."}), 404
     except Exception as e:
         return jsonify({"error": f"Error deleting students: {str(e)}"}), 500
+    
+@app.route("/api/student/studentprofile", methods=["GET"])
+def get_student_profile():
+    student_id = request.args.get("student_id")
+    print(f"Received student_id: '{student_id}'")
+    if not student_id:
+        return jsonify({"error": "Student ID is required"}), 400
+
+    student = students_collection.find_one({"student_id": str(student_id)})
+    if not student:
+        return jsonify({"error": "Student not found"}), 404
+    
+    name = student.get("first_name") + " " + student.get("last_name")
+    registered_grades = student.get("registered_courses_grades", [])
+    completed_grades = student.get("completed_courses_grades", [])
+    all_grades = registered_grades + completed_grades
+    all_grades_int = [int(grade) for grade in all_grades]
+    if all_grades_int:
+        gpa = sum(all_grades_int) / len(all_grades_int)
+    else:
+        gpa = 0
+    registered_courses = student.get("registered_courses", [])
+    completed_courses = student.get("completed_courses", [])
+    all_course_ids = registered_courses + completed_courses
+    course_codes = []
+    for course_id in all_course_ids:
+        try:
+            course = courses_collection.find_one({"_id": ObjectId(course_id)})
+            if course:
+                # Check if both course_dept and course_num are available
+                course_dept = course.get("course_dept", "")
+                course_num = course.get("course_num", "")
+                if course_dept and course_num:
+                    course_codes.append(f"{course_dept} {course_num}")
+                else:
+                    # If course_dept or course_num is missing, handle gracefully
+                    course_codes.append("Unknown Course")
+            else:
+                course_codes.append("Course not found")
+        except Exception as e:
+            course_codes.append("Invalid course ID")
+            print(f"Error fetching course {course_id}: {e}")
+    student_details = {
+        "student_id": student.get("student_id"),
+        "name": name,
+        "email": student.get("email"),
+        "gender": student.get("gender"),
+        "registered_courses": course_codes,
+        "registered_courses_grades": all_grades,
+        "degree": student.get("degree"),
+        "major": student.get("major"),
+        "gpa": gpa
+    }
+    
+    if student_details:
+        return jsonify({"student": student_details}), 200
+    return jsonify({"error": "Student details invalid"}), 404
 
 @app.before_request
 def log_request():
@@ -410,14 +467,3 @@ def test_user():
 
 if __name__ == "__main__":
   app.run(debug=True, host="0.0.0.0", port=5000)
-
-@app.route("/api/student/studentprofile", methods=["GET"])
-def get_student_profile():
-    student_id = request.args.get("student_id")
-    if not student_id:
-        return jsonify({"error": "Student ID is required"}), 400
-
-    student = students_collection.find_one({"student_id": student_id})
-    if student:
-        return jsonify(student)
-    return jsonify({"error": "Student ID does not exist"}), 404
