@@ -409,7 +409,6 @@ def get_student_profile():
     if not student:
         return jsonify({"error": "Student not found"}), 404
     
-    name = student.get("first_name") + " " + student.get("last_name")
     registered_grades = student.get("registered_courses_grades", [])
     completed_grades = student.get("completed_courses_grades", [])
     all_grades = registered_grades + completed_grades
@@ -441,7 +440,8 @@ def get_student_profile():
             print(f"Error fetching course {course_id}: {e}")
     student_details = {
         "student_id": student.get("student_id"),
-        "name": name,
+        "first_name": student.get("first_name"),
+        "last_name": student.get("last_name"),
         "email": student.get("email"),
         "gender": student.get("gender"),
         "registered_courses": course_codes,

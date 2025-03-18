@@ -25,12 +25,29 @@ export default function StudentProfile() {
 //methods
     const handleChange = () => {
         if(edit){
-            
+            let inputError = false;
+            if(!studentData.first_name){ showError("first_name", "Can not be empty"); inputError = true;}
+            if(!studentData.last_name){ showError("last_name", "Can not be empty"); inputError = true;}
+            const emailRegex = /^[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]{2,}$/;
+            if(!studentData.email || !emailRegex.test(studentData.email)){ showError("email", "Must follow example@example.com"); inputError = true;}
+            if(!studentData.gender){ showError("gender", "Can not be empty"); inputError = true;}
+            if(!studentData.degree){ showError("degree", "Can not be empty"); inputError = true;}
+            if(!studentData.major){ showError("major", "Can not be empty"); inputError = true;}
+            if(inputError) return;
         }else{
             setOldStudent(studentData);
         }
 
         setEdit(!edit);
+    };
+
+    const showError = (elementId, message) => {
+        const element = document.getElementById(elementId);
+        if (!element) return;
+        const error = document.createElement("span");
+        error.textContent = message;
+        error.className = "error-message";
+        element.appendChild(error);
     };
 
     const handleInputChange = (field, value) => {
@@ -46,14 +63,15 @@ export default function StudentProfile() {
                 const studentData = response.data.student;
                 const formattedStudent = {
                     student_id: studentData.student_id,
-                    name: studentData.name,
+                    first_name: studentData.first_name,
+                    last_name: studentData.last_name,
                     email: studentData.email,
                     gender: studentData.gender,
                     registered_courses: studentData.registered_courses,
                     registered_courses_grades: studentData.registered_courses_grades,
                     degree: studentData.degree,
                     major: studentData.major,
-                    gpa: studentData.gpa
+                    gpa: studentData.gpa.toFixed(1)
                 };
                 setStudentData(formattedStudent);
             } catch (err) {
@@ -106,13 +124,17 @@ export default function StudentProfile() {
                 <p>Loading...</p>
             ) : studentData ? (
                 <div id="student-profile">
-                    <section className="personal-info">
+                    <section id="personal-info">
                         <h2>Personal Information</h2>
                         <table>
                             <tbody>
                                 <tr>
-                                    <td><strong>Name:</strong></td>
-                                    <td>{studentData.name}</td>
+                                    <td><strong>First Name:</strong></td>
+                                    <td id="first_name">{edit ? (<input value={studentData.first_name} onChange={(e) => handleInputChange("first_name", e.target.value)}></input>) : (studentData.first_name)}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Last Name:</strong></td>
+                                    <td id="last_name">{edit ? (<input value={studentData.last_name} onChange={(e) => handleInputChange("last_name", e.target.value)}></input>) : (studentData.last_name)}</td>
                                 </tr>
                                 <tr>
                                     <td><strong>ID:</strong></td>
@@ -120,19 +142,19 @@ export default function StudentProfile() {
                                 </tr>
                                 <tr>
                                     <td><strong>Email:</strong></td>
-                                    <td>{studentData.email}</td>
+                                    <td id="email">{edit ? (<input value={studentData.email} onChange={(e) => handleInputChange("email", e.target.value)}></input>) : (studentData.email)}</td>
                                 </tr>
                                 <tr>
                                     <td><strong>Gender:</strong></td>
-                                    <td>{studentData.gender}</td>
+                                    <td id="gender">{edit ? (<input value={studentData.gender} onChange={(e) => handleInputChange("gender", e.target.value)}></input>) : (studentData.gender)}</td>
                                 </tr>
                                 <tr>
                                     <td><strong>Degree:</strong></td>
-                                    <td>{studentData.degree}</td>
+                                    <td id="degree">{edit ? (<input value={studentData.degree} onChange={(e) => handleInputChange("degree", e.target.value)}></input>) : (studentData.degree)}</td>
                                 </tr>
                                 <tr>
                                     <td><strong>Major:</strong></td>
-                                    <td>{studentData.major}</td>
+                                    <td id="major">{edit ? (<input value={studentData.major} onChange={(e) => handleInputChange("major", e.target.value)}></input>) : (studentData.major)}</td>
                                 </tr>
                                 <tr>
                                     <td><strong>GPA:</strong></td>

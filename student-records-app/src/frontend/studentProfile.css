@@ -10,7 +10,7 @@
     margin-bottom: 30px;
 }
 
-.personal-info, .courses-info {
+#personal-info, .courses-info {
     margin-bottom: 30px;
 }
 
@@ -39,4 +39,13 @@ th {
 
 tbody tr:nth-child(even) {
     background-color: #f9f9f9;
+}
+
+#personal-info input {
+    margin: 0;
+    padding: 0.25rem;
+}
+
+.error-message {
+    color: red;
 }
