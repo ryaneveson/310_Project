@@ -6,8 +6,21 @@ import axios from 'axios';
 //mock axios for pulling from database
 jest.mock('axios');
 
-//database connect not working, so testing with dummy data for now
-test('renders StudentProfile component with dummy data', async () => {
+// Dummy data for testing
+const dummyData = {
+  student_id: "10000001",
+  name: "John Jover",
+  email: "johnjover@johnmail.com",
+  gender: "Male",
+  registered_courses: ["Course 1", "Course 2", "Course 3", "Course 4"],
+  registered_courses_grades: [85, 82, 77, 91],
+  degree: "B.Sc.",
+  major: "Computer Science",
+  gpa: 83.75
+};
+
+
+test('renders StudentProfile component', async () => {
   window.history.pushState({}, 'Test Page', '/studentProfile/10000001');
 
   render(<StudentProfile />);
@@ -42,6 +55,7 @@ test('redirects to StudentProfileInput for invalid ID', async () => {
   await waitFor(() => {
     expect(window.alert).toHaveBeenCalledWith('Error fetching student profile.');
   });
+  
   //check if redirected to StudentProfileInput page
   expect(window.location.pathname).toBe("/studentProfileInput");
 });
