@@ -2,17 +2,18 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./frontend/addFee.css";
 
-function AddFee({ mockStudents = null }) {
+function ManageStudents({ mockStudents = null }) {
     const [userRole, setUserRole] = useState(null);
     const [students, setStudents] = useState([]);
     const [selectedStudents, setSelectedStudents] = useState([]);
-    const [allClasses, setAllClasses] = useState([]);
-    const [selectedClasses, setSelectedClasses] = useState(new Set());
     const [searchTerm, setSearchTerm] = useState(""); 
-    const [isSidebarVisible, setSidebarVisible] = useState(true);
-    const [feeName, setFeeName] = useState("");
-    const [feeAmount, setFeeAmount] = useState("");
-    const [feeDate, setFeeDate] = useState("");
+    const [newStudentFirstname, setNewStudentFirstname] = useState(null);
+    const [newStudentLastname, setNewStudentLastname] = useState(null);
+    const [newStudentEmail, setNewStudentEmail] = useState(null);
+    const [newStudentGender, setNewStudentGender] = useState(null);
+    const [newStudentOtherGender, setNewStudentOtherGender] = useState(null);
+    const [newStudentDegree, setNewStudentDegree] = useState(null);
+    const [newStudentMajor, setNewStudentMajor] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -32,7 +33,6 @@ function AddFee({ mockStudents = null }) {
                         .filter(className => /^[A-Z]{4} [0-9]{3}$/.test(className)) //excludes all courses that dont follow the standard naming convention
                 )
             ].sort();
-            setAllClasses(allUniqueClasses);
             setLoading(false);
             return;
         }
@@ -49,15 +49,6 @@ function AddFee({ mockStudents = null }) {
                 classes: student.classes
               }));
               setStudents(formattedStudents);
-
-              const allUniqueClasses = [
-                ...new Set(
-                    formattedStudents
-                        .flatMap(student => student.classes)
-                        .filter(className => /^[A-Z]{4} [0-9]{3}$/.test(className)) //excludes all courses that dont follow the standard naming convention
-                )
-            ].sort();
-              setAllClasses(allUniqueClasses);
               setLoading(false);
             } catch (err) {
               alert("error fetching students");
@@ -75,49 +66,15 @@ function AddFee({ mockStudents = null }) {
         window.location.href = "/";
     };
 
-    const handleClassSelection = (className) => {
-        setSelectedClasses((prev) => {
-            const newSelectedClasses = new Set(prev);
-            if (newSelectedClasses.has(className)) {
-                newSelectedClasses.delete(className);
-            } else {
-                newSelectedClasses.add(className);
-            }
-            return newSelectedClasses;
-        });
-    };
-
     const filteredStudents = students.filter(student =>
-        selectedClasses.size === 0 ||
-        [...selectedClasses].every(className => student.classes.includes(className))
-    ).filter(student =>
         searchTerm === "" ||
         `${student.name} ${student.lastName} ${student.studentNumber}`
           .toLowerCase()
           .includes(searchTerm.toLowerCase())
     );
 
-    const toggleClasses = () => {
-        setSidebarVisible(!isSidebarVisible);
-    };
-
-    const reset = () => {
-        setSelectedClasses(new Set());
-    };
-
     const clearSearch = () => {
         setSearchTerm("");
-    };
-
-    const exportSelectedToJson = () => {
-        const dataStr = JSON.stringify(selectedStudents, null, 2);
-        const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-        const exportFileDefaultName = 'selected_students.json';
-
-        const linkElement = document.createElement('a');
-        linkElement.setAttribute('href', dataUri);
-        linkElement.setAttribute('download', exportFileDefaultName);
-        linkElement.click();
     };
 
     if (!userRole) {
@@ -136,105 +93,80 @@ function AddFee({ mockStudents = null }) {
         );
     }
 
-    //function to validate currency input
-    const validateCurrencyInput = (event) => {
-        let value = event.target.value;
-        //remove non-numeric characters except for the first '.'
-        value = value.replace(/[^0-9.]/g, "").replace(/(\..*)\./g, "$1");
-        //prevent multiple leading zeros
-        value = value.replace(/^0+(\d)/, "$1");
-        //allow only two decimal places
-        const parts = value.split(".");
-        if (parts.length === 2) {
-        parts[1] = parts[1].slice(0, 2);
-        value = parts.join(".");
+    const handleGenderChange = (e) => {
+        setNewStudentGender(e.target.value);
+        if (e.target.value !== "Other") {
+          setNewStudentOtherGender("");
         }
-        setFeeAmount(value);
     };
 
-    const handleBlur = () => {
-        if (feeAmount) {
-          const numericValue = parseFloat(feeAmount);
-          if (!isNaN(numericValue)) {
-            setFeeAmount(numericValue.toFixed(2));
-          }
+    const deleteStudents = () => {
+        if (selectedStudents.length === 0) {
+            alert("No students selected to delete.");
+            return;
         }
+        const studentIdsToDelete = selectedStudents.map(student => student.studentNumber);
+        fetch("http://localhost:5000/api/delete-students", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ studentNumbers: studentIdsToDelete }),
+          })
+            .then(async (response) => {
+              const data = await response.json();
+              if (response.ok) {
+                alert('Students deleted successfully.');
+                window.location.href="/manageStudents";
+                setSelectedStudents([]);
+              } else {
+                alert(`Error deleting students: ${data.error || 'Unknown error'}`);
+              }
+            })
+            .catch((error) => alert(`Error deleting students: ${error.message || 'Unknown error'}`));
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        if (!feeName || !feeAmount || !feeDate || selectedStudents.length === 0) {
-            alert("All fields are required and at least one student must be selected.");
+        if (!newStudentFirstname || !newStudentLastname || !newStudentEmail || (!newStudentGender && !newStudentOtherGender) || !newStudentDegree || !newStudentMajor) {
+            alert("All fields are required.");
             return;
         }
+        let newGender = newStudentGender;
+        if (!newGender || newGender === "Other") {
+            newGender = newStudentOtherGender;
+        }
 
-        const studentsData = selectedStudents.map(student => ({
-            student_id: student.studentNumber,
-            item_name: feeName,
-            amount: parseFloat(feeAmount),
-            due_date: feeDate,
-        }));
-        fetch("http://localhost:5000/api/add-fee", {
+        const studentData = {
+            firstname: newStudentFirstname,
+            lastname: newStudentLastname,
+            email: newStudentEmail,
+            gender: newGender,
+            degree: newStudentDegree,
+            major: newStudentMajor
+        };
+        fetch("http://localhost:5000/api/add-student", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ students: studentsData }),
+            body: JSON.stringify(studentData),
         })
         .then(async (response) => {
             const data = await response.json();
             if (response.ok) {
-                alert('Fees added successfully for selected students.');
-                window.location.href="/addFee";
+                alert('Student added successfully.');
+                window.location.href="/manageStudents"
             } else {
-                alert(`Error adding fees: ${data.error}`);
+                alert(`Error adding student1: ${data.error || 'Unknown error'}`);
             }
         })
-        .catch((error) => alert(`Error adding fees: ${error}`));
+        .catch((error) => alert(`Error adding student: ${error.message || 'Unknown error'}`));
     };
 
     return (
         <div id="studentSearch">
-            <aside className="sidebar" id="sidebar">
-                <div className="button-container">
-                    <button id="reset-btn" className="btn" data-testid="reset" onClick={reset}>Reset All</button>
-                    <button id="toggle-btn" className="btn" onClick={toggleClasses}>
-                        {isSidebarVisible ? 'Collapse' : 'Expand'}
-                    </button>
-                </div>
-                <h3>Classes</h3>
-                <div className="checkboxes" data-testid="checkboxes" style={{
-                    height: isSidebarVisible ? 'auto' : '0',
-                    transition: 'width 0.3s ease',
-                    overflow: 'hidden'
-                }}>
-                    {allClasses.map((className) => (
-                        <div key={className} >
-                            <label>
-                                {className}
-                                <button className="btn" onClick={() => {
-                    const studentsInClass = students.filter(student => student.classes.includes(className));
-                    setSelectedStudents(prev => {
-                        const uniqueStudents = [...prev, ...studentsInClass].filter(
-                            (student, index, self) =>
-                                self.findIndex(s => s.studentNumber === student.studentNumber) === index
-                        );
-                        return uniqueStudents;
-                    });
-                }}>Select Students in Class</button>
-                                <input
-                                    type="checkbox"
-                                    data-testid={className}
-                                    checked={selectedClasses.has(className)}
-                                    onChange={() => handleClassSelection(className)}
-                                />
-                            </label>
-                            <br />
-                        </div>
-                    ))}
-                </div>
-            </aside>
             <article>
                 <div id="search">
                     <label>Search for a student:<br />
@@ -248,6 +180,7 @@ function AddFee({ mockStudents = null }) {
                         />
                     </label>
                     <button id="clear-btn" className="btn" onClick={clearSearch}>Clear</button>
+                    <button className="btn" onClick={() => {const confirmed = window.confirm(`Are you sure you want to delete All students?`); if (!confirmed) return; setSelectedStudents(students); deleteStudents();}}>Delete All Students</button>
                 </div>
                 <div id="results">
                     <h2>Filtered Students</h2>
@@ -270,6 +203,9 @@ function AddFee({ mockStudents = null }) {
                                         <button className="btn" onClick={() => setSelectedStudents(prev => [...prev, student])}>
                                             Select Student
                                         </button>
+                                        <button className="btn" onClick={() => window.location.href=`/studentProfile/${encodeURIComponent(student.studentNumber)}`}>
+                                            Go to Profile
+                                        </button>
                                     </td>
                                 </tr>
                             ))}
@@ -277,43 +213,79 @@ function AddFee({ mockStudents = null }) {
                     </table>
                 </div>
             </article>
-            <article id="fee-container">
-            <form id="fee-form" onSubmit={handleSubmit}>
-                <h2>Fee details</h2><br></br>
-                    <label>Fee Name:<br />
+            <article id="student-container">
+            <form id="new-student-form" onSubmit={handleSubmit}>
+                <h2>New Student details</h2><br></br>
+                    <label>First Name:
                         <input
                             type="text"
-                            placeholder="Fee's Name . . ."
-                            id="fee-name"
-                            onChange={(e) => setFeeName(e.target.value)}
-                            className="fee-box"
+                            placeholder="Students Firstname . . ."
+                            id="student-firstname"
+                            value={newStudentFirstname}
+                            onChange={(e) => setNewStudentFirstname(e.target.value)}
+                            className="student-box"
                         />
                     </label>
-                    <label>Fee Amount:<br />
+                    <label>Last Name:
                         <input
                             type="text"
-                            placeholder="0.00"
-                            id="fee-amount"
-                            onChange={validateCurrencyInput}
-                            onBlur={handleBlur}
-                            className="fee-box"
+                            placeholder="Students Lastname . . ."
+                            value={newStudentLastname}
+                            id="student-lastname"
+                            onChange={(e) => setNewStudentLastname(e.target.value)}
+                            className="student-box"
                         />
                     </label>
-                    <label>Fee Due Date:<br />
+                    <label>Email:
                         <input
-                            type="date"
-                            placeholder="YYYY-MM-DD"
-                            id="fee-date"
-                            onChange={(e) => setFeeDate(e.target.value)}
-                            className="fee-box"
+                            type="text"
+                            placeholder="example@gmail.com"
+                            value={newStudentEmail}
+                            id="student-email"
+                            onChange={(e) => setNewStudentEmail(e.target.value)}
+                            className="student-box"
                         />
                     </label>
-                    <button id="fee-submit" type="submit">Submit Fee</button>
+                    <label>Gender:
+                        <select id="student-gender" value={newStudentGender} onChange={handleGenderChange} className="student-box">
+                            <option value="">Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Prefer not to say">Prefer not to say</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        {newStudentGender === "Other" && (
+                        <input type="text" id="custom-gender" value={newStudentOtherGender} onChange={(e) => setNewStudentOtherGender(e.target.value)} placeholder="Please specify"/>
+                        )}
+                    </label>
+                    <label>Degree:
+                        <input
+                            type="text"
+                            placeholder="Students Degree . . ."
+                            value={newStudentDegree}
+                            id="stuent-degree"
+                            onChange={(e) => setNewStudentDegree(e.target.value)}
+                            className="student-box"
+                        />
+                    </label>
+                    <label>Major:
+                        <input
+                            type="text"
+                            placeholder="Students Major . . ."
+                            value={newStudentMajor}
+                            id="stuent-major"
+                            onChange={(e) => setNewStudentMajor(e.target.value)}
+                            className="student-box"
+                        />
+                    </label>
+                    <button id="stuent-submit" type="submit">Submit New Student</button>
                 </form>
+            </article>
+            <article id="delete-students-conatiner">
                 <div id="selected-students">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                         <h2>Selected Students</h2>
-                        <button className="btn" onClick={exportSelectedToJson}>Export to JSON</button>
+                        <button className="btn" onClick={deleteStudents}>Delete Selected Students</button>
                     </div>
                     <table>
                         <thead>
@@ -345,4 +317,4 @@ function AddFee({ mockStudents = null }) {
     );
 }
 
-export default AddFee;
+export default ManageStudents;
