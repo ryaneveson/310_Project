@@ -9,30 +9,36 @@ export default function StudentProfile() {
     const [studentData, setStudentData] = useState(null);
     const [notFound, setNotFound] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [edit, setEdit] = useState(false);
+    const [oldStudent, setOldStudent] = useState(null);
     const pathParts = window.location.pathname.split("/");
     const studentId = pathParts[pathParts.length - 1];
 
 
     useEffect(() => {
         validateStudentId();
-    
-        //dummy student data for now
-            //TODO: change registered_courses to work with ObjectId from database instead of course name
-        const data = [{ student_id: "10000001", name: "John Jover", email: "johnjover@johnmail.com", gender: "Male", registered_courses: ["Course 1", "Course 2", "Course 3", "Course 4"], registered_courses_grades: [85, 82, 77, 91], degree: "B.Sc.", major: "Computer Science", gpa: 83.75 }];
-
-        //TODO: pull from database instead of dummy data
-            //uncomment this when I can get the database connection to work
-        /*fetchStudentProfile();*/
-
-        //find the student, from dummy data for now
-        const student = data.find(student => student.student_id);
-        setStudentData(student);
         fetchStudentProfile();
         setLoading(false);
     }, []);
 
 
 //methods
+    const handleChange = () => {
+        if(edit){
+            
+        }else{
+            setOldStudent(studentData);
+        }
+
+        setEdit(!edit);
+    };
+
+    const handleInputChange = (field, value) => {
+        setStudentData((prev) => ({
+          ...prev,
+          [field]: value,
+        }));
+      };
         //pull student data from database
         const fetchStudentProfile = async () => {
             try {
@@ -133,7 +139,8 @@ export default function StudentProfile() {
                                     <td>{studentData.gpa}</td>
                                 </tr>
                             </tbody>
-                        </table>
+                        </table><br></br>
+                        {<button onClick={handleChange}>{edit ? "Set Info" : "Change Info"}</button>}
                     </section>
                     <section className="courses-info">
                         <h2>Registered Courses</h2>
