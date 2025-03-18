@@ -1,12 +1,14 @@
-from flask import Flask, request, jsonify, redirect
+from flask import Flask, request, jsonify, redirect, make_response
 from flask_cors import CORS
 from pymongo import MongoClient
 import bcrypt
 from bson import ObjectId
 from datetime import datetime
+from flask_cors import CORS
 import os
 
 app = Flask(__name__)
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # Remove any existing CORS configuration and use this simple setup
 @app.after_request
@@ -398,6 +400,28 @@ def delete_students():
     except Exception as e:
         return jsonify({"error": f"Error deleting students: {str(e)}"}), 500
     
+@app.route("/api/edit-student", methods=["POST"])
+def edit_student():
+    data = request.get_json()
+    if not all(key in data for key in ["student_id", "first_name", "last_name", "email", "gender", "degree", "major"]):
+        return jsonify({"error": "Missing required fields"}), 400
+    update_data = {
+        "first_name": data["first_name"],
+        "last_name": data["last_name"],
+        "email": data["email"],
+        "gender": data["gender"],
+        "degree": data["degree"],
+        "major": data["major"]
+    }
+    result = students_collection.update_one(
+        {"student_id": str(data["student_id"])},
+        {"$set": update_data}
+    )
+    print(update_data)
+    if result.modified_count == 0:
+        return jsonify({"error": "Student not found or no changes made"}), 404
+    return jsonify({"message": "Student updated successfully"}), 200
+    
 @app.route("/api/student/studentprofile", methods=["GET"])
 def get_student_profile():
     student_id = request.args.get("student_id")
@@ -409,7 +433,6 @@ def get_student_profile():
     if not student:
         return jsonify({"error": "Student not found"}), 404
     
-    name = student.get("first_name") + " " + student.get("last_name")
     registered_grades = student.get("registered_courses_grades", [])
     completed_grades = student.get("completed_courses_grades", [])
     all_grades = registered_grades + completed_grades
@@ -441,7 +464,8 @@ def get_student_profile():
             print(f"Error fetching course {course_id}: {e}")
     student_details = {
         "student_id": student.get("student_id"),
-        "name": name,
+        "first_name": student.get("first_name"),
+        "last_name": student.get("last_name"),
         "email": student.get("email"),
         "gender": student.get("gender"),
         "registered_courses": course_codes,

@@ -9,30 +9,83 @@ export default function StudentProfile() {
     const [studentData, setStudentData] = useState(null);
     const [notFound, setNotFound] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [edit, setEdit] = useState(false);
     const pathParts = window.location.pathname.split("/");
     const studentId = pathParts[pathParts.length - 1];
 
 
     useEffect(() => {
         validateStudentId();
-    
-        //dummy student data for now
-            //TODO: change registered_courses to work with ObjectId from database instead of course name
-        const data = [{ student_id: "10000001", name: "John Jover", email: "johnjover@johnmail.com", gender: "Male", registered_courses: ["Course 1", "Course 2", "Course 3", "Course 4"], registered_courses_grades: [85, 82, 77, 91], degree: "B.Sc.", major: "Computer Science", gpa: 83.75 }];
-
-        //TODO: pull from database instead of dummy data
-            //uncomment this when I can get the database connection to work
-        /*fetchStudentProfile();*/
-
-        //find the student, from dummy data for now
-        const student = data.find(student => student.student_id);
-        setStudentData(student);
         fetchStudentProfile();
-        setLoading(false);
     }, []);
 
 
 //methods
+    const handleChange = async () => {
+        if(edit){
+            let inputError = false;
+            if(!studentData.first_name){ showError("first_name", "Can not be empty"); inputError = true;}
+            if(!studentData.last_name){ showError("last_name", "Can not be empty"); inputError = true;}
+            const emailRegex = /^[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]{2,}$/;
+            if(!studentData.email || !emailRegex.test(studentData.email)){ showError("email", "Must follow example@example.com"); inputError = true;}
+            if(!studentData.gender){ showError("gender", "Can not be empty"); inputError = true;}
+            if(!studentData.degree){ showError("degree", "Can not be empty"); inputError = true;}
+            if(!studentData.major){ showError("major", "Can not be empty"); inputError = true;}
+            if(inputError) return;
+
+            const formData = {
+                student_id: studentData.student_id,
+                first_name: studentData.first_name,
+                last_name: studentData.last_name,
+                email: studentData.email,
+                gender: studentData.gender,
+                degree: studentData.degree,
+                major: studentData.major
+            };
+            fetch("http://localhost:5000/api/edit-student", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(formData),
+            })
+            .then(async (response) => {
+                const data = await response.json();
+                if (response.ok) {
+                    alert('Student updated successfully.');
+                    window.location.href=`/studentProfile/${studentId}`;
+                } else {
+                    alert(`Error adding student1: ${data.error || 'Unknown error'}`);
+                }
+            })
+            .catch((error) => alert(`Error adding student: ${error.message || 'Unknown error'}`));
+        }
+
+        setEdit(!edit);
+    };
+
+    const showError = (elementId, message) => {
+        const element = document.getElementById(elementId);
+        if (!element) return;
+        let existingError = element.querySelector(".error-message");
+        
+        if (existingError) {
+            existingError.textContent = message;
+        } else {
+            const error = document.createElement("span");
+            error.textContent = message;
+            error.className = "error-message";
+            element.appendChild(error);
+        }
+    };
+    
+
+    const handleInputChange = (field, value) => {
+        setStudentData((prev) => ({
+          ...prev,
+          [field]: value,
+        }));
+      };
         //pull student data from database
         const fetchStudentProfile = async () => {
             try {
@@ -40,24 +93,26 @@ export default function StudentProfile() {
                 const studentData = response.data.student;
                 const formattedStudent = {
                     student_id: studentData.student_id,
-                    name: studentData.name,
+                    first_name: studentData.first_name,
+                    last_name: studentData.last_name,
                     email: studentData.email,
                     gender: studentData.gender,
                     registered_courses: studentData.registered_courses,
                     registered_courses_grades: studentData.registered_courses_grades,
                     degree: studentData.degree,
                     major: studentData.major,
-                    gpa: studentData.gpa
+                    gpa: studentData.gpa.toFixed(1)
                 };
                 setStudentData(formattedStudent);
+                setNotFound(false);
             } catch (err) {
+                setNotFound(true);
                 if (!alertShown.current) {
                     alert(`Error fetching student profile.${studentId.trim()}.`);
                     alertShown.current = true;
                 }
                 //window.location.href = "/studentProfileInput";
             }
-            setNotFound(false);
             alertShown.current = false; // Reset alertShown when student is found
             setLoading(false);
         }
@@ -100,13 +155,17 @@ export default function StudentProfile() {
                 <p>Loading...</p>
             ) : studentData ? (
                 <div id="student-profile">
-                    <section className="personal-info">
+                    <section id="personal-info">
                         <h2>Personal Information</h2>
                         <table>
                             <tbody>
                                 <tr>
-                                    <td><strong>Name:</strong></td>
-                                    <td>{studentData.name}</td>
+                                    <td><strong>First Name:</strong></td>
+                                    <td id="first_name">{edit ? (<input value={studentData.first_name} onChange={(e) => handleInputChange("first_name", e.target.value)}></input>) : (studentData.first_name)}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Last Name:</strong></td>
+                                    <td id="last_name">{edit ? (<input value={studentData.last_name} onChange={(e) => handleInputChange("last_name", e.target.value)}></input>) : (studentData.last_name)}</td>
                                 </tr>
                                 <tr>
                                     <td><strong>ID:</strong></td>
@@ -114,26 +173,27 @@ export default function StudentProfile() {
                                 </tr>
                                 <tr>
                                     <td><strong>Email:</strong></td>
-                                    <td>{studentData.email}</td>
+                                    <td id="email">{edit ? (<input value={studentData.email} onChange={(e) => handleInputChange("email", e.target.value)}></input>) : (studentData.email)}</td>
                                 </tr>
                                 <tr>
                                     <td><strong>Gender:</strong></td>
-                                    <td>{studentData.gender}</td>
+                                    <td id="gender">{edit ? (<input value={studentData.gender} onChange={(e) => handleInputChange("gender", e.target.value)}></input>) : (studentData.gender)}</td>
                                 </tr>
                                 <tr>
                                     <td><strong>Degree:</strong></td>
-                                    <td>{studentData.degree}</td>
+                                    <td id="degree">{edit ? (<input value={studentData.degree} onChange={(e) => handleInputChange("degree", e.target.value)}></input>) : (studentData.degree)}</td>
                                 </tr>
                                 <tr>
                                     <td><strong>Major:</strong></td>
-                                    <td>{studentData.major}</td>
+                                    <td id="major">{edit ? (<input value={studentData.major} onChange={(e) => handleInputChange("major", e.target.value)}></input>) : (studentData.major)}</td>
                                 </tr>
                                 <tr>
                                     <td><strong>GPA:</strong></td>
                                     <td>{studentData.gpa}</td>
                                 </tr>
                             </tbody>
-                        </table>
+                        </table><br></br>
+                        {<button onClick={handleChange}>{edit ? "Set Info" : "Change Info"}</button>}
                     </section>
                     <section className="courses-info">
                         <h2>Registered Courses</h2>
