@@ -9,6 +9,7 @@ export default function StudentProfile() {
     const [studentData, setStudentData] = useState(null);
     const [notFound, setNotFound] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [edit, setEdit] = useState(false);
     const pathParts = window.location.pathname.split("/");
     const studentId = pathParts[pathParts.length - 1];
 
@@ -32,6 +33,18 @@ export default function StudentProfile() {
 
 
 //methods
+
+    const handleChange = () => {
+        setEdit(!edit);
+    };
+
+    const handleInputChange = (field, value) => {
+        setStudentData((prev) => ({
+          ...prev,
+          [field]: value,
+        }));
+      };
+
         //pull student data from database
         const fetchStudentProfile = async () => {
             try {
@@ -88,13 +101,13 @@ export default function StudentProfile() {
                 <p>Loading...</p>
             ) : studentData ? (
                 <div id="student-profile">
-                    <section className="personal-info">
+                    <section id="personal-info">
                         <h2>Personal Information</h2>
                         <table>
                             <tbody>
                                 <tr>
                                     <td><strong>Name:</strong></td>
-                                    <td>{studentData.name}</td>
+                                    <td>{edit ? (<input value={studentData.name} onChange={(e) => handleInputChange("name", e.target.value)}></input>) : (studentData.name)}</td>
                                 </tr>
                                 <tr>
                                     <td><strong>ID:</strong></td>
@@ -102,26 +115,27 @@ export default function StudentProfile() {
                                 </tr>
                                 <tr>
                                     <td><strong>Email:</strong></td>
-                                    <td>{studentData.email}</td>
+                                    <td>{edit ? (<input value={studentData.email} onChange={(e) => handleInputChange("email", e.target.value)}></input>) : (studentData.email)}</td>
                                 </tr>
                                 <tr>
                                     <td><strong>Gender:</strong></td>
-                                    <td>{studentData.gender}</td>
+                                    <td>{edit ? (<input value={studentData.gender} onChange={(e) => handleInputChange("gender", e.target.value)}></input>) : (studentData.gender)}</td>
                                 </tr>
                                 <tr>
                                     <td><strong>Degree:</strong></td>
-                                    <td>{studentData.degree}</td>
+                                    <td>{edit ? (<input value={studentData.degree} onChange={(e) => handleInputChange("degree", e.target.value)}></input>) : (studentData.degree)}</td>
                                 </tr>
                                 <tr>
                                     <td><strong>Major:</strong></td>
-                                    <td>{studentData.major}</td>
+                                    <td>{edit ? (<input value={studentData.major} onChange={(e) => handleInputChange("major", e.target.value)}></input>) : (studentData.major)}</td>
                                 </tr>
                                 <tr>
                                     <td><strong>GPA:</strong></td>
                                     <td>{studentData.current_gpa}</td>
                                 </tr>
                             </tbody>
-                        </table>
+                        </table><br></br>
+                        {edit ? (<button onClick={handleChange}>Set info</button>) : (<button onClick={handleChange}>Change Info</button>)}
                     </section>
                     <section className="courses-info">
                         <h2>Registered Courses</h2>
