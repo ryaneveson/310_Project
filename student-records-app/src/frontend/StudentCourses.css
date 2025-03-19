@@ -1,0 +1,141 @@
+#student-courses-container {
+    margin: 8rem auto;
+    font-family: Arial, sans-serif;
+  }
+
+  #data-container {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .calendar-container {
+    margin: 2rem;
+  }
+  
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: 100px repeat(5, 150px);
+    grid-template-rows: 50px repeat(25, 40px);
+    position: relative;
+    background-color: white;
+    border: 5px solid #ddd;
+    border-radius: 10px;
+  }
+  
+  .time-column {
+    grid-column: 1;
+    background-color: #004385;
+    color: white;
+    text-align: center;
+    font-weight: bold;
+    padding-top: 5px;
+    padding-bottom: 15px;
+  }
+  
+  .day-header {
+    background-color: #004385;
+    color: white;
+    border-left: 2px solid #ddd;
+    text-align: center;
+    font-weight: bold;
+    padding: 10px;
+  }
+  
+  .time-slot {
+    grid-column: 1;
+    text-align: center;
+    font-size: 14px;
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd; 
+  }
+  
+  .day-column {
+    display: grid;
+    grid-template-rows: repeat(25, 40px);
+    border-left: 1px solid #ddd;
+  }
+  
+  .hour-cell {
+    border-bottom: 1px solid #ddd; /* aligning with the time-slot border */
+    border-left: 1px solid #ddd;
+    position: relative;
+    transform: translateY(-1000px);
+    box-sizing: border-box; /* make sure border is part of the elements total size */
+  }
+  
+  .event-block {
+    position: absolute;
+    background-color: lightgray;
+    color: #495867;
+    padding: 10px;
+    border-radius: 15px;
+    font-size: 14px;
+    left: 1px;
+    width: 150px;
+    z-index: 10;
+  }
+
+  #classes {
+    width: 300px;
+    height: fit-content;
+    background-color: white;
+    padding: 20px;
+    box-shadow: 20px 20px 10px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e0e0e0;
+    border-radius: 25px;
+  }
+
+  #classes label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .register button {
+    width: fit-content;
+  }
+  
+  #classes h3 {
+    padding: 2rem 0;
+    font-size: 1.2rem;
+  }
+  
+  #toggle-btn {
+    position: static;
+    transform: none;
+    margin: 5px;
+  }
+
+  #classes .btn {
+    background: #004385;
+    color: white;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0px 3px 0px #004385;
+    position: relative;
+    width: fit-content;
+    margin: 5px;
+  }
+
+  #classes .btn:hover {
+    background: #3674b3;
+    box-shadow: 0px 1px 0px #004385;
+  }
+
+  .hovered-event {
+    background-color: rgba(0, 123, 255, 0.5);
+    z-index: 2;
+    position: absolute;
+    left: 0;
+    right: 0;
+  }
+  
+  .hovered-event.overlap {
+    background-color: rgba(255, 0, 0, 0.5);
+  }
+  
