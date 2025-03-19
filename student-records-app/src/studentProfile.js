@@ -215,22 +215,26 @@ export default function StudentProfile() {
                             </tbody>
                         </table>
                         <h2>Completed Courses</h2>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Course Name</th>
-                                    <th>Grade</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {studentData.completed_courses && studentData.completed_courses.map((course, index) => (
-                                    <tr key={course}>
-                                        <td>{course}</td>
-                                        <td>{studentData.completed_courses_grades[index]}</td>
+                        {studentData.completed_courses && studentData.completed_courses_grades.length > 0 ? (
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Course Name</th>
+                                        <th>Grade</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    {studentData.completed_courses && studentData.completed_courses.map((course, index) => (
+                                        <tr key={course}>
+                                            <td>{course}</td>
+                                            <td>{studentData.completed_courses_grades[index]}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        ) : (
+                            <p>This student has not completed any courses</p>
+                        )}
                     </section>
                 </div>
             ) : (
