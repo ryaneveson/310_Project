@@ -49,3 +49,7 @@ tbody tr:nth-child(even) {
 .error-message {
     color: red;
 }
+
+.courses-info table:first-of-type {
+    margin-bottom: 40px;
+}

@@ -99,6 +99,8 @@ export default function StudentProfile() {
                     gender: studentData.gender,
                     registered_courses: studentData.registered_courses,
                     registered_courses_grades: studentData.registered_courses_grades,
+                    completed_courses: studentData.completed_courses,
+                    completed_courses_grades: studentData.completed_courses_grades,
                     degree: studentData.degree,
                     major: studentData.major,
                     gpa: studentData.gpa.toFixed(1)
@@ -209,6 +211,23 @@ export default function StudentProfile() {
                                     <tr key={course}>
                                         <td>{course}</td>
                                         <td>{studentData.registered_courses_grades[index]}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                        <h2>Completed Courses</h2>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Course Name</th>
+                                    <th>Grade</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {studentData.completed_courses && studentData.completed_courses.map((course, index) => (
+                                    <tr key={course}>
+                                        <td>{course}</td>
+                                        <td>{studentData.completed_courses_grades[index]}</td>
                                     </tr>
                                 ))}
                             </tbody>
