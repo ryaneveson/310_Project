@@ -424,15 +424,16 @@ def edit_student():
     
 @app.route("/api/student/studentprofile", methods=["GET"])
 def get_student_profile():
+    # Retrieve student
     student_id = request.args.get("student_id")
     print(f"Received student_id: '{student_id}'")
     if not student_id:
         return jsonify({"error": "Student ID is required"}), 400
-
     student = students_collection.find_one({"student_id": str(student_id)})
     if not student:
         return jsonify({"error": "Student not found"}), 404
     
+    # Calculate GPA
     registered_grades = student.get("registered_courses_grades", [])
     completed_grades = student.get("completed_courses_grades", [])
     all_grades = registered_grades + completed_grades
@@ -443,7 +444,8 @@ def get_student_profile():
         gpa = 0
     registered_courses = student.get("registered_courses", [])
     completed_courses = student.get("completed_courses", [])
-    #all_course_ids = registered_courses + completed_courses
+
+    # Fetch course codes for registered and completed courses
     registered_course_codes = []
     completed_course_codes = []
     for course_id in registered_courses:
@@ -463,7 +465,6 @@ def get_student_profile():
         except Exception as e:
             registered_course_codes.append("Invalid course ID")
             print(f"Error fetching course {course_id}: {e}")
-    
     for course_id in completed_courses:
         try:
             course = courses_collection.find_one({"_id": ObjectId(course_id)})

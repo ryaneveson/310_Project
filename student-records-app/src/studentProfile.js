@@ -144,7 +144,6 @@ export default function StudentProfile() {
 
 //return
     //display student's profile data
-    //TODO: add student data for completed courses
     return (
         <div>
             <HeaderLoader />
