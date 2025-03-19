@@ -12,6 +12,8 @@ const dummyData = {
   gender: "Male",
   registered_courses: ["Course 1", "Course 2", "Course 3", "Course 4"],
   registered_courses_grades: [85, 82, 77, 91],
+  completed_courses: ["Course 5", "Course 6"],
+  completed_courses_grades: [88, 92],
   degree: "B.Sc.",
   major: "Computer Science",
   gpa: 83.8
@@ -51,6 +53,34 @@ describe('StudentProfile Component', () => {
       expect(screen.getByText('B.Sc.')).toBeInTheDocument();
       expect(screen.getByText('Computer Science')).toBeInTheDocument();
       expect(screen.getByText('83.8')).toBeInTheDocument(); // GPA formatted
+    });
+  });
+
+  it('renders the "Completed Courses" table correctly', async () => {
+    mockFetchStudentProfile();
+    render(<StudentProfile />);
+    await waitFor(() => {
+      expect(screen.getByText('Completed Courses')).toBeInTheDocument();
+      expect(screen.getByText('Course 5')).toBeInTheDocument();
+      expect(screen.getByText('88')).toBeInTheDocument();
+      expect(screen.getByText('Course 6')).toBeInTheDocument();
+      expect(screen.getByText('92')).toBeInTheDocument();
+    });
+  });
+
+  it('displays a message when there are no completed courses', async () => {
+    const noCompletedCoursesData = {
+      ...dummyData,
+      completed_courses: [],
+      completed_courses_grades: []
+    };
+    mockFetchStudentProfile(noCompletedCoursesData);
+    render(<StudentProfile />);
+    await waitFor(() => {
+      expect(screen.getByText('Completed Courses')).toBeInTheDocument();
+      expect(screen.queryByText('Course 5')).not.toBeInTheDocument();
+      expect(screen.queryByText('88')).not.toBeInTheDocument();
+      expect(screen.getByText('This student has not completed any courses')).toBeInTheDocument();
     });
   });
 

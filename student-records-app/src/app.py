@@ -424,15 +424,16 @@ def edit_student():
     
 @app.route("/api/student/studentprofile", methods=["GET"])
 def get_student_profile():
+    # Retrieve student
     student_id = request.args.get("student_id")
     print(f"Received student_id: '{student_id}'")
     if not student_id:
         return jsonify({"error": "Student ID is required"}), 400
-
     student = students_collection.find_one({"student_id": str(student_id)})
     if not student:
         return jsonify({"error": "Student not found"}), 404
     
+    # Calculate GPA
     registered_grades = student.get("registered_courses_grades", [])
     completed_grades = student.get("completed_courses_grades", [])
     all_grades = registered_grades + completed_grades
@@ -443,9 +444,11 @@ def get_student_profile():
         gpa = 0
     registered_courses = student.get("registered_courses", [])
     completed_courses = student.get("completed_courses", [])
-    all_course_ids = registered_courses + completed_courses
-    course_codes = []
-    for course_id in all_course_ids:
+
+    # Fetch course codes for registered and completed courses
+    registered_course_codes = []
+    completed_course_codes = []
+    for course_id in registered_courses:
         try:
             course = courses_collection.find_one({"_id": ObjectId(course_id)})
             if course:
@@ -453,23 +456,43 @@ def get_student_profile():
                 course_dept = course.get("course_dept", "")
                 course_num = course.get("course_num", "")
                 if course_dept and course_num:
-                    course_codes.append(f"{course_dept} {course_num}")
+                    registered_course_codes.append(f"{course_dept} {course_num}")
                 else:
                     # If course_dept or course_num is missing, handle gracefully
-                    course_codes.append("Unknown Course")
+                    registered_course_codes.append("Unknown Course")
             else:
-                course_codes.append("Course not found")
+                registered_course_codes.append("Course not found")
         except Exception as e:
-            course_codes.append("Invalid course ID")
+            registered_course_codes.append("Invalid course ID")
             print(f"Error fetching course {course_id}: {e}")
+    for course_id in completed_courses:
+        try:
+            course = courses_collection.find_one({"_id": ObjectId(course_id)})
+            if course:
+                # Check if both course_dept and course_num are available
+                course_dept = course.get("course_dept", "")
+                course_num = course.get("course_num", "")
+                if course_dept and course_num:
+                    completed_course_codes.append(f"{course_dept} {course_num}")
+                else:
+                    # If course_dept or course_num is missing, handle gracefully
+                    completed_course_codes.append("Unknown Course")
+            else:
+                completed_course_codes.append("Course not found")
+        except Exception as e:
+            completed_course_codes.append("Invalid course ID")
+            print(f"Error fetching course {course_id}: {e}")
+
     student_details = {
         "student_id": student.get("student_id"),
         "first_name": student.get("first_name"),
         "last_name": student.get("last_name"),
         "email": student.get("email"),
         "gender": student.get("gender"),
-        "registered_courses": course_codes,
-        "registered_courses_grades": all_grades,
+        "registered_courses": registered_course_codes,
+        "registered_courses_grades": registered_grades,
+        "completed_courses": completed_course_codes,
+        "completed_courses_grades": completed_grades,
         "degree": student.get("degree"),
         "major": student.get("major"),
         "gpa": gpa
