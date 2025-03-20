@@ -12,6 +12,8 @@ export default function StudentProfile() {
     const [edit, setEdit] = useState(false);
     const pathParts = window.location.pathname.split("/");
     const studentId = pathParts[pathParts.length - 1];
+    //Id used for switching profiles
+    const [newStudentID, setNewStudentID] = useState("");
 
 
     useEffect(() => {
@@ -140,82 +142,137 @@ export default function StudentProfile() {
                 return;
             }
         }
+
+    const switchProfile = () => {
+        if (newStudentID.trim()) {
+            window.location.href = `/studentProfile/${encodeURIComponent(newStudentID)}`;
+        } else {
+            alert("Please enter a student ID.");
+        }
+    };
     
 
 //return
     //display student's profile data
     return (
-        <div>
+        <div style={{ position: "relative" }}>
             <HeaderLoader />
             <h1>Student Profile</h1>
             {loading ? (
                 <p>Loading...</p>
             ) : studentData ? (
                 <div>
-            {loading ? (
-                <p>Loading...</p>
-            ) : studentData ? (
-                <div id="student-profile">
-                    <section id="personal-info">
-                        <h2>Personal Information</h2>
-                        <table>
-                            <tbody>
-                                <tr>
-                                    <td><strong>First Name:</strong></td>
-                                    <td id="first_name">{edit ? (<input value={studentData.first_name} onChange={(e) => handleInputChange("first_name", e.target.value)}></input>) : (studentData.first_name)}</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Last Name:</strong></td>
-                                    <td id="last_name">{edit ? (<input value={studentData.last_name} onChange={(e) => handleInputChange("last_name", e.target.value)}></input>) : (studentData.last_name)}</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>ID:</strong></td>
-                                    <td>{studentData.student_id}</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Email:</strong></td>
-                                    <td id="email">{edit ? (<input value={studentData.email} onChange={(e) => handleInputChange("email", e.target.value)}></input>) : (studentData.email)}</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Gender:</strong></td>
-                                    <td id="gender">{edit ? (<input value={studentData.gender} onChange={(e) => handleInputChange("gender", e.target.value)}></input>) : (studentData.gender)}</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Degree:</strong></td>
-                                    <td id="degree">{edit ? (<input value={studentData.degree} onChange={(e) => handleInputChange("degree", e.target.value)}></input>) : (studentData.degree)}</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Major:</strong></td>
-                                    <td id="major">{edit ? (<input value={studentData.major} onChange={(e) => handleInputChange("major", e.target.value)}></input>) : (studentData.major)}</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>GPA:</strong></td>
-                                    <td>{studentData.gpa}</td>
-                                </tr>
-                            </tbody>
-                        </table><br></br>
-                        {<button onClick={handleChange}>{edit ? "Set Info" : "Change Info"}</button>}
-                    </section>
-                    <section className="courses-info">
-                        <h2>Registered Courses</h2>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Course Name</th>
-                                    <th>Grade</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {studentData.registered_courses && studentData.registered_courses.map((course, index) => (
-                                    <tr key={course}>
-                                        <td>{course}</td>
-                                        <td>{studentData.registered_courses_grades[index]}</td>
+                    {/* Separate div for the Search button */}
+                    <div style={{ position: "absolute" }} className="search-button-container">
+                        <input
+                            type="text"
+                            placeholder="Enter Student ID"
+                            value={newStudentID}
+                            onChange={(e) => setNewStudentID(e.target.value)}
+                            className="profile-search-input"
+                        />
+                        <button id="profileInput-submit" onClick={switchProfile} className="profile-search-button">
+                            <label htmlFor="profileInput-submit">Search for a Different Student</label>
+                        </button>
+                    </div>
+                    <div id="student-profile">
+                        <section id="personal-info">
+                            <h2>Personal Information</h2>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>First Name:</strong></td>
+                                        <td id="first_name">
+                                            {edit ? (
+                                                <input
+                                                    value={studentData.first_name}
+                                                    onChange={(e) => handleInputChange("first_name", e.target.value)}
+                                                />
+                                            ) : (
+                                                studentData.first_name
+                                            )}
+                                        </td>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                        <h2>Completed Courses</h2>
-                        {studentData.completed_courses && studentData.completed_courses_grades.length > 0 ? (
+                                    <tr>
+                                        <td><strong>Last Name:</strong></td>
+                                        <td id="last_name">
+                                            {edit ? (
+                                                <input
+                                                    value={studentData.last_name}
+                                                    onChange={(e) => handleInputChange("last_name", e.target.value)}
+                                                />
+                                            ) : (
+                                                studentData.last_name
+                                            )}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>ID:</strong></td>
+                                        <td>{studentData.student_id}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Email:</strong></td>
+                                        <td id="email">
+                                            {edit ? (
+                                                <input
+                                                    value={studentData.email}
+                                                    onChange={(e) => handleInputChange("email", e.target.value)}
+                                                />
+                                            ) : (
+                                                studentData.email
+                                            )}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Gender:</strong></td>
+                                        <td id="gender">
+                                            {edit ? (
+                                                <input
+                                                    value={studentData.gender}
+                                                    onChange={(e) => handleInputChange("gender", e.target.value)}
+                                                />
+                                            ) : (
+                                                studentData.gender
+                                            )}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Degree:</strong></td>
+                                        <td id="degree">
+                                            {edit ? (
+                                                <input
+                                                    value={studentData.degree}
+                                                    onChange={(e) => handleInputChange("degree", e.target.value)}
+                                                />
+                                            ) : (
+                                                studentData.degree
+                                            )}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Major:</strong></td>
+                                        <td id="major">
+                                            {edit ? (
+                                                <input
+                                                    value={studentData.major}
+                                                    onChange={(e) => handleInputChange("major", e.target.value)}
+                                                />
+                                            ) : (
+                                                studentData.major
+                                            )}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>GPA:</strong></td>
+                                        <td>{studentData.gpa}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <br />
+                            <button onClick={handleChange}>{edit ? "Set Info" : "Change Info"}</button>
+                        </section>
+                        <section className="courses-info">
+                            <h2>Registered Courses</h2>
                             <table>
                                 <thead>
                                     <tr>
@@ -224,27 +281,41 @@ export default function StudentProfile() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {studentData.completed_courses && studentData.completed_courses.map((course, index) => (
+                                    {studentData.registered_courses.map((course, index) => (
                                         <tr key={course}>
                                             <td>{course}</td>
-                                            <td>{studentData.completed_courses_grades[index]}</td>
+                                            <td>{studentData.registered_courses_grades[index]}</td>
                                         </tr>
                                     ))}
                                 </tbody>
                             </table>
-                        ) : (
-                            <p>This student has not completed any courses</p>
-                        )}
-                    </section>
+                            <h2>Completed Courses</h2>
+                            {studentData.completed_courses.length > 0 ? (
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Course Name</th>
+                                            <th>Grade</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {studentData.completed_courses.map((course, index) => (
+                                            <tr key={course}>
+                                                <td>{course}</td>
+                                                <td>{studentData.completed_courses_grades[index]}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            ) : (
+                                <p>This student has not completed any courses</p>
+                            )}
+                        </section>
+                    </div>
                 </div>
             ) : (
                 <p>Student not found.</p>
             )}
         </div>
-
-            ) : (
-                <p>Student not found.</p>
-            )}
-        </div>
     );
-}
+    }
