@@ -134,4 +134,51 @@ describe('StudentProfile Component', () => {
       expect(screen.getByText('Can not be empty')).toBeInTheDocument();
     });
   });
+
+
+
+
+
+  it('navigates to the correct profile when a valid student ID is entered', async () => {
+    render(<StudentProfile />);
+    const input = screen.getByPlaceholderText('Enter Student ID');
+    const button = screen.getByText('Search for a Different Student');
+
+    // Simulate entering a valid student ID
+    fireEvent.change(input, { target: { value: '10000002' } });
+    fireEvent.click(button);
+
+    // Expect the window location to change to the new profile URL
+    await waitFor(() => {
+      expect(window.location.href).toContain('/studentProfile/10000002');
+    });
+  });
+
+  it('shows an alert when the search button is clicked without entering a student ID', async () => {
+    render(<StudentProfile />);
+    const button = screen.getByText('Search for a Different Student');
+
+    // Simulate clicking the button without entering a student ID
+    fireEvent.click(button);
+
+    // Expect an alert to be shown
+    await waitFor(() => {
+      expect(window.alert).toHaveBeenCalledWith('Please enter a student ID.');
+    });
+  });
+
+  it('renders the search button with correct text and styling', async () => {
+    render(<StudentProfile />);
+    
+    // Verify the button is in the document
+    const button = screen.getByText('Search for a Different Student');
+    expect(button).toBeInTheDocument();
+  
+    // Verify the button has the correct class
+    expect(button).toHaveClass('search-button');
+  
+    // Verify the button has the correct attributes
+    expect(button).toHaveAttribute('id', 'profileInput-submit');
+    expect(button).toHaveAttribute('type', 'button');
+  });
 });
