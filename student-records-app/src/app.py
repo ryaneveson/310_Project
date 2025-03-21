@@ -1,22 +1,25 @@
-from flask import Flask, request, jsonify, redirect
+from flask import Flask, request, jsonify, redirect, make_response
 from flask_cors import CORS
 from pymongo import MongoClient
 import bcrypt
 from bson import ObjectId
 from datetime import datetime
+from flask_cors import CORS
 import os
 
 app = Flask(__name__)
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # Configure CORS
 CORS(app, 
      resources={r"/*": {
          "origins": ["http://localhost:3000"],
-         "methods": ["GET", "POST", "OPTIONS"],
+         "methods": ["GET", "POST", "PUT", "OPTIONS"],
          "allow_headers": ["Content-Type"],
          "expose_headers": ["Content-Type"],
          "supports_credentials": True
      }})
+
 
 MONGO_URI = os.getenv("MONGO_URI")
 client = MongoClient(MONGO_URI)
@@ -86,9 +89,11 @@ def login():
         if student and student.get("password") == password:
             return jsonify({
                 "success": True,
+
                 "role": student.get("role", "student"),
                 "student_id": student.get("student_id"),
                 "username": student["username"],
+
                 "message": "Login successful"
             }), 200
 
@@ -431,6 +436,108 @@ def delete_students():
             return jsonify({"error": "No students found with the provided IDs."}), 404
     except Exception as e:
         return jsonify({"error": f"Error deleting students: {str(e)}"}), 500
+    
+@app.route("/api/edit-student", methods=["POST"])
+def edit_student():
+    data = request.get_json()
+    if not all(key in data for key in ["student_id", "first_name", "last_name", "email", "gender", "degree", "major"]):
+        return jsonify({"error": "Missing required fields"}), 400
+    update_data = {
+        "first_name": data["first_name"],
+        "last_name": data["last_name"],
+        "email": data["email"],
+        "gender": data["gender"],
+        "degree": data["degree"],
+        "major": data["major"]
+    }
+    result = students_collection.update_one(
+        {"student_id": str(data["student_id"])},
+        {"$set": update_data}
+    )
+    print(update_data)
+    if result.modified_count == 0:
+        return jsonify({"error": "Student not found or no changes made"}), 404
+    return jsonify({"message": "Student updated successfully"}), 200
+    
+@app.route("/api/student/studentprofile", methods=["GET"])
+def get_student_profile():
+    # Retrieve student
+    student_id = request.args.get("student_id")
+    print(f"Received student_id: '{student_id}'")
+    if not student_id:
+        return jsonify({"error": "Student ID is required"}), 400
+    student = students_collection.find_one({"student_id": str(student_id)})
+    if not student:
+        return jsonify({"error": "Student not found"}), 404
+    
+    # Calculate GPA
+    registered_grades = student.get("registered_courses_grades", [])
+    completed_grades = student.get("completed_courses_grades", [])
+    all_grades = registered_grades + completed_grades
+    all_grades_int = [int(grade) for grade in all_grades]
+    if all_grades_int:
+        gpa = sum(all_grades_int) / len(all_grades_int)
+    else:
+        gpa = 0
+    registered_courses = student.get("registered_courses", [])
+    completed_courses = student.get("completed_courses", [])
+
+    # Fetch course codes for registered and completed courses
+    registered_course_codes = []
+    completed_course_codes = []
+    for course_id in registered_courses:
+        try:
+            course = courses_collection.find_one({"_id": ObjectId(course_id)})
+            if course:
+                # Check if both course_dept and course_num are available
+                course_dept = course.get("course_dept", "")
+                course_num = course.get("course_num", "")
+                if course_dept and course_num:
+                    registered_course_codes.append(f"{course_dept} {course_num}")
+                else:
+                    # If course_dept or course_num is missing, handle gracefully
+                    registered_course_codes.append("Unknown Course")
+            else:
+                registered_course_codes.append("Course not found")
+        except Exception as e:
+            registered_course_codes.append("Invalid course ID")
+            print(f"Error fetching course {course_id}: {e}")
+    for course_id in completed_courses:
+        try:
+            course = courses_collection.find_one({"_id": ObjectId(course_id)})
+            if course:
+                # Check if both course_dept and course_num are available
+                course_dept = course.get("course_dept", "")
+                course_num = course.get("course_num", "")
+                if course_dept and course_num:
+                    completed_course_codes.append(f"{course_dept} {course_num}")
+                else:
+                    # If course_dept or course_num is missing, handle gracefully
+                    completed_course_codes.append("Unknown Course")
+            else:
+                completed_course_codes.append("Course not found")
+        except Exception as e:
+            completed_course_codes.append("Invalid course ID")
+            print(f"Error fetching course {course_id}: {e}")
+
+    student_details = {
+        "student_id": student.get("student_id"),
+        "first_name": student.get("first_name"),
+        "last_name": student.get("last_name"),
+        "email": student.get("email"),
+        "gender": student.get("gender"),
+        "registered_courses": registered_course_codes,
+        "registered_courses_grades": registered_grades,
+        "completed_courses": completed_course_codes,
+        "completed_courses_grades": completed_grades,
+        "degree": student.get("degree"),
+        "major": student.get("major"),
+        "gpa": gpa
+    }
+    
+    if student_details:
+        return jsonify({"student": student_details}), 200
+    return jsonify({"error": "Student details invalid"}), 404
 
 @app.before_request
 def log_request():
@@ -442,14 +549,48 @@ def test_user():
     print("Test user:", user)
     return jsonify({"user": str(user)})
 
-if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=5000)
 
-@app.route("/api/student/studentprofile", methods=["GET"])
-def get_student_profile():
-    student_id = request.args.get("student_id")
-    if not student_id:
-        return jsonify({"error": "Student ID is required"}), 400
+@app.route("/api/user/update", methods=["PUT", "OPTIONS"])
+def update_username():
+    if request.method == "OPTIONS":
+        response = make_response()
+        response.headers.add('Access-Control-Allow-Methods', 'PUT')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+        return response
+
+
+    try:
+        data = request.json
+        current_username = data.get("currentUsername")
+        new_username = data.get("newUsername")
+        
+        if not current_username or not new_username:
+            return jsonify({"error": "Both current and new username are required"}), 400
+            
+        # Check if new username already exists
+        if users_collection.find_one({"username": new_username}):
+            return jsonify({"error": "Username already taken"}), 400
+            
+        # Update username in users collection
+        user_result = users_collection.update_one(
+            {"username": current_username},
+            {"$set": {"username": new_username}}
+        )
+        
+        # Update username in students collection if it exists
+        student_result = students_collection.update_one(
+            {"username": current_username},
+            {"$set": {"username": new_username}}
+        )
+        
+        if user_result.modified_count == 0:
+            return jsonify({"error": "User not found"}), 404
+            
+        return jsonify({"message": "Username updated successfully"}), 200
+    except Exception as e:
+        print(f"Error updating username: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
 
     student = students_collection.find_one({"student_id": student_id})
     if student:
@@ -488,3 +629,5 @@ def verify_student():
                 "success": False,
                 "error": "Student ID not found"
             }), 404
+
+  app.run(debug=True, host="0.0.0.0", port=5000)
