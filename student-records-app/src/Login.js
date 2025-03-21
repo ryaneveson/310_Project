@@ -9,12 +9,6 @@ const Login = () => {
   const [step, setStep] = useState(1); // Step 1: Login, Step 2: 2FA
   const [code, setCode] = useState("");
 
-  // Hardcoded users
-  const users = {
-    admin: { username: "admin", password: "adminpass", role: "admin" },
-    student: { username: "student", password: "studentpass", role: "student", student_id: "12345678" }
-  };
-
   useEffect(() => {
     fetch("/footer.html")
       .then((res) => res.text())
@@ -25,22 +19,6 @@ const Login = () => {
     e.preventDefault();
     setError("");
 
-    // First check hardcoded users
-    const hardcodedUser = Object.values(users).find(
-      user => user.username === username && user.password === password
-    );
-
-    if (hardcodedUser) {
-      localStorage.setItem("role", hardcodedUser.role);
-      localStorage.setItem("username", hardcodedUser.username);
-      if (hardcodedUser.student_id) {
-        localStorage.setItem("student_id", hardcodedUser.student_id);
-      }
-      setStep(2);
-      return;
-    }
-
-    // If not a hardcoded user, try database login
     try {
       console.log('Attempting database login with:', { username });
 
@@ -49,16 +27,33 @@ const Login = () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ username, password })
+        body: JSON.stringify({
+          username: username,
+          password: password
+        })
       });
 
       const data = await response.json();
       console.log('Server response:', data);
 
       if (data.success) {
+        // Clear any existing role first
+        localStorage.removeItem("role");
+        localStorage.removeItem("username");
+        
+        // Set the new role and username
         localStorage.setItem("role", data.role);
-        localStorage.setItem("username", data.username);
-        localStorage.setItem("student_id", data.student_id);
+        localStorage.setItem("username", username);
+        
+        // Verify the role was set correctly
+        const storedRole = localStorage.getItem("role");
+        console.log('Verified stored role:', storedRole);
+        
+        if (storedRole !== data.role) {
+          setError("Error: Role not stored correctly");
+          return;
+        }
+
         setStep(2);
       } else {
         setError(data.error || "Invalid username or password!");
