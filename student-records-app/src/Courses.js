@@ -59,13 +59,19 @@ function Courses({ mockCourses = null}) {
       body: JSON.stringify({
         student_id: student_id,
         course_dept: course.dept,
-        course_num: course.courseNum
+        course_num: course.courseNum,
+        course_capacity: course.capacity
       }),
     })
       .then((response) => response.json())
       .then((data) => {
+         if (data.error) {
+        // Display the error message from the backend
+        alert(data.error);
+      } else {
+        // Display the success message
         alert(`You have registered for ${course.name}!`);
-        window.location.href="/academicdashboard"
+        window.location.href = "/academicdashboard"; // Redirect to dashboard
       })
       .catch((error) => console.error("Error registering for course:", error));
   };

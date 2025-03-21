@@ -264,21 +264,36 @@ def register_course():
     student_id = data.get("student_id")
     course_dept = data.get("course_dept")
     course_num = data.get("course_num")
+    course_capacity = data.get("course_capacity")
 
     if not student_id or not course_dept or not course_num:
         return jsonify({"error": "Student ID, course department, and course number are required"}), 400
+    
+    student = students_collection.find_one({"student_id": student_id})
+    if not student:
+        return jsonify({"error": "Student not found"}), 404
 
     # Concatenate the course department and number
     course_identifier = f"{course_dept} {course_num}"
 
-    # Add the course to the student's registered courses
-    students_collection.update_one(
-        {"student_id": student_id},
-        {"$push": {"registered_courses": course_identifier}},
-        upsert=True
-    )
+    if course_identifier in student.get("registered_courses", []):
+        return jsonify({"error": "Student is already registered for this course"}), 400
+    
+    if course_capacity < 150:
+        # Add the course to the student's registered courses
+        students_collection.update_one(
+            {"student_id": student_id},
+            {"$push": {"registered_courses": course_identifier}},
+            upsert=True
+        )
 
-    return jsonify({"message": "Course registered successfully!"}), 201
+        courses_collection.update_one(
+        {"course_dept": course_dept, "course_num": course_num},
+        {"$inc": {"capacity": +1}}
+    )
+        return jsonify({"message": "Course registered successfully!"}), 201
+    else:
+        return jsonify({"error": "Course is full."}), 400
 
 @app.route("/api/add-payment", methods=["POST"])
 def add_payment():
