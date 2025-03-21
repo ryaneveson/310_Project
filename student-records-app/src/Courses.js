@@ -50,7 +50,7 @@ function Courses({ mockCourses = null}) {
   };
 
   const handleRegister = (course, index) => {
-    const student_id = "12345"; // Replace with the actual student ID (e.g., from login state)
+    const student_id = localStorage.getItem("student_id");
     fetch("http://localhost:5000/api/register-course", {
       method: "POST",
       headers: {
@@ -58,15 +58,26 @@ function Courses({ mockCourses = null}) {
       },
       body: JSON.stringify({
         student_id: student_id,
-        course_name: course.name,
+        course_dept: course.dept,
+        course_num: course.courseNum,
+        course_capacity: course.capacity
       }),
     })
       .then((response) => response.json())
       .then((data) => {
-        alert(`You have registered for ${course.name}!`);
-        window.location.href="/academicdashboard"
+        if (data.error) {
+          // Display the error message from the backend
+          alert(data.error);
+        } else {
+          // Display the success message
+          alert(`You have registered for ${course.name}!`);
+          window.location.href = "/academicdashboard";
+        }
       })
-      .catch((error) => console.error("Error registering for course:", error));
+      .catch((error) => {
+        console.error("Error registering for course:", error);
+        alert("An error occurred while registering for the course. Please try again.");
+      });
   };
 
   return (
@@ -186,6 +197,9 @@ function Courses({ mockCourses = null}) {
                         </p>
                         <p>
                           <strong>Pre-requisites:</strong> {course.prerequisites}
+                        </p>
+                        <p>
+                          <strong>Capacity:</strong> {course.capacity}/150
                         </p>
                       </>
                     )}
