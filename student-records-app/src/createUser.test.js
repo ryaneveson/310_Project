@@ -3,83 +3,85 @@ import CreateUser from './createUser';
 import '@testing-library/jest-dom';
 
 describe('CreateUser Component', () => {
-  // Mock fetch before tests
   global.fetch = jest.fn();
 
-  beforeEach(() =>  {
+  beforeEach(() => {
     fetch.mockClear();
   });
 
-  test('renders form elements', () => {
+  test('renders initial student verification form', () => {
     render(<CreateUser />);
     
-    // Check if all form elements are present
-    expect(screen.getAllByText('Create Account')).toHaveLength(2);
-    expect(screen.getByPlaceholderText('Username')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('Password')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Create Account' })).toBeInTheDocument();
+    // check to see if student verification form elements are present
+    expect(screen.getByText('Create Student Account')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Student ID')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Verify Student ID' })).toBeInTheDocument();
   });
 
-  test('handles user input', () => {
+  test('shows error when student ID is empty', async () => {
     render(<CreateUser />);
     
-    const usernameInput = screen.getByPlaceholderText('Username');
-    const passwordInput = screen.getByPlaceholderText('Password');
+    // try to submit without student ID
+    const verifyButton = screen.getByRole('button', { name: 'Verify Student ID' });
+    fireEvent.click(verifyButton);
     
-    fireEvent.change(usernameInput, { target: { value: 'testuser' } });
-    fireEvent.change(passwordInput, { target: { value: 'testpass' } });
-    
-    expect(usernameInput.value).toBe('testuser');
-    expect(passwordInput.value).toBe('testpass');
+    expect(screen.getByText('Please enter a student ID')).toBeInTheDocument();
   });
 
-  test('shows success message on successful registration', async () => {
+  test('shows registration form after successful verification', async () => {
+    //  successful verification response
     fetch.mockImplementationOnce(() => 
       Promise.resolve({
         ok: true,
-        json: () => Promise.resolve({ message: 'User created successfully!' })
+        json: () => Promise.resolve({ success: true })
       })
     );
 
     render(<CreateUser />);
     
-    // Fill and submit form
-    fireEvent.change(screen.getByPlaceholderText('Username'), {
-      target: { value: 'testuser' }
-    });
-    fireEvent.change(screen.getByPlaceholderText('Password'), {
-      target: { value: 'testpass' }
-    });
-    fireEvent.click(screen.getByRole('button', { name: 'Create Account' }));
+    // submit verification form
+    const studentIdInput = screen.getByPlaceholderText('Student ID');
+    fireEvent.change(studentIdInput, { target: { value: '12345678' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Verify Student ID' }));
 
-    // Wait for success message
+    // wait for registration form to appear
     await waitFor(() => {
-      expect(screen.getByText('User created successfully! You can now log in.')).toBeInTheDocument();
+      expect(screen.getByPlaceholderText('Choose a username')).toBeInTheDocument();
+      expect(screen.getByPlaceholderText('Choose a password')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Create Account' })).toBeInTheDocument();
     });
   });
 
-  test('shows error message when registration fails', async () => {
+  test('handles failed student verification', async () => {
+    // failed verification response
     fetch.mockImplementationOnce(() => 
       Promise.resolve({
         ok: false,
-        json: () => Promise.resolve({ error: 'Username already exists' })
+        json: () => Promise.resolve({ 
+          success: false, 
+          error: 'Student ID not found' 
+        })
       })
     );
 
     render(<CreateUser />);
     
-    // Fill and submit form
-    fireEvent.change(screen.getByPlaceholderText('Username'), {
-      target: { value: 'existinguser' }
-    });
-    fireEvent.change(screen.getByPlaceholderText('Password'), {
-      target: { value: 'testpass' }
-    });
-    fireEvent.click(screen.getByRole('button', { name: 'Create Account' }));
+    // Fill and submit verification form
+    const studentIdInput = screen.getByPlaceholderText('Student ID');
+    fireEvent.change(studentIdInput, { target: { value: 'invalid_id' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Verify Student ID' }));
 
     // Wait for error message
     await waitFor(() => {
-      expect(screen.getByText('Username already exists')).toBeInTheDocument();
+      expect(screen.getByText('Student ID not found')).toBeInTheDocument();
     });
+  });
+
+  test('login link exists', () => {
+    render(<CreateUser />);
+    
+    const loginLink = screen.getByText('Login here');
+    expect(loginLink).toBeInTheDocument();
+    expect(loginLink.getAttribute('href')).toBe('/');
   });
 });
