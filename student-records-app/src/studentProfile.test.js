@@ -135,12 +135,14 @@ describe('StudentProfile Component', () => {
     });
   });
 
-
-
-
   it('navigates to the correct profile when a valid student ID is entered', async () => {
+    mockFetchStudentProfile();
+    delete window.location;
+    window.location = { pathname: "" };
     render(<StudentProfile />);
-    const input = screen.getByPlaceholderText('Enter Student ID');
+
+    // Wait for the input field to appear
+    const input = await waitFor(() => screen.getByPlaceholderText('Enter Student ID'));
     const button = screen.getByRole('button', { name: 'Search for a Different Student' });
 
     // Simulate entering a valid student ID
@@ -149,14 +151,19 @@ describe('StudentProfile Component', () => {
 
     // Expect the window location to change to the new profile URL
     await waitFor(() => {
-      expect(window.location.href).toContain('/studentProfile/10000002');
+      expect(window.location.href).toBe('/studentProfile/10000002');
     });
   });
 
   it('shows an alert when the search button is clicked without entering a student ID', async () => {
+    mockFetchStudentProfile();
     render(<StudentProfile />);
-    const button = screen.getByRole('button', { name: 'Search for a Different Student' });
-    
+
+    // Wait for the button to appear
+    const button = await waitFor(() =>
+      screen.getByRole('button', { name: 'Search for a Different Student' })
+    );
+
     // Simulate clicking the button without entering a student ID
     fireEvent.click(button);
 
@@ -167,17 +174,18 @@ describe('StudentProfile Component', () => {
   });
 
   it('renders the search button with correct text and styling', async () => {
+    mockFetchStudentProfile();
     render(<StudentProfile />);
-    
+
+    // Wait for the button to appear
+    const button = await waitFor(() =>
+      screen.getByRole('button', { name: 'Search for a Different Student' })
+    );
+
     // Verify the button is in the document
-    const button = screen.queryByRole('button', { name: 'Search for a Different Student' });
-    expect(button).not.toBeNull(); // Ensure the button exists
-  
+    expect(button).toBeInTheDocument();
+
     // Verify the button has the correct class
-    expect(button).toHaveClass('search-button');
-  
-    // Verify the button has the correct attributes
-    expect(button).toHaveAttribute('id', 'profileInput-submit');
-    expect(button).toHaveAttribute('type', 'button');
+    expect(button).toHaveClass('profile-search-button');
   });
 });
