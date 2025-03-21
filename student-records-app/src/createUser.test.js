@@ -66,12 +66,12 @@ describe('CreateUser Component', () => {
 
     render(<CreateUser />);
     
-    // Fill and submit verification form
+    // fill and submit verification form
     const studentIdInput = screen.getByPlaceholderText('Student ID');
     fireEvent.change(studentIdInput, { target: { value: 'invalid_id' } });
     fireEvent.click(screen.getByRole('button', { name: 'Verify Student ID' }));
 
-    // Wait for error message
+    // wait for error message
     await waitFor(() => {
       expect(screen.getByText('Student ID not found')).toBeInTheDocument();
     });
