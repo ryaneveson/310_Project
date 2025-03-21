@@ -15,7 +15,7 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 def after_request(response):
     response.headers.add('Access-Control-Allow-Origin', '*')
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
-    response.headers.add('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+    response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PUT, OPTIONS')
     return response
 
 @app.route("/login", methods=['OPTIONS'])
@@ -74,6 +74,7 @@ def login():
             return jsonify({
                 "success": True,
                 "role": user["role"],
+                "username": username,
                 "message": "Login successful"
             }), 200
         
@@ -511,6 +512,46 @@ def test_user():
     user = users_collection.find_one({})  # Gets first user
     print("Test user:", user)
     return jsonify({"user": str(user)})
+
+@app.route("/api/user/update", methods=["PUT", "OPTIONS"])
+def update_username():
+    if request.method == "OPTIONS":
+        response = make_response()
+        response.headers.add('Access-Control-Allow-Methods', 'PUT')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+        return response
+
+    try:
+        data = request.json
+        current_username = data.get("currentUsername")
+        new_username = data.get("newUsername")
+        
+        if not current_username or not new_username:
+            return jsonify({"error": "Both current and new username are required"}), 400
+            
+        # Check if new username already exists
+        if users_collection.find_one({"username": new_username}):
+            return jsonify({"error": "Username already taken"}), 400
+            
+        # Update username in users collection
+        user_result = users_collection.update_one(
+            {"username": current_username},
+            {"$set": {"username": new_username}}
+        )
+        
+        # Update username in students collection if it exists
+        student_result = students_collection.update_one(
+            {"username": current_username},
+            {"$set": {"username": new_username}}
+        )
+        
+        if user_result.modified_count == 0:
+            return jsonify({"error": "User not found"}), 404
+            
+        return jsonify({"message": "Username updated successfully"}), 200
+    except Exception as e:
+        print(f"Error updating username: {str(e)}")
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
   app.run(debug=True, host="0.0.0.0", port=5000)
