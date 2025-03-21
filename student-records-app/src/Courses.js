@@ -65,15 +65,19 @@ function Courses({ mockCourses = null}) {
     })
       .then((response) => response.json())
       .then((data) => {
-         if (data.error) {
-        // Display the error message from the backend
-        alert(data.error);
-      } else {
-        // Display the success message
-        alert(`You have registered for ${course.name}!`);
-        window.location.href = "/academicdashboard"; // Redirect to dashboard
+        if (data.error) {
+          // Display the error message from the backend
+          alert(data.error);
+        } else {
+          // Display the success message
+          alert(`You have registered for ${course.name}!`);
+          window.location.href = "/academicdashboard";
+        }
       })
-      .catch((error) => console.error("Error registering for course:", error));
+      .catch((error) => {
+        console.error("Error registering for course:", error);
+        alert("An error occurred while registering for the course. Please try again.");
+      });
   };
 
   return (
