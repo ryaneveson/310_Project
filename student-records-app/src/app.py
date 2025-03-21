@@ -119,8 +119,9 @@ def get_courses():
             "professor": course["prof"],
             "date": course["lecture_time"],
             "room": course["lecture_room"],
-            #"description": "None",  # Add a placeholder if needed
+            "description": "None",  # Add a placeholder if needed
             "prerequisites": course["prereq"],
+            "capacity": course["capacity"]
         })
     return jsonify(transformed_courses)
 
