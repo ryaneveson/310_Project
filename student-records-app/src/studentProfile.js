@@ -171,8 +171,8 @@ export default function StudentProfile() {
                             onChange={(e) => setNewStudentID(e.target.value)}
                             className="profile-search-input"
                         />
-                        <button id="profileInput-submit" onClick={switchProfile} className="profile-search-button">
-                            <label htmlFor="profileInput-submit">Search for a Different Student</label>
+                        <button onClick={switchProfile} className="profile-search-button">
+                            Search for a Different Student
                         </button>
                     </div>
                     <div id="student-profile">

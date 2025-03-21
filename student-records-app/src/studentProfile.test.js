@@ -138,11 +138,10 @@ describe('StudentProfile Component', () => {
 
 
 
-
   it('navigates to the correct profile when a valid student ID is entered', async () => {
     render(<StudentProfile />);
     const input = screen.getByPlaceholderText('Enter Student ID');
-    const button = screen.getByText('Search for a Different Student');
+    const button = screen.getByRole('button', { name: 'Search for a Different Student' });
 
     // Simulate entering a valid student ID
     fireEvent.change(input, { target: { value: '10000002' } });
@@ -156,8 +155,8 @@ describe('StudentProfile Component', () => {
 
   it('shows an alert when the search button is clicked without entering a student ID', async () => {
     render(<StudentProfile />);
-    const button = screen.getByText('Search for a Different Student');
-
+    const button = screen.getByRole('button', { name: 'Search for a Different Student' });
+    
     // Simulate clicking the button without entering a student ID
     fireEvent.click(button);
 
@@ -171,8 +170,8 @@ describe('StudentProfile Component', () => {
     render(<StudentProfile />);
     
     // Verify the button is in the document
-    const button = screen.getByText('Search for a Different Student');
-    expect(button).toBeInTheDocument();
+    const button = screen.queryByRole('button', { name: 'Search for a Different Student' });
+    expect(button).not.toBeNull(); // Ensure the button exists
   
     // Verify the button has the correct class
     expect(button).toHaveClass('search-button');
