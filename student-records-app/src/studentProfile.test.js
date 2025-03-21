@@ -134,4 +134,58 @@ describe('StudentProfile Component', () => {
       expect(screen.getByText('Can not be empty')).toBeInTheDocument();
     });
   });
+
+  it('navigates to the correct profile when a valid student ID is entered', async () => {
+    mockFetchStudentProfile();
+    delete window.location;
+    window.location = { pathname: "" };
+    render(<StudentProfile />);
+
+    // Wait for the input field to appear
+    const input = await waitFor(() => screen.getByPlaceholderText('Enter Student ID'));
+    const button = screen.getByRole('button', { name: 'Search for a Different Student' });
+
+    // Simulate entering a valid student ID
+    fireEvent.change(input, { target: { value: '10000002' } });
+    fireEvent.click(button);
+
+    // Expect the window location to change to the new profile URL
+    await waitFor(() => {
+      expect(window.location.href).toBe('/studentProfile/10000002');
+    });
+  });
+
+  it('shows an alert when the search button is clicked without entering a student ID', async () => {
+    mockFetchStudentProfile();
+    render(<StudentProfile />);
+
+    // Wait for the button to appear
+    const button = await waitFor(() =>
+      screen.getByRole('button', { name: 'Search for a Different Student' })
+    );
+
+    // Simulate clicking the button without entering a student ID
+    fireEvent.click(button);
+
+    // Expect an alert to be shown
+    await waitFor(() => {
+      expect(window.alert).toHaveBeenCalledWith('Please enter a student ID.');
+    });
+  });
+
+  it('renders the search button with correct text and styling', async () => {
+    mockFetchStudentProfile();
+    render(<StudentProfile />);
+
+    // Wait for the button to appear
+    const button = await waitFor(() =>
+      screen.getByRole('button', { name: 'Search for a Different Student' })
+    );
+
+    // Verify the button is in the document
+    expect(button).toBeInTheDocument();
+
+    // Verify the button has the correct class
+    expect(button).toHaveClass('profile-search-button');
+  });
 });

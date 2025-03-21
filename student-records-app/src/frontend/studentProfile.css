@@ -53,3 +53,27 @@ tbody tr:nth-child(even) {
 .courses-info table:first-of-type {
     margin-bottom: 40px;
 }
+
+/* Style for the button container */
+.search-button-container {
+    position: absolute;
+    text-align: right; /* Align the button to the right */
+    margin-bottom: 20px; /* Add space below the button */
+    left: 550px;
+    right: -450px;
+}
+
+/* Style for the button itself */
+.search-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.search-button:hover {
+    background-color: #0056b3;
+}
