@@ -42,7 +42,7 @@ function App() {
         <Route path="/upcomingDue" element={<UpcomingDue />} />
         <Route path="/addFee" element={<AddFee />} />
         <Route path="/manageStudents" element={<ManageStudents />} />
-        <Route path="/studentInformation" element={<StudentInformation />} />
+        <Route path="/StudentInfo" element={<StudentInformation />} />
       </Routes>
     </Router>
   );
