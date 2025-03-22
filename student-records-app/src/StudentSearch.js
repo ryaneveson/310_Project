@@ -151,6 +151,33 @@ function StudentSearch({mockStudents = null}) {
         linkElement.click();
     };
 
+    const exportSelectedToPdf = async () => {
+        if (selectedStudents.length === 0) {
+            alert("Please select at least one student to export");
+            return;
+        }
+
+        try {
+            const response = await axios.get(
+                `http://localhost:5000/api/generate-student-report?student_ids=${selectedStudents.map(s => s.studentNumber).join(",")}`,
+                { responseType: 'blob' }
+            );
+
+            const blob = new Blob([response.data], { type: 'application/pdf' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `student_report_${new Date().toISOString().split('T')[0]}.pdf`;
+            document.body.appendChild(link);
+            link.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(link);
+        } catch (error) {
+            console.error("Error exporting PDF:", error);
+            alert("Error generating PDF report");
+        }
+    };
+
     if (!userRole) {
         return <div>Loading...</div>;
     }
@@ -275,7 +302,14 @@ function StudentSearch({mockStudents = null}) {
             <article id="selected-students">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <h2>Selected Students</h2>
-                    <button className="btn" onClick={exportSelectedToJson}>Export Selected</button>
+                    <div className="export-buttons">
+                        <button className="btn export-json" onClick={exportSelectedToJson}>
+                            Export Selected (JSON)
+                        </button>
+                        <button className="btn export-pdf" onClick={exportSelectedToPdf}>
+                            Export Selected (PDF)
+                        </button>
+                    </div>
                 </div>
                 <table>
                     <thead>

@@ -1,148 +1,235 @@
-/* studentSearch.css */
-
 #studentSearch {
-    font-family: Arial, sans-serif;
-    color: #495867;
-    display: flex;
+  display: grid;
+  grid-template-columns: 300px 1fr 300px;
+  gap: 2rem;
+  padding: 2.5rem;
+  background-color: #f8fafc;
+  min-height: 100vh;
+}
+
+.sidebar {
+  background: white;
+  padding: 1.75rem;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  height: fit-content;
+  position: sticky;
+  top: 2rem;
+}
+
+.sidebar label {
+  display: block;
+  margin-bottom: 1.25rem;
+  font-size: 0.95rem;
+  color: #1e293b;
+  font-weight: 500;
+}
+
+.grade-box {
+  width: 80px;
+  padding: 0.625rem;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  margin: 0.5rem 0;
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease;
+}
+
+.grade-box:focus, .search-box:focus {
+  outline: none;
+  border-color: #003B71;
+  box-shadow: 0 0 0 3px rgba(0, 59, 113, 0.1);
+}
+
+.search-box {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  margin: 0.5rem 0;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+.btn {
+  background-color: #003B71;
+  color: white;
+  border: none;
+  padding: 0.625rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  margin: 0.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn:hover {
+  background-color: #002B54;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#search {
+  background: white;
+  padding: 1.75rem;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+#search h2 {
+  margin-bottom: 1rem;
+  color: #1e293b;
+}
+
+#results, #selected-students {
+  background: white;
+  padding: 1.75rem;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 1rem 0;
+}
+
+th {
+  background-color: #003B71;
+  color: white;
+  padding: 1rem 1.25rem;
+  text-align: left;
+  font-weight: 500;
+  font-size: 0.875rem;
+  letter-spacing: 0.025em;
+}
+
+th:first-child {
+  border-top-left-radius: 8px;
+}
+
+th:last-child {
+  border-top-right-radius: 8px;
+}
+
+td {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #e2e8f0;
+  color: #1e293b;
+  font-size: 0.875rem;
+}
+
+tr:hover td {
+  background-color: #f8fafc;
+}
+
+.checkboxes {
+  margin-top: 1rem;
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.checkboxes::-webkit-scrollbar {
+  width: 4px;
+}
+
+.checkboxes::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 2px;
+}
+
+.checkboxes::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 2px;
+}
+
+.checkboxes label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-weight: normal;
+  font-size: 0.875rem;
+  color: #475569;
+}
+
+.checkboxes input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1.5px solid #cbd5e1;
+  cursor: pointer;
+}
+
+h2 {
+  color: #1e293b;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+h3 {
+  color: #1e293b;
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 1.5rem 0 1rem;
+}
+
+.export-buttons {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.export-json {
+  background-color: #10b981;
+}
+
+.export-json:hover {
+  background-color: #059669;
+}
+
+.export-pdf {
+  background-color: #ef4444;
+}
+
+.export-pdf:hover {
+  background-color: #dc2626;
+}
+
+@media (max-width: 1200px) {
+  #studentSearch {
+    grid-template-columns: 250px 1fr;
   }
   
-  /* sidebar styles */
-  #studentSearch .sidebar {
-    width: 300px;
-    background-color: white;
-    padding: 20px;
-    box-shadow: 20px 20px 10px rgba(0, 0, 0, 0.05);
-    border: 1px solid #e0e0e0;
-    border-radius: 25px;
-    position: absolute;
-    top: 7rem;
-    left: 20px;
-    display: flex;
+  #selected-students {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 768px) {
+  #studentSearch {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+  }
+
+  .sidebar {
+    position: static;
+  }
+
+  .btn {
+    width: 100%;
+    margin: 0.25rem 0;
+  }
+
+  .export-buttons {
     flex-direction: column;
   }
-  
-  #studentSearch .checkbox-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  #studentSearch .sidebar .checkboxes {
-    margin-top: 20px;
-  }
-
-  #studentSearch .sidebar label {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  #studentSearch .sidebar input {
-    width: fit-content;
-  }
-  
-  #studentSearch .sidebar h3 {
-    font-size: 1.2rem;
-  }
-  
-  #studentSearch .sidebar #toggle-btn,
-  #studentSearch .sidebar #reset-btn,
-  #studentSearch .sidebar #clear-btn {
-    position: static;
-    transform: none;
-    margin: 5px;
-  }
-
-  #studentSearch .btn {
-    background: #004385;
-    color: white;
-    padding: 6px 12px;
-    border: none;
-    border-radius: 6px;
-    font-size: 10px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: all 0.3s ease-in-out;
-    box-shadow: 0px 3px 0px #004385;
-    position: relative;
-    width: fit-content;
-    margin: 5px;
-  }
-
-  #studentSearch .btn:hover {
-    background: #3674b3;
-    box-shadow: 0px 1px 0px #004385;
-  }
-
-  
-  
-  /* student list styling */
-  #studentSearch article {
-    position: absolute;
-    left: 400px;
-    top: 7rem;
-    padding: 20px;
-  }
-
-  #studentSearch article > * {
-    background-color: white;
-    padding: 20px;
-    box-shadow: 20px 20px 10px rgba(0, 0, 0, 0.05); /* soft shadow */
-    border: 1px solid #e0e0e0;
-    border-radius: 25px;
-    margin: 25px;
-  }
-
-  #studentSearch input[type="text"] {
-    width: calc(100% - 100px);
-    padding: 0.25rem;
-    margin: 1rem 0;
-    border-radius: 10px;
-    border: 1px solid #004385;
-    display: inline-block;
-  }
-  
-  #studentSearch .sidebar input[type="text"] {
-    width: 3rem;
-  }
-
-  #studentSearch article h2 {
-    font-size: 1.5rem;
-    margin-bottom: 20px;
-  }
-  
-  #studentSearch table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  #studentSearch table, #studentSearch th, #studentSearch td {
-    border: 1px solid #ddd;
-  }
-  
-  #studentSearch th, #studentSearch td {
-    padding: 8px;
-    text-align: left;
-  }
-  
-  th {
-    background-color: #004385;
-    color: white;
-  }
-  
-  tr:nth-child(even) {
-    background-color: #f9f9f9;
-  }
-  
-  tr:hover {
-    background-color: #f1f1f1;
-  }
-  
-  /* Add button container */
-  #studentSearch .button-container {
-    display: flex;
-    justify-content: space-between;
-    margin: 10px 0;
-    width: 100%;
-  }
-  
+}

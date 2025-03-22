@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, redirect, make_response
+from flask import Flask, request, jsonify, redirect, make_response, send_file
 from flask_cors import CORS
 from pymongo import MongoClient
 import bcrypt
@@ -6,6 +6,11 @@ from bson import ObjectId
 from datetime import datetime
 from flask_cors import CORS
 import os
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
+from io import BytesIO
 
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
@@ -25,7 +30,6 @@ def handle_options():
 MONGO_URI = os.getenv("MONGO_URI")
 client = MongoClient(MONGO_URI)
 db = client["student_records"]
-users_collection = db["users"]
 students_collection = db["students"]
 courses_collection = db["Courses"]
 finances_collection = db["Finances"]
@@ -38,12 +42,12 @@ def register():
     password = data.get("password").encode("utf-8")
     role = data.get("role", "student")  # default to student if not specified
 
-    if users_collection.find_one({"username": username}):
+    if students_collection.find_one({"username": username}):
         return jsonify({"error": "Username already exists"}), 400
 
     hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
 
-    users_collection.insert_one({
+    students_collection.insert_one({
         "username": username,
         "password": hashed_password.decode("utf-8"),
         "role": role
@@ -67,14 +71,16 @@ def login():
             return jsonify({"error": "Missing username or password"}), 400
 
         print(f"Looking for user: {username}")
-        user = users_collection.find_one({"username": username})
+        user = students_collection.find_one({"username": username})
         print(f"Found user: {user}")
 
-        if user and bcrypt.checkpw(password.encode('utf-8'), user["password"].encode('utf-8')):
+        # Simple password comparison without hashing
+        if user and user["password"] == password:
             return jsonify({
                 "success": True,
                 "role": user["role"],
                 "username": username,
+                "student_id": user.get("student_id"),  # Add student_id to response
                 "message": "Login successful"
             }), 200
         
@@ -121,33 +127,55 @@ def get_student_calendar():
     student_id = request.args.get("student_id")
     if not student_id:
         return jsonify({"error": "Student ID is required"}), 400
+    
     student = students_collection.find_one({"student_id": student_id})
     if not student:
         return jsonify({"error": "Student not found"}), 404
-    registered_course_names = student.get("registered_courses", [])
     
+    registered_courses = student.get("registered_courses", [])
     courses_details = []
-    for course_id in registered_course_names:
-        course = courses_collection.find_one({"_id": course_id})
-        
+
+    for course_entry in registered_courses:
+        if isinstance(course_entry, str):
+            # If course is a string (like "COSC 310"), look it up by dept and number
+            dept, num = course_entry.split()
+            course = courses_collection.find_one({
+                "course_dept": dept,
+                "course_num": num
+            })
+        else:
+            # If course is an ObjectId, look it up directly
+            try:
+                course = courses_collection.find_one({"_id": ObjectId(str(course_entry))})
+            except:
+                course = None
+
         if course:
             class_code = f"{course.get('course_dept')} {course.get('course_num')}"
             lecture_time = course.get("lecture_time", "")
-            #assuming lecture_time is in format like "Mon-Wed 11:00-12:30"
-            days, times = lecture_time.split(" ")
-            start_time, end_time = times.split("-")
-            days_list = days.split("-")
-             
-            for day in days_list:
-                courses_details.append({
-                    "day": day,
-                    "startTime": start_time,
-                    "endTime": end_time,
-                    "classCode": class_code,
-                    "room": course.get("lecture_room")
-                })
+            
+            # Parse lecture time (format: "Mon-Wed 9:30-11:00")
+            try:
+                days, times = lecture_time.split(" ")
+                start_time, end_time = times.split("-")
+                days_list = days.split("-")
+                
+                # Create an event for each day
+                for day in days_list:
+                    courses_details.append({
+                        "day": day,
+                        "startTime": start_time,
+                        "endTime": end_time,
+                        "classCode": class_code,
+                        "room": course.get("lecture_room")
+                    })
+            except:
+                print(f"Error parsing lecture time for course: {class_code}")
+                continue
+
     if not courses_details:
         return jsonify({"error": "No courses found for this student"}), 404
+    
     return jsonify({"courses": courses_details}), 200
 
 @app.route("/api/student/finances", methods=["GET"])
@@ -182,7 +210,7 @@ def get_students_payment_methods():
         return jsonify({"error": "Student ID is required"}), 400
     if len(student_id) != 8 or not student_id.isdigit():
         return jsonify({"error": "Student ID must be an 8-digit number"}), 400
-    student = students_collection.find_one({"student_id": student_id})
+    student = students_collection.find_one({"student_id": student["_id"]}, {"_id": 0})
     if not student:
         return jsonify({"error": "Student not found"}), 404
     payment_methods = list(payment_methods_collection.find({"student_id": student["_id"]}, {"_id": 0}))
@@ -425,11 +453,11 @@ def edit_student():
     
 @app.route("/api/student/studentprofile", methods=["GET"])
 def get_student_profile():
-    # Retrieve student
     student_id = request.args.get("student_id")
     print(f"Received student_id: '{student_id}'")
     if not student_id:
         return jsonify({"error": "Student ID is required"}), 400
+    
     student = students_collection.find_one({"student_id": str(student_id)})
     if not student:
         return jsonify({"error": "Student not found"}), 404
@@ -438,51 +466,43 @@ def get_student_profile():
     registered_grades = student.get("registered_courses_grades", [])
     completed_grades = student.get("completed_courses_grades", [])
     all_grades = registered_grades + completed_grades
-    all_grades_int = [int(grade) for grade in all_grades]
-    if all_grades_int:
-        gpa = sum(all_grades_int) / len(all_grades_int)
-    else:
-        gpa = 0
+    all_grades_int = [int(grade) for grade in all_grades if grade]
+    gpa = sum(all_grades_int) / len(all_grades_int) if all_grades_int else 0
+    
     registered_courses = student.get("registered_courses", [])
     completed_courses = student.get("completed_courses", [])
 
-    # Fetch course codes for registered and completed courses
+    # Process registered courses
     registered_course_codes = []
-    completed_course_codes = []
-    for course_id in registered_courses:
-        try:
-            course = courses_collection.find_one({"_id": ObjectId(course_id)})
-            if course:
-                # Check if both course_dept and course_num are available
-                course_dept = course.get("course_dept", "")
-                course_num = course.get("course_num", "")
-                if course_dept and course_num:
-                    registered_course_codes.append(f"{course_dept} {course_num}")
+    for course in registered_courses:
+        if isinstance(course, str):
+            # If course is already a string (like "COSC 310")
+            registered_course_codes.append(course)
+        else:
+            try:
+                # If course is an ObjectId, fetch the course details
+                course_doc = courses_collection.find_one({"_id": ObjectId(str(course))})
+                if course_doc:
+                    registered_course_codes.append(f"{course_doc.get('course_dept')} {course_doc.get('course_num')}")
                 else:
-                    # If course_dept or course_num is missing, handle gracefully
                     registered_course_codes.append("Unknown Course")
-            else:
-                registered_course_codes.append("Course not found")
-        except Exception as e:
-            registered_course_codes.append("Invalid course ID")
-            print(f"Error fetching course {course_id}: {e}")
-    for course_id in completed_courses:
-        try:
-            course = courses_collection.find_one({"_id": ObjectId(course_id)})
-            if course:
-                # Check if both course_dept and course_num are available
-                course_dept = course.get("course_dept", "")
-                course_num = course.get("course_num", "")
-                if course_dept and course_num:
-                    completed_course_codes.append(f"{course_dept} {course_num}")
+            except:
+                registered_course_codes.append("Invalid Course")
+
+    # Process completed courses
+    completed_course_codes = []
+    for course in completed_courses:
+        if isinstance(course, str):
+            completed_course_codes.append(course)
+        else:
+            try:
+                course_doc = courses_collection.find_one({"_id": ObjectId(str(course))})
+                if course_doc:
+                    completed_course_codes.append(f"{course_doc.get('course_dept')} {course_doc.get('course_num')}")
                 else:
-                    # If course_dept or course_num is missing, handle gracefully
                     completed_course_codes.append("Unknown Course")
-            else:
-                completed_course_codes.append("Course not found")
-        except Exception as e:
-            completed_course_codes.append("Invalid course ID")
-            print(f"Error fetching course {course_id}: {e}")
+            except:
+                completed_course_codes.append("Invalid Course")
 
     student_details = {
         "student_id": student.get("student_id"),
@@ -509,7 +529,7 @@ def log_request():
 
 @app.route("/test-user", methods=["GET"])
 def test_user():
-    user = users_collection.find_one({})  # Gets first user
+    user = students_collection.find_one({})  # Gets first user
     print("Test user:", user)
     return jsonify({"user": str(user)})
 
@@ -524,34 +544,458 @@ def update_username():
     try:
         data = request.json
         current_username = data.get("currentUsername")
-        new_username = data.get("newUsername")
+        new_info = data.get("newInfo", {})
         
-        if not current_username or not new_username:
-            return jsonify({"error": "Both current and new username are required"}), 400
+        if not current_username or not new_info:
+            return jsonify({"error": "Current username and new information are required"}), 400
             
-        # Check if new username already exists
-        if users_collection.find_one({"username": new_username}):
+        # Check if new username already exists (if username is being changed)
+        if new_info.get("username") != current_username and \
+           students_collection.find_one({"username": new_info.get("username")}):
             return jsonify({"error": "Username already taken"}), 400
             
-        # Update username in users collection
-        user_result = users_collection.update_one(
+        # Prepare update data
+        update_data = {
+            "username": new_info.get("username"),
+            "first_name": new_info.get("first_name"),
+            "last_name": new_info.get("last_name"),
+            "email": new_info.get("email"),
+            "gender": new_info.get("gender")
+        }
+        
+        # Handle password update separately
+        if new_info.get("password"):
+            update_data["password"] = new_info["password"]  # In production, hash the password
+        
+        # Update student information
+        result = students_collection.update_one(
             {"username": current_username},
-            {"$set": {"username": new_username}}
+            {"$set": update_data}
         )
         
-        # Update username in students collection if it exists
-        student_result = students_collection.update_one(
-            {"username": current_username},
-            {"$set": {"username": new_username}}
-        )
-        
-        if user_result.modified_count == 0:
+        if result.modified_count == 0:
             return jsonify({"error": "User not found"}), 404
             
-        return jsonify({"message": "Username updated successfully"}), 200
+        return jsonify({"message": "Information updated successfully"}), 200
     except Exception as e:
-        print(f"Error updating username: {str(e)}")
+        print(f"Error updating user information: {str(e)}")
         return jsonify({"error": str(e)}), 500
+
+@app.route("/api/generate-transcript", methods=["GET"])
+def generate_transcript():
+    student_id = request.args.get("student_id")
+    if not student_id:
+        return jsonify({"error": "Student ID is required"}), 400
+
+    # Find the student
+    student = students_collection.find_one({"student_id": str(student_id)})
+    if not student:
+        return jsonify({"error": "Student not found"}), 404
+
+    # Create a PDF buffer
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=letter)
+    elements = []
+    styles = getSampleStyleSheet()
+
+    # Add header
+    elements.append(Paragraph(f"Academic Transcript", styles['Title']))
+    elements.append(Paragraph(f"Student: {student.get('first_name', '')} {student.get('last_name', '')}", styles['Normal']))
+    elements.append(Paragraph(f"Student ID: {student_id}", styles['Normal']))
+    elements.append(Paragraph(f"Major: {student.get('major', '')}", styles['Normal']))
+    elements.append(Spacer(1, 20))
+
+    # Prepare registered courses data
+    registered_courses = student.get("registered_courses", [])
+    registered_grades = student.get("registered_courses_grades", [])
+    
+    if registered_courses:
+        elements.append(Paragraph("Current Courses", styles['Heading2']))
+        data = [["Course", "Grade"]]
+        
+        # Process each course
+        for i, course in enumerate(registered_courses):
+            course_name = ""
+            if isinstance(course, str):
+                # If course is already a string (like "COSC 310")
+                course_name = course
+            else:
+                try:
+                    # If course is an ObjectId, fetch the course details
+                    course_doc = courses_collection.find_one({"_id": ObjectId(str(course))})
+                    if course_doc:
+                        course_name = f"{course_doc.get('course_dept')} {course_doc.get('course_num')}"
+                    else:
+                        course_name = "Unknown Course"
+                except:
+                    course_name = "Invalid Course"
+            
+            # Get grade if available
+            grade = registered_grades[i] if i < len(registered_grades) else "N/A"
+            data.append([course_name, grade])
+        
+        table = Table(data)
+        table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 0), 14),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+            ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
+            ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 1), (-1, -1), 12),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black)
+        ]))
+        elements.append(table)
+        elements.append(Spacer(1, 20))
+
+    # Similar process for completed courses
+    completed_courses = student.get("completed_courses", [])
+    completed_grades = student.get("completed_courses_grades", [])
+    
+    if completed_courses:
+        elements.append(Paragraph("Completed Courses", styles['Heading2']))
+        data = [["Course", "Grade"]]
+        
+        for i, course in enumerate(completed_courses):
+            course_name = ""
+            if isinstance(course, str):
+                course_name = course
+            else:
+                try:
+                    course_doc = courses_collection.find_one({"_id": ObjectId(str(course))})
+                    if course_doc:
+                        course_name = f"{course_doc.get('course_dept')} {course_doc.get('course_num')}"
+                    else:
+                        course_name = "Unknown Course"
+                except:
+                    course_name = "Invalid Course"
+            
+            grade = completed_grades[i] if i < len(completed_grades) else "N/A"
+            data.append([course_name, grade])
+        
+        table = Table(data)
+        table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 0), 14),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+            ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
+            ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 1), (-1, -1), 12),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black)
+        ]))
+        elements.append(table)
+
+    # Build PDF
+    doc.build(elements)
+    buffer.seek(0)
+    
+    return send_file(
+        buffer,
+        download_name=f'transcript_{student_id}.pdf',
+        as_attachment=True,
+        mimetype='application/pdf'
+    )
+
+@app.route("/api/update-student-fees", methods=["POST"])
+def update_student_fees():
+    try:
+        student_id = request.args.get("student_id")
+        if not student_id:
+            return jsonify({"error": "Student ID is required"}), 400
+
+        student = students_collection.find_one({"student_id": str(student_id)})
+        if not student:
+            return jsonify({"error": "Student not found"}), 404
+
+        # Calculate fees based on registered courses ($600 per course)
+        registered_courses = student.get("registered_courses", [])
+        total_fees = len(registered_courses) * 600
+        current_paid = student.get("paid", 0)
+
+        # Update the student document with new fees
+        update_data = {
+            "fees": total_fees,
+            "paid": current_paid
+        }
+
+        # Update the student document
+        students_collection.update_one(
+            {"student_id": str(student_id)},
+            {"$set": update_data}
+        )
+
+        return jsonify({
+            "message": "Fees updated successfully",
+            "fees": update_data["fees"],
+            "paid": update_data["paid"],
+            "remaining": total_fees - current_paid
+        }), 200
+
+    except Exception as e:
+        print(f"Error updating fees: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/api/make-payment", methods=["POST"])
+def make_payment():
+    try:
+        data = request.json
+        print("Received payment data:", data)  # Debug log
+        
+        student_id = data.get("student_id")
+        payment_amount = float(data.get("amount"))
+        payment_method = data.get("payment_method")
+        
+        if not all([student_id, payment_amount, payment_method]):
+            return jsonify({"error": "Missing required payment information"}), 400
+
+        # Get student's current financial status
+        student = students_collection.find_one({"student_id": str(student_id)})
+        if not student:
+            return jsonify({"error": "Student not found"}), 404
+
+        current_fees = student.get("fees", 0)
+        current_paid = student.get("paid", 0)
+        new_paid_amount = current_paid + payment_amount
+
+        # Validate payment amount
+        if payment_amount > (current_fees - current_paid):
+            return jsonify({"error": "Payment amount exceeds remaining balance"}), 400
+
+        print(f"Updating payment for student {student_id}: Current paid={current_paid}, New paid={new_paid_amount}")  # Debug log
+
+        # Update the paid amount
+        result = students_collection.update_one(
+            {"student_id": str(student_id)},
+            {"$set": {"paid": new_paid_amount}}
+        )
+
+        print(f"Update result: {result.modified_count} document(s) modified")  # Debug log
+
+        # Record the payment in finances collection
+        payment_record = {
+            "student_id": student["_id"],
+            "item_name": "payment",
+            "amount": payment_amount,
+            "payment_method": payment_method,
+            "due_date": datetime.now(),
+            "is_paid": True
+        }
+        finances_collection.insert_one(payment_record)
+
+        return jsonify({
+            "message": "Payment processed successfully",
+            "new_balance": current_fees - new_paid_amount
+        }), 200
+
+    except Exception as e:
+        print(f"Error processing payment: {str(e)}")  # Debug log
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/api/initialize-all-student-fees", methods=["POST"])
+def initialize_all_student_fees():
+    try:
+        # Get all students
+        students = students_collection.find({})
+        
+        for student in students:
+            # Calculate fees based on registered courses ($600 per course)
+            registered_courses = student.get("registered_courses", [])
+            total_fees = len(registered_courses) * 600
+            
+            # Update student document with fees and paid fields
+            students_collection.update_one(
+                {"_id": student["_id"]},
+                {
+                    "$set": {
+                        "fees": total_fees,
+                        "paid": student.get("paid", 0)  # Preserve existing paid amount or set to 0
+                    }
+                }
+            )
+        
+        return jsonify({"message": "All student fees initialized successfully"}), 200
+    except Exception as e:
+        print(f"Error initializing student fees: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/api/update-grades", methods=["POST"])
+def update_grades():
+    try:
+        data = request.json
+        student_id = data.get("student_id")
+        registered_grades = data.get("registered_courses_grades", [])
+        completed_grades = data.get("completed_courses_grades", [])
+
+        if not student_id:
+            return jsonify({"error": "Student ID is required"}), 400
+
+        # Find the student
+        student = students_collection.find_one({"student_id": str(student_id)})
+        if not student:
+            return jsonify({"error": "Student not found"}), 404
+
+        # Validate that we have the correct number of grades
+        if len(registered_grades) != len(student.get("registered_courses", [])) or \
+           len(completed_grades) != len(student.get("completed_courses", [])):
+            return jsonify({"error": "Number of grades doesn't match number of courses"}), 400
+
+        # Update the grades
+        update_data = {
+            "registered_courses_grades": registered_grades,
+            "completed_courses_grades": completed_grades
+        }
+
+        result = students_collection.update_one(
+            {"student_id": str(student_id)},
+            {"$set": update_data}
+        )
+
+        if result.modified_count == 0:
+            return jsonify({"error": "No changes made"}), 400
+
+        return jsonify({"message": "Grades updated successfully"}), 200
+
+    except Exception as e:
+        print(f"Error updating grades: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/api/generate-student-report", methods=["GET"])
+def generate_student_report():
+    student_ids = request.args.get("student_ids", "").split(",")
+    if not student_ids:
+        return jsonify({"error": "No student IDs provided"}), 400
+
+    # Create PDF buffer
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=letter)
+    elements = []
+    styles = getSampleStyleSheet()
+
+    # Add title
+    elements.append(Paragraph("Student Report", styles['Title']))
+    elements.append(Spacer(1, 20))
+
+    for student_id in student_ids:
+        student = students_collection.find_one({"student_id": student_id})
+        if not student:
+            continue
+
+        # Add student header
+        elements.append(Paragraph(f"Student: {student.get('first_name', '')} {student.get('last_name', '')}", styles['Heading1']))
+        elements.append(Paragraph(f"ID: {student_id}", styles['Normal']))
+        elements.append(Paragraph(f"Major: {student.get('major', '')}", styles['Normal']))
+        elements.append(Spacer(1, 10))
+
+        # Process registered courses
+        registered_courses = student.get("registered_courses", [])
+        registered_grades = student.get("registered_courses_grades", [])
+        
+        if registered_courses:
+            elements.append(Paragraph("Registered Courses", styles['Heading2']))
+            data = [["Course", "Grade"]]
+            
+            for i, course in enumerate(registered_courses):
+                course_name = ""
+                if isinstance(course, str):
+                    # If course is already a string (like "COSC 310")
+                    course_name = course
+                else:
+                    try:
+                        # If course is an ObjectId, fetch course details
+                        course_doc = courses_collection.find_one({"_id": ObjectId(str(course))})
+                        if course_doc:
+                            course_name = f"{course_doc.get('course_dept')} {course_doc.get('course_num')}"
+                        else:
+                            course_name = "Unknown Course"
+                    except:
+                        course_name = "Invalid Course"
+                
+                grade = registered_grades[i] if i < len(registered_grades) else "N/A"
+                data.append([course_name, grade])
+            
+            table = Table(data)
+            table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTSIZE', (0, 0), (-1, 0), 12),
+                ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+                ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
+                ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+                ('FONTSIZE', (0, 1), (-1, -1), 10),
+                ('GRID', (0, 0), (-1, -1), 1, colors.black)
+            ]))
+            elements.append(table)
+            elements.append(Spacer(1, 10))
+
+        # Process completed courses
+        completed_courses = student.get("completed_courses", [])
+        completed_grades = student.get("completed_courses_grades", [])
+        
+        if completed_courses:
+            elements.append(Paragraph("Completed Courses", styles['Heading2']))
+            data = [["Course", "Grade"]]
+            
+            for i, course in enumerate(completed_courses):
+                course_name = ""
+                if isinstance(course, str):
+                    course_name = course
+                else:
+                    try:
+                        course_doc = courses_collection.find_one({"_id": ObjectId(str(course))})
+                        if course_doc:
+                            course_name = f"{course_doc.get('course_dept')} {course_doc.get('course_num')}"
+                        else:
+                            course_name = "Unknown Course"
+                    except:
+                        course_name = "Invalid Course"
+                
+                grade = completed_grades[i] if i < len(completed_grades) else "N/A"
+                data.append([course_name, grade])
+            
+            table = Table(data)
+            table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTSIZE', (0, 0), (-1, 0), 12),
+                ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+                ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
+                ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+                ('FONTSIZE', (0, 1), (-1, -1), 10),
+                ('GRID', (0, 0), (-1, -1), 1, colors.black)
+            ]))
+            elements.append(table)
+
+        # Add GPA
+        all_grades = registered_grades + completed_grades
+        all_grades_int = [int(grade) for grade in all_grades if grade]
+        gpa = sum(all_grades_int) / len(all_grades_int) if all_grades_int else 0
+        elements.append(Spacer(1, 10))
+        elements.append(Paragraph(f"Current GPA: {gpa:.2f}", styles['Normal']))
+        elements.append(Spacer(1, 20))
+
+    # Build PDF
+    doc.build(elements)
+    buffer.seek(0)
+    
+    return send_file(
+        buffer,
+        download_name=f'student_report_{datetime.now().strftime("%Y%m%d")}.pdf',
+        as_attachment=True,
+        mimetype='application/pdf'
+    )
 
 if __name__ == "__main__":
   app.run(debug=True, host="0.0.0.0", port=5000)
