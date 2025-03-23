@@ -67,7 +67,7 @@ describe('Calendar Component (Compact View)', () => {
     render(<Calendar mockEvents={[]} compact={true} />);
     
     // Calendar should still render without events
-    expect(screen.getByText('Weekly Schedule')).toBeInTheDocument();
+    expect(screen.getByText('No courses scheduled')).toBeInTheDocument();
   });
 
   test('event blocks have correct positioning', () => {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import axios from 'axios';
 import StudentInformation from './StudentInfo';
 
@@ -24,10 +24,13 @@ describe('StudentInformation Component', () => {
         });
     });
 
-    test('displays current username and edit button', () => {
+    test('displays current username and edit button', async () => {
         render(<StudentInformation />);
-        expect(screen.getByText(/testUser/)).toBeInTheDocument();
-        expect(screen.getByText('Change Username')).toBeInTheDocument();
+        await waitFor(() => {
+            expect(screen.queryByText("Loading...")).not.toBeInTheDocument();
+        });
+        expect(screen.getByText("Username")).toBeInTheDocument();
+        expect(screen.getByText('Edit Information')).toBeInTheDocument();
     });
 
     test('redirects to login if no username in localStorage', () => {

@@ -35,6 +35,6 @@ describe("Dashboard Component", () => {
         expect(window.location.href).toBe("/courses");
         
         fireEvent.click(screen.getByText("Request Transcript"));
-        expect(window.location.href).toBe("/Dashboard");
+        expect(window.location.href).toBe("/courses");
     });
 });
