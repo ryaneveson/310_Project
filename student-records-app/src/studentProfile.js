@@ -151,6 +151,43 @@ export default function StudentProfile() {
         }
     };
     
+    function PersonalInfo({ studentData, edit, handleInputChange }) {
+        return (
+            <section id="personal-info">
+                <h2>Personal Information</h2>
+                <table>
+                    <tbody>
+                        {[
+                            { label: "First Name", field: "first_name" },
+                            { label: "Last Name", field: "last_name" },
+                            { label: "Email", field: "email" },
+                            { label: "Gender", field: "gender" },
+                            { label: "Degree", field: "degree" },
+                            { label: "Major", field: "major" },
+                        ].map(({ label, field }) => (
+                            <tr key={field}>
+                                <td><strong>{label}:</strong></td>
+                                <td id={field}>
+                                    {edit ? (
+                                        <input
+                                            value={studentData[field]}
+                                            onChange={(e) => handleInputChange(field, e.target.value)}
+                                        />
+                                    ) : (
+                                        studentData[field]
+                                    )}
+                                </td>
+                            </tr>
+                        ))}
+                        <tr>
+                            <td><strong>GPA:</strong></td>
+                            <td>{studentData.gpa}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        );
+    }
 
 //return
     //display student's profile data
@@ -176,101 +213,9 @@ export default function StudentProfile() {
                         </button>
                     </div>
                     <div id="student-profile">
-                        <section id="personal-info">
-                            <h2>Personal Information</h2>
-                            <table>
-                                <tbody>
-                                    <tr>
-                                        <td><strong>First Name:</strong></td>
-                                        <td id="first_name">
-                                            {edit ? (
-                                                <input
-                                                    value={studentData.first_name}
-                                                    onChange={(e) => handleInputChange("first_name", e.target.value)}
-                                                />
-                                            ) : (
-                                                studentData.first_name
-                                            )}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Last Name:</strong></td>
-                                        <td id="last_name">
-                                            {edit ? (
-                                                <input
-                                                    value={studentData.last_name}
-                                                    onChange={(e) => handleInputChange("last_name", e.target.value)}
-                                                />
-                                            ) : (
-                                                studentData.last_name
-                                            )}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>ID:</strong></td>
-                                        <td>{studentData.student_id}</td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Email:</strong></td>
-                                        <td id="email">
-                                            {edit ? (
-                                                <input
-                                                    value={studentData.email}
-                                                    onChange={(e) => handleInputChange("email", e.target.value)}
-                                                />
-                                            ) : (
-                                                studentData.email
-                                            )}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Gender:</strong></td>
-                                        <td id="gender">
-                                            {edit ? (
-                                                <input
-                                                    value={studentData.gender}
-                                                    onChange={(e) => handleInputChange("gender", e.target.value)}
-                                                />
-                                            ) : (
-                                                studentData.gender
-                                            )}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Degree:</strong></td>
-                                        <td id="degree">
-                                            {edit ? (
-                                                <input
-                                                    value={studentData.degree}
-                                                    onChange={(e) => handleInputChange("degree", e.target.value)}
-                                                />
-                                            ) : (
-                                                studentData.degree
-                                            )}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Major:</strong></td>
-                                        <td id="major">
-                                            {edit ? (
-                                                <input
-                                                    value={studentData.major}
-                                                    onChange={(e) => handleInputChange("major", e.target.value)}
-                                                />
-                                            ) : (
-                                                studentData.major
-                                            )}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>GPA:</strong></td>
-                                        <td>{studentData.gpa}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <br />
-                            <button onClick={handleChange}>{edit ? "Set Info" : "Change Info"}</button>
-                        </section>
+                        <PersonalInfo studentData={studentData} edit={edit} handleInputChange={handleInputChange} />
+                        <br />
+                        <button onClick={handleChange}>{edit ? "Set Info" : "Change Info"}</button>
                         <section className="courses-info">
                             <h2>Registered Courses</h2>
                             <table>
