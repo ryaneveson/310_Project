@@ -87,62 +87,66 @@ export default function StudentProfile() {
           ...prev,
           [field]: value,
         }));
-      };
-        //pull student data from database
-        const fetchStudentProfile = async () => {
-            try {
-                const response = await axios.get(`http://localhost:5000/api/student/studentprofile?student_id=${studentId.trim()}`);
-                const studentData = response.data.student;
-                const formattedStudent = {
-                    student_id: studentData.student_id,
-                    first_name: studentData.first_name,
-                    last_name: studentData.last_name,
-                    email: studentData.email,
-                    gender: studentData.gender,
-                    registered_courses: studentData.registered_courses,
-                    registered_courses_grades: studentData.registered_courses_grades,
-                    completed_courses: studentData.completed_courses,
-                    completed_courses_grades: studentData.completed_courses_grades,
-                    degree: studentData.degree,
-                    major: studentData.major,
-                    gpa: studentData.gpa.toFixed(1)
-                };
-                setStudentData(formattedStudent);
-                setNotFound(false);
-            } catch (err) {
-                setNotFound(true);
-                if (!alertShown.current) {
-                    alert(`Error fetching student profile.${studentId.trim()}.`);
-                    alertShown.current = true;
-                }
-                //window.location.href = "/studentProfileInput";
-            }
-            alertShown.current = false; // Reset alertShown when student is found
-            setLoading(false);
-        }
+    };
 
-        //validate student ID is retrieved correctly and is the correct length
-        const validateStudentId = async () => { 
-            if (!studentId || pathParts.length<3) {
-                setStudentData(null);
-                if(!alertShown.current){
-                    alert("Error fetching student profile.");
-                    alertShown.current = true;
-                }
-                window.location.href = "/studentProfileInput";
-                return;
-            }
-            else if (studentId.length !== 8) {
-                setStudentData(null);
-                if (!alertShown.current) {
-                    alert("Invalid student ID.");
-                    alertShown.current = true;
-                }
-                window.location.href = "/studentProfileInput";
-                return;
-            }
-        }
 
+    //pull student data from database
+    const fetchStudentProfile = async () => {
+        try {
+            const response = await axios.get(`http://localhost:5000/api/student/studentprofile?student_id=${studentId.trim()}`);
+            const studentData = response.data.student;
+            const formattedStudent = {
+                student_id: studentData.student_id,
+                first_name: studentData.first_name,
+                last_name: studentData.last_name,
+                email: studentData.email,
+                gender: studentData.gender,
+                registered_courses: studentData.registered_courses,
+                registered_courses_grades: studentData.registered_courses_grades,
+                completed_courses: studentData.completed_courses,
+                completed_courses_grades: studentData.completed_courses_grades,
+                degree: studentData.degree,
+                major: studentData.major,
+                gpa: studentData.gpa.toFixed(1)
+            };
+            setStudentData(formattedStudent);
+            setNotFound(false);
+        } catch (err) {
+            setNotFound(true);
+            if (!alertShown.current) {
+                alert(`Error fetching student profile.${studentId.trim()}.`);
+                alertShown.current = true;
+            }
+            window.location.href = "/studentProfileInput";
+        }
+        alertShown.current = false; // Reset alertShown when student is found
+        setLoading(false);
+    }
+
+
+    //validate student ID is retrieved correctly and is the correct length
+    const validateStudentId = async () => { 
+        if (!studentId || pathParts.length<3) {
+            setStudentData(null);
+            if(!alertShown.current){
+                alert("Error fetching student profile.");
+                alertShown.current = true;
+            }
+            window.location.href = "/studentProfileInput";
+            return;
+        }
+        else if (studentId.length !== 8) {
+            setStudentData(null);
+            if (!alertShown.current) {
+                alert("Invalid student ID.");
+                alertShown.current = true;
+            }
+            window.location.href = "/studentProfileInput";
+            return;
+        }
+    }
+
+    //use the top-right button to switch to a different student profile
     const switchProfile = () => {
         if (newStudentID.trim()) {
             window.location.href = `/studentProfile/${encodeURIComponent(newStudentID)}`;
@@ -150,7 +154,9 @@ export default function StudentProfile() {
             alert("Please enter a student ID.");
         }
     };
-    
+
+
+    //methods to create the html for the student profile
     function PersonalInfo({ studentData, edit, handleInputChange }) {
         return (
             <section id="personal-info">
@@ -190,8 +196,62 @@ export default function StudentProfile() {
         );
     }
 
+    function RegisteredCourses({ registeredCourses, registeredCoursesGrades }) {
+        return (
+            <section className="courses-info">
+                <h2>Registered Courses</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Course Name</th>
+                            <th>Grade</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {registeredCourses.map((course, index) => (
+                            <tr key={course}>
+                                <td>{course}</td>
+                                <td>{registeredCoursesGrades[index]}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </section>
+        );
+    }
+
+    function CompletedCourses({ completedCourses, completedCoursesGrades }) {
+        return (
+            <section className="courses-info">
+                <h2>Completed Courses</h2>
+                {completedCourses.length > 0 ? (
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Course Name</th>
+                                <th>Grade</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {completedCourses.map((course, index) => (
+                                <tr key={course}>
+                                    <td>{course}</td>
+                                    <td>{completedCoursesGrades[index]}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                ) : (
+                    <p>This student has not completed any courses</p>
+                )}
+            </section>
+        );
+    }
+    
+
 //return
     //display student's profile data
+    //display button for switching profile
     return (
         <div style={{ position: "relative" }}>
             <HeaderLoader />
@@ -200,7 +260,6 @@ export default function StudentProfile() {
                 <p>Loading...</p>
             ) : studentData ? (
                 <div>
-                    {/* Separate div for the Search button */}
                     <div style={{ position: "absolute" }} className="search-button-container">
                         <input
                             type="text"
@@ -217,46 +276,14 @@ export default function StudentProfile() {
                         <PersonalInfo studentData={studentData} edit={edit} handleInputChange={handleInputChange} />
                         <br />
                         <button onClick={handleChange}>{edit ? "Set Info" : "Change Info"}</button>
-                        <section className="courses-info">
-                            <h2>Registered Courses</h2>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Course Name</th>
-                                        <th>Grade</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {studentData.registered_courses.map((course, index) => (
-                                        <tr key={course}>
-                                            <td>{course}</td>
-                                            <td>{studentData.registered_courses_grades[index]}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                            <h2>Completed Courses</h2>
-                            {studentData.completed_courses.length > 0 ? (
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Course Name</th>
-                                            <th>Grade</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {studentData.completed_courses.map((course, index) => (
-                                            <tr key={course}>
-                                                <td>{course}</td>
-                                                <td>{studentData.completed_courses_grades[index]}</td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            ) : (
-                                <p>This student has not completed any courses</p>
-                            )}
-                        </section>
+                        <RegisteredCourses
+                            registeredCourses={studentData.registered_courses}
+                            registeredCoursesGrades={studentData.registered_courses_grades}
+                        />
+                        <CompletedCourses
+                            completedCourses={studentData.completed_courses}
+                            completedCoursesGrades={studentData.completed_courses_grades}
+                        />
                     </div>
                 </div>
             ) : (
@@ -264,4 +291,6 @@ export default function StudentProfile() {
             )}
         </div>
     );
-    }
+
+
+}
