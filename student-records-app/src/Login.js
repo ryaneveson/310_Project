@@ -37,20 +37,24 @@ const Login = () => {
       console.log('Server response:', data);
 
       if (data.success) {
-        // Clear any existing role first
+        // Clear any existing data first
         localStorage.removeItem("role");
         localStorage.removeItem("username");
+        localStorage.removeItem("student_id");
         
-        // Set the new role and username
+        // Set the new data
         localStorage.setItem("role", data.role);
         localStorage.setItem("username", username);
+        localStorage.setItem("student_id", data.student_id);  // Store student_id
         
-        // Verify the role was set correctly
+        // Verify the data was set correctly
         const storedRole = localStorage.getItem("role");
+        const storedStudentId = localStorage.getItem("student_id");
         console.log('Verified stored role:', storedRole);
+        console.log('Verified stored student_id:', storedStudentId);
         
-        if (storedRole !== data.role) {
-          setError("Error: Role not stored correctly");
+        if (storedRole !== data.role || !storedStudentId) {
+          setError("Error: Data not stored correctly");
           return;
         }
 

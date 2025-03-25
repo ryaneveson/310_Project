@@ -4,54 +4,92 @@ import "./frontend/dashboardStyles.css";
 
 const Finances = () => {
   const [userRole, setUserRole] = useState(null);
-  const [curBalance, setCurBalance] = useState(null);
-  const [nextDue, setNextDue] = useState(null);
-  const [lastPayment, setLastPayment] = useState(null);
-  const [lastPayDate, setLastPayDate] = useState(null);
+  const [financialInfo, setFinancialInfo] = useState({
+    totalFees: 0,
+    amountPaid: 0,
+    remainingBalance: 0,
+    nextPaymentDue: null,
+    lastPayment: null,
+    lastPaymentDate: null,
+    registeredCourses: 0
+  });
   const [loading, setLoading] = useState(true);
-  const studentId = "10000001"
 
   useEffect(() => {
     const role = localStorage.getItem("role");
+    const studentId = localStorage.getItem("student_id");
+    
     if (!role) {
       window.location.href = "/";
       return;
     }
     setUserRole(role);
 
-    const fetchFinances = async () => {
+    const fetchFinancialData = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/student/finances?student_id=${studentId}`);
-        const financeData = response.data.finances
-        let sum = 0
+        // First, update the fees
+        await axios.post(`http://localhost:5000/api/update-student-fees?student_id=${studentId}`);
+
+        // Get student profile for fees and payment info
+        const studentResponse = await axios.get(`http://localhost:5000/api/student/studentprofile?student_id=${studentId}`);
+        const studentData = studentResponse.data.student;
+
+        // Get payment history
+        const financeResponse = await axios.get(`http://localhost:5000/api/student/finances?student_id=${studentId}`);
+        const financeData = financeResponse.data.finances;
+
+        // Calculate next payment due and last payment
+        let nextDue = null;
+        let lastPayment = null;
+        let lastPaymentDate = null;
+
         financeData.forEach(item => {
-          if (item.is_paid === false) {
-            sum += item.amount;
-            if (!nextDue || new Date(item.due_date) < new Date(nextDue)) {
-              setNextDue(new Date(item.due_date).toLocaleDateString('en-GB', {weekday: 'short', day: '2-digit',  month: 'short', year: 'numeric'}));
-            }
+          const itemDate = new Date(item.due_date);
+          if (item.is_paid === false && (!nextDue || itemDate < new Date(nextDue))) {
+            nextDue = itemDate;
           }
           if (item.item_name === "payment") {
-            if (!lastPayDate || new Date(item.due_date) > new Date(lastPayDate)) {
-              setLastPayment(item.amount);
-              setLastPayDate(new Date(item.due_date).toLocaleDateString('en-GB', {weekday: 'short', day: '2-digit',  month: 'short', year: 'numeric'}));
+            if (!lastPaymentDate || itemDate > new Date(lastPaymentDate)) {
+              lastPayment = item.amount;
+              lastPaymentDate = itemDate;
             }
           }
         });
-        setCurBalance(sum);
+
+        setFinancialInfo({
+          totalFees: studentData.fees || 0,
+          amountPaid: studentData.paid || 0,
+          remainingBalance: (studentData.fees || 0) - (studentData.paid || 0),
+          nextPaymentDue: nextDue ? nextDue.toLocaleDateString('en-GB', {
+            weekday: 'short',
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
+          }) : 'No upcoming payments',
+          lastPayment: lastPayment,
+          lastPaymentDate: lastPaymentDate ? lastPaymentDate.toLocaleDateString('en-GB', {
+            weekday: 'short',
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
+          }) : 'No previous payments',
+          registeredCourses: studentData.registered_courses.length
+        });
+
         setLoading(false);
       } catch (err) {
-        if (err.response && err.response.data && err.response.data.error) {
-          alert(`Error: ${err.response.data.error}`);
-        } else {
-          alert("Error fetching finances.");
-        }
+        console.error("Error fetching financial data:", err);
+        alert("Error fetching financial information.");
+        setLoading(false);
       }
     };
-    fetchFinances();
+
+    if (studentId) {
+      fetchFinancialData();
+    }
   }, []);
 
-  if(loading){
+  if (loading) {
     return <div>Loading...</div>;
   }
 
@@ -85,20 +123,35 @@ const Finances = () => {
         <div className="info-cards">
           <div className="card">
             <h3>Account Balance</h3>
-            <p>Current Balance: ${curBalance}</p>
-            <p>Due Date: {nextDue}</p>
+            <p>Total Tuition: ${financialInfo.totalFees.toFixed(2)}</p>
+            <p>Amount Paid: ${financialInfo.amountPaid.toFixed(2)}</p>
+            <p>Remaining Balance: ${financialInfo.remainingBalance.toFixed(2)}</p>
+            <p>Registered Courses: {financialInfo.registeredCourses} (${(financialInfo.registeredCourses * 600).toFixed(2)})</p>
+            {financialInfo.nextPaymentDue && (
+              <p>Next Payment Due: {financialInfo.nextPaymentDue}</p>
+            )}
           </div>
           <div className="card">
             <h3>Payment History</h3>
-            <p>Last Payment: ${lastPayment}</p>
-            <p>Payment Date: {lastPayDate}</p>
+            {financialInfo.lastPayment ? (
+              <>
+                <p>Last Payment: ${financialInfo.lastPayment.toFixed(2)}</p>
+                <p>Payment Date: {financialInfo.lastPaymentDate}</p>
+              </>
+            ) : (
+              <p>No payment history available</p>
+            )}
           </div>
         </div>
 
         <div className="apps-card">
           <h3>Financial Actions</h3>
           <div className="apps-buttons">
-            <button onClick={() => (window.location.href = "/makePayment")} className="app-button">
+            <button 
+              onClick={() => (window.location.href = "/makePayment")} 
+              className="app-button"
+              disabled={financialInfo.remainingBalance <= 0}
+            >
               Make Payment
             </button>
             <button onClick={() => (window.location.href = "/addPaymentMethod")} className="app-button">

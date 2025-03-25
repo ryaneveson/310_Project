@@ -5,29 +5,46 @@ import "./calendar.css";
 const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 const hours = Array.from({ length: 25 }, (_, i) => 8 + i * 0.5); // 8:00 - 20:00 PM in 30-min increments
 
+const dayMap = {
+  "Mon": "Monday",
+  "Tue": "Tuesday",
+  "Wed": "Wednesday",
+  "Thu": "Thursday",
+  "Fri": "Friday"
+};
+
 function Calendar({ mockEvents = null, compact = false }) {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const studentId = "10000001";
 
   useEffect(() => {
-    if(mockEvents){
+    if (mockEvents) {
       setEvents(mockEvents);
       setLoading(false);
       return;
     }
+
     const fetchCourses = async () => {
       try {
+        const studentId = localStorage.getItem("student_id");
+        if (!studentId) {
+          setError("No student ID found");
+          setLoading(false);
+          return;
+        }
+
         const response = await axios.get(`http://localhost:5000/api/student/courses?student_id=${studentId}`);
+        
+        if (response.data.error) {
+          setError(response.data.error);
+          setLoading(false);
+          return;
+        }
+
         const courseData = response.data.courses;
-        const dayMap = {
-          "Mon": "Monday",
-          "Tue": "Tuesday",
-          "Wed": "Wednesday",
-          "Thu": "Thursday",
-          "Fri": "Friday"
-        };
+        
+        // Transform the data for calendar display
         const formattedEvents = courseData.map(course => ({
           day: dayMap[course.day] || course.day,
           startTime: course.startTime,
@@ -35,21 +52,27 @@ function Calendar({ mockEvents = null, compact = false }) {
           classCode: course.classCode,
           room: course.room
         }));
+
         setEvents(formattedEvents);
         setLoading(false);
       } catch (err) {
-        setError("Error fetching courses.");
+        console.error("Error fetching courses:", err);
+        setError(err.response?.data?.error || "Error fetching courses");
         setLoading(false);
       }
     };
+
     fetchCourses();
-  }, [studentId]);
-  // function to convert "HH:MM" to decimal hours
+  }, [mockEvents]);
+
+  if (loading) return <div>Loading calendar...</div>;
+  if (error) return <div>Error: {error}</div>;
+  if (events.length === 0) return <div>No courses scheduled</div>;
+
   const parseTime = (timeStr) => {
     const [hours, minutes] = timeStr.split(":").map(Number);
     return hours + (minutes / 60);
   };
-  //alert(JSON.stringify(events));
 
   return (
     <div data-testid="calendar-container" className={`calendar-container ${compact ? 'calendar-compact' : ''}`}>

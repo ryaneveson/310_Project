@@ -8,26 +8,49 @@ function MakePayment() {
   const [selectedCardNumber, setSelectedCardNumber] = useState("");
   const [paymentAmount, setPaymentAmount] = useState("");
   const [billingMethods, setBillingMethods] = useState([]);
-  const [totalDue, setTotalDue] = useState(null);
-  const [next30Due, setNext30Due] = useState(null);
+  const [financialInfo, setFinancialInfo] = useState({
+    totalFees: 0,
+    amountPaid: 0,
+    remainingBalance: 0
+  });
   const [loading, setLoading] = useState(true);
   const [numVer, setNumVer] = useState(false);
   const [cvvVer, setCvvVer] = useState(false);
   const [expVer, setExpVer] = useState(false);
-  const studentId = "10000001";
 
   useEffect(() => {
     const role = localStorage.getItem("role");
+    const studentId = localStorage.getItem("student_id");
+    
     if (!role) {
       window.location.href = "/";
       return;
     }
     setUserRole(role);
 
-    const fetchPaymentMethods = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/student/payment_methods?student_id=${studentId}`);
-        const paymentData = response.data.payment_methods
+        // Update and fetch fees
+        await axios.post(`http://localhost:5000/api/update-student-fees?student_id=${studentId}`);
+        
+        // Get student profile for financial info
+        const studentResponse = await axios.get(
+          `http://localhost:5000/api/student/studentprofile?student_id=${studentId}`
+        );
+        const studentData = studentResponse.data.student;
+        
+        setFinancialInfo({
+          totalFees: studentData.fees || 0,
+          amountPaid: studentData.paid || 0,
+          remainingBalance: (studentData.fees || 0) - (studentData.paid || 0)
+        });
+
+        // Fetch payment methods
+        const methodsResponse = await axios.get(
+          `http://localhost:5000/api/student/payment_methods?student_id=${studentId}`
+        );
+        const paymentData = methodsResponse.data.payment_methods;
+        
         const formattedPaymentMethods = paymentData.map(method => ({
           cardType: method.card_type,
           cardNumber: method.card_number,
@@ -36,70 +59,25 @@ function MakePayment() {
           expiryDate: method.expiry_date,
           cvv: method.cvv
         }));
+        
         setBillingMethods(formattedPaymentMethods);
-
-        const response2 = await axios.get(`http://localhost:5000/api/student/finances?student_id=${studentId}`);
-        const financeData = response2.data.finances
-        let sum = 0
-        let sum2 = 0
-        const today = new Date();
-        const thirtyDaysFromNow = new Date();
-        thirtyDaysFromNow.setDate(today.getDate() + 30);
-        financeData.forEach(item => {
-          if (!item.is_paid ) {
-            if(item.due_date >= today && item.due_date <= thirtyDaysFromNow){
-              sum += item.amount
-            }
-            sum2 += item.amount;
-          }
-        });
-        setNext30Due(sum);
-        setTotalDue(sum2);
         setLoading(false);
       } catch (err) {
-        if (err.response && err.response.data && err.response.data.error) {
-          alert(`Error: ${err.response.data.error}`);
-        } else {
-          alert("Error fetching payment methods.");
-        }
+        console.error("Error fetching data:", err);
+        alert("Error loading payment information.");
+        setLoading(false);
       }
     };
-    fetchPaymentMethods();
+
+    if (studentId) {
+      fetchData();
+    }
   }, []);
 
-  if(loading){
-    return <div>Loading...</div>;
-  }
-
-  const handleLogout = () => {
-    localStorage.removeItem("role");
-    window.location.href = "/";
-  };
-
-  if (!userRole) {
-    return <div>Loading...</div>;
-  }
-
-  if (userRole !== "student") {
-    return (
-      <div className="dashboard-container">
-        <h2>Access Denied</h2>
-        <p>This page is only accessible to students.</p>
-        <button className="logout-button" onClick={handleLogout}>
-          Logout
-        </button>
-      </div>
-    );
-  }
-
-  //function to validate currency input
   const validateCurrencyInput = (event) => {
     let value = event.target.value;
-    //remove non-numeric characters except for the first '.'
     value = value.replace(/[^0-9.]/g, "").replace(/(\..*)\./g, "$1");
-    //prevent multiple leading zeros
     value = value.replace(/^0+(\d)/, "$1");
-    //allow only two decimal places
     const parts = value.split(".");
     if (parts.length === 2) {
       parts[1] = parts[1].slice(0, 2);
@@ -117,38 +95,60 @@ function MakePayment() {
     }
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
+    const studentId = localStorage.getItem("student_id");
+    
     if (!paymentAmount || parseFloat(paymentAmount) <= 0) {
-      alert("Please enter a valid payment amount greater than $0.");
-      return;
-    }
-    if (!selectedMethod) {
-      alert("Please select a payment method.");
-      return;
-    }
-    if (!numVer || !cvvVer || !expVer) {
-      const tempInputDiv = document.getElementById("temp-input");
-      if (tempInputDiv && !tempInputDiv.querySelector(".error-message")) {
-          tempInputDiv.innerHTML += "<p class='error-message' style='color: red;'>Invalid card details. Please check your input.</p>";
-      }
-      return;
+        alert("Please enter a valid payment amount greater than $0.");
+        return;
     }
     
-    fetch("http://localhost:5000/api/add-payment", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        student_id: studentId,
-        amount: paymentAmount,
-        due_date: new Date().toISOString().split("T")[0],
-        is_paid: true
-      }),
-    }).catch((error) => alert(`Error adding payment ${error}`));
-    alert(`Payment of $${paymentAmount} confirmed using ${selectedMethod} (${selectedCardNumber})`);
-    window.location.href = "/Finances";
+    if (!selectedMethod) {
+        alert("Please select a payment method.");
+        return;
+    }
+    
+    if (!numVer || !cvvVer || !expVer) {
+        const tempInputDiv = document.getElementById("temp-input");
+        if (tempInputDiv && !tempInputDiv.querySelector(".error-message")) {
+            tempInputDiv.innerHTML += "<p class='error-message' style='color: red;'>Invalid card details. Please check your input.</p>";
+        }
+        return;
+    }
+
+    try {
+        console.log("Submitting payment:", {
+            student_id: studentId,
+            amount: parseFloat(paymentAmount),
+            payment_method: selectedMethod
+        });
+
+        // First update the student's paid amount
+        const updateResponse = await axios.post("http://localhost:5000/api/make-payment", {
+            student_id: studentId,
+            amount: parseFloat(paymentAmount),
+            payment_method: selectedMethod
+        });
+
+        if (updateResponse.data.error) {
+            throw new Error(updateResponse.data.error);
+        }
+
+        // Record the payment in finances collection
+        await axios.post("http://localhost:5000/api/add-payment", {
+            student_id: studentId,
+            amount: parseFloat(paymentAmount),
+            due_date: new Date().toISOString().split("T")[0],
+            is_paid: true
+        });
+
+        alert(`Payment of $${paymentAmount} confirmed using ${selectedMethod} (${selectedCardNumber})`);
+        window.location.href = "/Finances";
+    } catch (error) {
+        console.error("Payment error:", error);
+        alert("Error processing payment. Please try again.");
+    }
   };
 
   function formatCardNumber(cardNumber) {
@@ -157,12 +157,18 @@ function MakePayment() {
     return '**** **** **** ' + lastFour;
   }
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="container" id="makePayment">
-      <h2>How much to Pay: </h2>
+      <h2>Make a Payment</h2>
       <div className="amount">
-        <p>Amount due in next 30 days: ${next30Due}</p>
-        <p>Total amount due: ${totalDue}</p>
+        <p>Total Tuition: ${financialInfo.totalFees.toFixed(2)}</p>
+        <p>Amount Paid: ${financialInfo.amountPaid.toFixed(2)}</p>
+        <p>Remaining Balance: ${financialInfo.remainingBalance.toFixed(2)}</p>
+        
         <label htmlFor="payment-amount">Payment amount: </label>
         <div className="input-container">
           <span>$</span>
@@ -174,6 +180,7 @@ function MakePayment() {
             value={paymentAmount}
             onChange={validateCurrencyInput}
             onBlur={handleBlur}
+            max={financialInfo.remainingBalance}
           />
         </div>
       </div>
@@ -200,27 +207,33 @@ function MakePayment() {
               </div>
               
               {selectedMethod && selectedMethod === method.cardType && (
-              <div id="temp-input">
-                <label>Enter full card number:<br></br><input
-                  type="text"
-                  placeholder="XXXX XXXX XXXX XXXX"
-                  className="payment-method-input"
-                  onChange={(e) => setNumVer(e.target.value === method.cardNumber)}
-                /></label>
-                <label>Enter CVV:<br></br><input
-                  type="text"
-                  placeholder="CVV"
-                  className="payment-method-input"
-                  onChange={(e) => setCvvVer(e.target.value === method.cvv)}
-                /></label>
-                <label>Enter Expiry:<br></br><input
-                  type="text"
-                  placeholder="MM/YY"
-                  className="payment-method-input"
-                  onChange={(e) => setExpVer(e.target.value === method.expiryDate)}
-                /></label>
-              </div>
-        )}
+                <div id="temp-input">
+                  <label>Enter full card number:<br/>
+                    <input
+                      type="text"
+                      placeholder="XXXX XXXX XXXX XXXX"
+                      className="payment-method-input"
+                      onChange={(e) => setNumVer(e.target.value === method.cardNumber)}
+                    />
+                  </label>
+                  <label>Enter CVV:<br/>
+                    <input
+                      type="text"
+                      placeholder="CVV"
+                      className="payment-method-input"
+                      onChange={(e) => setCvvVer(e.target.value === method.cvv)}
+                    />
+                  </label>
+                  <label>Enter Expiry:<br/>
+                    <input
+                      type="text"
+                      placeholder="MM/YY"
+                      className="payment-method-input"
+                      onChange={(e) => setExpVer(e.target.value === method.expiryDate)}
+                    />
+                  </label>
+                </div>
+              )}
             </label>
           ))}
 
@@ -229,11 +242,16 @@ function MakePayment() {
           </div>
         </div>
 
-        <button type="submit" className="confirm-button">Confirm Payment</button>
+        <button 
+          type="submit" 
+          className="confirm-button"
+          disabled={financialInfo.remainingBalance <= 0}
+        >
+          Confirm Payment
+        </button>
       </form>
     </div>
   );
 }
-
 
 export default MakePayment;

@@ -1,0 +1,109 @@
+.student-info-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.student-info-header {
+    color: #2c3e50;
+    margin-bottom: 2rem;
+    text-align: center;
+    font-size: 2rem;
+}
+
+.info-section {
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+.info-field {
+    margin-bottom: 1rem;
+}
+
+.info-label {
+    display: block;
+    color: #2c3e50;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.info-value {
+    font-size: 1.1rem;
+    color: #34495e;
+}
+
+.info-input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+}
+
+.info-input:focus {
+    border-color: #3498db;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.button-container {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.edit-button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s;
+}
+
+.edit-button:hover {
+    background-color: #2980b9;
+}
+
+.save-button {
+    background-color: #2ecc71;
+}
+
+.save-button:hover {
+    background-color: #27ae60;
+}
+
+.cancel-button {
+    background-color: #e74c3c;
+}
+
+.cancel-button:hover {
+    background-color: #c0392b;
+}
+
+.error-message {
+    color: #e74c3c;
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.success-message {
+    color: #2ecc71;
+    text-align: center;
+    margin-top: 1rem;
+}

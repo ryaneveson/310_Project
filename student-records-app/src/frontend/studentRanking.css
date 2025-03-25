@@ -1,0 +1,141 @@
+.student-ranking {
+    min-height: 100vh;
+    background-color: #f8fafc;
+  }
+  
+  .ranking-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+  }
+  
+  .filters-section {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+  }
+  
+  .filter-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  
+  .filter-group label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: #1e293b;
+  }
+  
+  .filter-group input,
+  .filter-group select {
+    padding: 0.5rem;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+  }
+  
+  .filter-group input:focus,
+  .filter-group select:focus {
+    outline: none;
+    border-color: #003B71;
+    box-shadow: 0 0 0 3px rgba(0, 59, 113, 0.1);
+  }
+  
+  .clear-filters {
+    background-color: #ef4444;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    align-self: flex-end;
+  }
+  
+  .clear-filters:hover {
+    background-color: #dc2626;
+    transform: translateY(-1px);
+  }
+  
+  .rankings-table {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 1rem;
+  }
+  
+  th {
+    background-color: #003B71;
+    color: white;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 500;
+    font-size: 0.875rem;
+    white-space: nowrap;
+  }
+  
+  th:first-child {
+    border-top-left-radius: 8px;
+  }
+  
+  th:last-child {
+    border-top-right-radius: 8px;
+  }
+  
+  td {
+    padding: 1rem;
+    border-bottom: 1px solid #e2e8f0;
+    font-size: 0.875rem;
+    color: #1e293b;
+  }
+  
+  tr:hover td {
+    background-color: #f8fafc;
+  }
+  
+  .loading, .error, .no-results {
+    text-align: center;
+    padding: 2rem;
+    color: #1e293b;
+  }
+  
+  .error {
+    color: #ef4444;
+  }
+  
+  h2 {
+    color: #1e293b;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  
+  @media (max-width: 768px) {
+    .filter-group {
+      grid-template-columns: 1fr;
+    }
+    
+    .rankings-table {
+      margin-top: 1rem;
+    }
+    
+    td {
+      white-space: nowrap;
+    }
+  }
