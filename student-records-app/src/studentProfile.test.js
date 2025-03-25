@@ -48,6 +48,7 @@ describe('StudentProfile Component', () => {
       expect(screen.getByText('Student Profile')).toBeInTheDocument();
       expect(screen.getByText('John')).toBeInTheDocument();
       expect(screen.getByText('Jover')).toBeInTheDocument();
+      expect(screen.getByText('10000001')).toBeInTheDocument();
       expect(screen.getByText('johnjover@johnmail.com')).toBeInTheDocument();
       expect(screen.getByText('Male')).toBeInTheDocument();
       expect(screen.getByText('B.Sc.')).toBeInTheDocument();
