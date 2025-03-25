@@ -160,6 +160,7 @@ export default function StudentProfile() {
                         {[
                             { label: "First Name", field: "first_name" },
                             { label: "Last Name", field: "last_name" },
+                            {label: "Student ID", field: "student_id"},
                             { label: "Email", field: "email" },
                             { label: "Gender", field: "gender" },
                             { label: "Degree", field: "degree" },
