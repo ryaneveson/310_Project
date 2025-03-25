@@ -11,7 +11,11 @@
 }
 
 #personal-info, .courses-info {
-    margin-bottom: 30px;
+    margin-bottom: 10px;
+}
+
+.courses-info {
+    margin-top: 40px;
 }
 
 .section-header {
