@@ -1,5 +1,5 @@
 import { render, screen, waitFor } from "@testing-library/react";
-import Finances from "./Finances";
+import Finances from "../FinancePages/Finances";
 import axios from "axios";
 
 jest.mock("axios");

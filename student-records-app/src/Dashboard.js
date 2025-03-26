@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./frontend/dashboardStyles.css";
 import ubcoImage from './frontend/img/UBCO6.jpg';
-import Calendar from './Calendar';
+import Calendar from './StudentPages/Calendar';
 
 const handleLogout = () => {
   localStorage.removeItem("role");

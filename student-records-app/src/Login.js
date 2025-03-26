@@ -6,7 +6,7 @@ const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [step, setStep] = useState(1); // Step 1: Login, Step 2: 2FA
+  const [step, setStep] = useState(1);
   const [code, setCode] = useState("");
 
   useEffect(() => {

@@ -1,23 +1,24 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Login from "./Login";
 import Dashboard from "./Dashboard";
-import Calendar from "./Calendar";
-import EditGrades from "./editGrades";
-import Courses from "./Courses";
-import Finances from "./Finances";
-import MakePayment from "./MakePayment";
-import StudentRanking from './studentRanking';
-import CreateUser from "./createUser.js";
-import StudentSearch from "./StudentSearch";
-import StudentProfileInput from "./studentProfileInput";
-import StudentProfile from "./studentProfile";
-import AcademicDashboard from "./AcademicDashboard"
-import AddPaymentMethod from "./addPaymentMethod";
-import PaymentHistory from "./PaymentHistory";
-import UpcomingDue from "./UpcomingDue";
-import AddFee from "./AddFee";
-import ManageStudents from "./ManageStudents";
-import StudentInformation from './StudentInfo';
+import Calendar from "./StudentPages/Calendar.js";
+import EditGrades from "./AdminPages/editGrades";
+import Courses from "./StudentPages/Courses.js";
+import Finances from "./FinancePages/Finances.js";
+import MakePayment from "./FinancePages/MakePayment.js";
+import StudentRanking from './AdminPages/studentRanking';
+import CreateUser from "./StudentPages/createUser.js";
+import StudentSearch from "./AdminPages/StudentSearch";
+import StudentProfileInput from "./AdminPages/studentProfileInput";
+import StudentProfile from "./AdminPages/studentProfile";
+import AcademicDashboard from "./StudentPages/AcademicDashboard.js"
+import AddPaymentMethod from "./FinancePages/addPaymentMethod.js";
+import PaymentHistory from "./FinancePages/PaymentHistory.js";
+import UpcomingDue from "./FinancePages/UpcomingDue";
+import AddFee from "./FinancePages/AddFee.js";
+import ManageStudents from "./AdminPages/ManageStudents";
+import StudentInformation from './AdminPages/StudentInfo';
+import StudentGrades from './StudentPages/StudentGrades.js';  
 
 function App() {
   return (
@@ -43,6 +44,7 @@ function App() {
         <Route path="/addFee" element={<AddFee />} />
         <Route path="/manageStudents" element={<ManageStudents />} />
         <Route path="/StudentInfo" element={<StudentInformation />} />
+        <Route path="/grades" element={<StudentGrades />} />
       </Routes>
     </Router>
   );
