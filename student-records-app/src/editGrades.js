@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./frontend/dashboardStyles.css";
 import ReactDOM from "react-dom/client";
-import HeaderLoader from "./Header";
-import FooterLoader from "./Footer";
 
 //function called when "Save Changes: button is clicked, returns"
 const EditGrades = () => {
@@ -131,20 +129,11 @@ const EditGrades = () => {
       <div className="dashboard-content">
         <div className="grades-section">
           <div className="student-search">
-            <form onSubmit={handleSearch} className="search-container">
-              <label htmlFor="student-id">Student ID:</label>
-              <input
-                type="text"
-                id="student-id"
-                value={studentId}
-                onChange={handleStudentIdChange}
-                placeholder="Enter Student ID"
-                className="student-id-input"
-              />
-              <button type="submit" className="search-button">
-                Search
-              </button>
-            </form>
+            <StudentSearchForm
+              studentId={studentId}
+              onStudentIdChange={handleStudentIdChange}
+              onSearch={handleSearch}
+            />
           </div>
 
           {loading && <div className="loading">Loading student data...</div>}
@@ -237,6 +226,25 @@ const EditGrades = () => {
   );
 };
 
+function StudentSearchForm({ studentId, onStudentIdChange, onSearch }) {
+  return (
+    <form onSubmit={onSearch} className="search-container">
+      <label htmlFor="student-id">Student ID:</label>
+      <input
+        type="text"
+        id="student-id"
+        value={studentId}
+        onChange={onStudentIdChange}
+        placeholder="Enter Student ID"
+        className="student-id-input"
+      />
+      <button type="submit" className="search-button">
+        Search
+      </button>
+    </form>
+  );
+}
+
 // Render the EditGrades component inside the #edit-grades div
 const editGradesElement = document.getElementById("edit-grades");
 if (editGradesElement) {
@@ -244,28 +252,6 @@ if (editGradesElement) {
   editGradesRoot.render(
     <React.StrictMode>
       <EditGrades />
-    </React.StrictMode>
-  );
-}
-
-// Render the header inside the #header div
-const headerElement = document.getElementById("header");
-if (headerElement) {
-  const headerRoot = ReactDOM.createRoot(headerElement);
-  headerRoot.render(
-    <React.StrictMode>
-      <HeaderLoader />
-    </React.StrictMode>
-  );
-}
-
-// Render the footer inside the #footer div
-const footerElement = document.getElementById("footer");
-if (footerElement) {
-  const footerRoot = ReactDOM.createRoot(footerElement);
-  footerRoot.render(
-    <React.StrictMode>
-      <FooterLoader />
     </React.StrictMode>
   );
 }
