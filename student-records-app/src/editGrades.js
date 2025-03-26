@@ -104,6 +104,80 @@ const EditGrades = () => {
     }
   };
 
+  const renderRegisteredCourses = () => {
+    if (grades.registered.length === 0) return null;
+  
+    return (
+      <div className="grades-table-container">
+        <h4>Registered Courses</h4>
+        <table className="grades-table">
+          <thead>
+            <tr>
+              <th>Course</th>
+              <th>Current Grade</th>
+              <th>New Grade</th>
+            </tr>
+          </thead>
+          <tbody>
+            {grades.registered.map((item, index) => (
+              <tr key={`registered-${index}`}>
+                <td>{item.course}</td>
+                <td>{item.grade || 'N/A'}</td>
+                <td>
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    className="grade-input"
+                    value={item.grade}
+                    onChange={(e) => handleGradeChange('registered', index, e.target.value)}
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  };
+
+  const renderCompletedCourses = () => {
+    if (grades.completed.length === 0) return null;
+
+    return (
+      <div className="grades-table-container">
+        <h4>Completed Courses</h4>
+        <table className="grades-table">
+          <thead>
+            <tr>
+              <th>Course</th>
+              <th>Current Grade</th>
+              <th>New Grade</th>
+            </tr>
+          </thead>
+          <tbody>
+            {grades.completed.map((item, index) => (
+              <tr key={`completed-${index}`}>
+                <td>{item.course}</td>
+                <td>{item.grade || 'N/A'}</td>
+                <td>
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    className="grade-input"
+                    value={item.grade}
+                    onChange={(e) => handleGradeChange('completed', index, e.target.value)}
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  };
+
   if (!userRole) {
     return <div>Loading...</div>;
   }
@@ -147,72 +221,8 @@ const EditGrades = () => {
 
           {(grades.registered.length > 0 || grades.completed.length > 0) && (
             <div className="grades-tables">
-              {grades.registered.length > 0 && (
-                <div className="grades-table-container">
-                  <h4>Registered Courses</h4>
-                  <table className="grades-table">
-                    <thead>
-                      <tr>
-                        <th>Course</th>
-                        <th>Current Grade</th>
-                        <th>New Grade</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {grades.registered.map((item, index) => (
-                        <tr key={`registered-${index}`}>
-                          <td>{item.course}</td>
-                          <td>{item.grade || 'N/A'}</td>
-                          <td>
-                            <input
-                              type="number"
-                              min="0"
-                              max="100"
-                              className="grade-input"
-                              value={item.grade}
-                              onChange={(e) => handleGradeChange('registered', index, e.target.value)}
-                            />
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-
-              {grades.completed.length > 0 && (
-                <div className="grades-table-container">
-                  <h4>Completed Courses</h4>
-                  <table className="grades-table">
-                    <thead>
-                      <tr>
-                        <th>Course</th>
-                        <th>Current Grade</th>
-                        <th>New Grade</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {grades.completed.map((item, index) => (
-                        <tr key={`completed-${index}`}>
-                          <td>{item.course}</td>
-                          <td>{item.grade || 'N/A'}</td>
-                          <td>
-                            <input
-                              type="number"
-                              min="0"
-                              max="100"
-                              className="grade-input"
-                              value={item.grade}
-                              onChange={(e) => handleGradeChange('completed', index, e.target.value)}
-                            />
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-
+              {renderRegisteredCourses()}
+              {renderCompletedCourses()}
               <div className="actions-container">
                 <button onClick={saveGrades} className="save-button">
                   Save Changes
@@ -245,15 +255,5 @@ function StudentSearchForm({ studentId, onStudentIdChange, onSearch }) {
   );
 }
 
-// Render the EditGrades component inside the #edit-grades div
-const editGradesElement = document.getElementById("edit-grades");
-if (editGradesElement) {
-  const editGradesRoot = ReactDOM.createRoot(editGradesElement);
-  editGradesRoot.render(
-    <React.StrictMode>
-      <EditGrades />
-    </React.StrictMode>
-  );
-}
 
 export default EditGrades;
