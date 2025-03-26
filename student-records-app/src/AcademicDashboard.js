@@ -61,27 +61,20 @@ const calculateGPA = (grades) => {
   return gradeToGPAMap.get(closestGrade);
 };
 
-const AcademicDashboard = () => {
-  const [username, setUsername] = useState("");
-  const [userRole, setUserRole] = useState(null);
+// Constants
+const CREDITS_PER_COURSE = 3;
+const TOTAL_CREDITS_REQUIRED = 120;
+
+// Custom hooks
+const useAcademicInfo = (studentId) => {
   const [academicInfo, setAcademicInfo] = useState({
     gpa: 0,
     creditsCompleted: 0,
     creditsInProgress: 0,
-    creditsRemaining: 120
+    creditsRemaining: TOTAL_CREDITS_REQUIRED
   });
 
   useEffect(() => {
-    const role = localStorage.getItem("role");
-    const studentId = localStorage.getItem("student_id");
-    if (!role) {
-      window.location.href = "/";
-      return;
-    }
-    setUserRole(role);
-    setUsername("User");
-
-    // Fetch student's academic information
     const fetchAcademicInfo = async () => {
       try {
         const response = await fetch(`http://localhost:5000/api/student/studentprofile?student_id=${studentId}`);
@@ -92,13 +85,15 @@ const AcademicDashboard = () => {
           const completedGrades = data.student.completed_courses_grades.map(Number);
           const allGrades = [...registeredGrades, ...completedGrades];
           
-          // Calculate GPA
-          const gpa = calculateGPA(allGrades);
+          // Calculate GPA using new formula
+          const gpa = allGrades.length > 0
+            ? calculateGPA(allGrades)
+            : 0;
           
           // Calculate credits
-          const completedCredits = data.student.completed_courses.length * 3;
-          const inProgressCredits = data.student.registered_courses.length * 3;
-          const remainingCredits = 120 - completedCredits;
+          const completedCredits = data.student.completed_courses.length * CREDITS_PER_COURSE;
+          const inProgressCredits = data.student.registered_courses.length * CREDITS_PER_COURSE;
+          const remainingCredits = TOTAL_CREDITS_REQUIRED - completedCredits;
 
           setAcademicInfo({
             gpa: gpa.toFixed(2),
@@ -115,16 +110,60 @@ const AcademicDashboard = () => {
     if (studentId) {
       fetchAcademicInfo();
     }
-  }, []);
+  }, [studentId]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("role");
-    window.location.href = "/";
-  };
+  return academicInfo;
+};
+
+// Component for the academic status cards
+const AcademicStatusCards = ({ academicInfo }) => (
+  <div className="info-cards">
+    <div className="card">
+      <h3>Current Semester</h3>
+      <p>Spring 2024</p>
+      <p>Full-time Status</p>
+      <p>Credits In Progress: {academicInfo.creditsInProgress}</p>
+    </div>
+    <div className="card">
+      <h3>Academic Progress</h3>
+      <p>GPA: {academicInfo.gpa}</p>
+      <p>Credits Completed: {academicInfo.creditsCompleted}</p>
+      <p>Credits Remaining: {academicInfo.creditsRemaining}</p>
+    </div>
+  </div>
+);
+
+// Component for academic resources
+const AcademicResources = ({ onTranscriptDownload }) => (
+  <div className="apps-card">
+    <h3>Academic Resources</h3>
+    <div className="apps-buttons">
+      <button onClick={() => (window.location.href = "/courses")} className="app-button">
+        Course Registration
+      </button>
+      <button onClick={onTranscriptDownload} className="app-button">
+        Request Transcript
+      </button>
+    </div>
+  </div>
+);
+
+const AcademicDashboard = () => {
+  const [userRole, setUserRole] = useState(null);
+  const studentId = localStorage.getItem("student_id");
+  const academicInfo = useAcademicInfo(studentId);
+
+  useEffect(() => {
+    const role = localStorage.getItem("role");
+    if (!role) {
+      window.location.href = "/";
+      return;
+    }
+    setUserRole(role);
+  }, []);
 
   const handleTranscriptDownload = async () => {
     try {
-      const studentId = localStorage.getItem("student_id");
       if (!studentId) {
         alert("Student ID not found. Please log in again.");
         return;
@@ -134,9 +173,7 @@ const AcademicDashboard = () => {
         method: 'GET',
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to generate transcript');
-      }
+      if (!response.ok) throw new Error('Failed to generate transcript');
 
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
@@ -153,16 +190,17 @@ const AcademicDashboard = () => {
     }
   };
 
-  if (!userRole) {
-    return <div>Loading...</div>;
-  }
+  if (!userRole) return <div>Loading...</div>;
 
   if (userRole !== "student") {
     return (
       <div className="dashboard-container">
         <h2>Access Denied</h2>
         <p>This page is only accessible to students.</p>
-        <button className="logout-button" onClick={handleLogout}>
+        <button className="logout-button" onClick={() => {
+          localStorage.removeItem("role");
+          window.location.href = "/";
+        }}>
           Logout
         </button>
       </div>
@@ -173,41 +211,13 @@ const AcademicDashboard = () => {
     <div className="dashboard-container">
       <div className="hero">
         <h2>Academic Dashboard</h2>
-        <p>
-          Welcome to your academic overview
-        </p>
+        <p>Welcome to your academic overview</p>
       </div>
 
       <div className="dashboard-content">
-        <div className="info-cards">
-          <div className="card">
-            <h3>Current Semester</h3>
-            <p>Spring 2024</p>
-            <p>Full-time Status</p>
-            <p>Credits In Progress: {academicInfo.creditsInProgress}</p>
-          </div>
-          <div className="card">
-            <h3>Academic Progress</h3>
-            <p>GPA: {academicInfo.gpa}</p>
-            <p>Credits Completed: {academicInfo.creditsCompleted}</p>
-            <p>Credits Remaining: {academicInfo.creditsRemaining}</p>
-          </div>
-        </div>
-
-        <div className="apps-card">
-          <h3>Academic Resources</h3>
-          <div className="apps-buttons">
-            <button onClick={() => (window.location.href = "/courses")} className="app-button">
-              Course Registration
-            </button>
-
-            <button onClick={handleTranscriptDownload} className="app-button">
-              Request Transcript
-            </button>
-          </div>
-        </div>
+        <AcademicStatusCards academicInfo={academicInfo} />
+        <AcademicResources onTranscriptDownload={handleTranscriptDownload} />
       </div>
-
     </div>
   );
 };
