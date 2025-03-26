@@ -18,6 +18,7 @@ import UpcomingDue from "./UpcomingDue";
 import AddFee from "./AddFee";
 import ManageStudents from "./ManageStudents";
 import StudentInformation from './StudentInfo';
+import StudentGrades from './StudentGrades';
 
 function App() {
   return (
@@ -43,6 +44,7 @@ function App() {
         <Route path="/addFee" element={<AddFee />} />
         <Route path="/manageStudents" element={<ManageStudents />} />
         <Route path="/StudentInfo" element={<StudentInformation />} />
+        <Route path="/grades" element={<StudentGrades />} />
       </Routes>
     </Router>
   );
