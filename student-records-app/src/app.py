@@ -15,7 +15,7 @@ from io import BytesIO
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
-# Remove any existing CORS configuration and use this simple setup
+# Add CORS headers
 @app.after_request
 def after_request(response):
     response.headers.add('Access-Control-Allow-Origin', '*')
@@ -23,10 +23,7 @@ def after_request(response):
     response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PUT, OPTIONS')
     return response
 
-@app.route("/login", methods=['OPTIONS'])
-def handle_options():
-    return jsonify({}), 200
-
+# MongoDB connection
 MONGO_URI = os.getenv("MONGO_URI")
 client = MongoClient(MONGO_URI)
 db = client["student_records"]
@@ -34,6 +31,53 @@ students_collection = db["students"]
 courses_collection = db["Courses"]
 finances_collection = db["Finances"]
 payment_methods_collection = db["payment_methods"]
+
+# Helper functions to reduce duplicate code
+def get_student_by_id(student_id):
+    """Helper function to get student by ID with error handling"""
+    if not student_id:
+        return None, "Student ID is required"
+    
+    student = students_collection.find_one({"student_id": str(student_id)})
+    if not student:
+        return None, "Student not found"
+        
+    return student, None
+
+def process_course_list(courses, grades=None):
+    """Helper function to process course lists consistently"""
+    processed_courses = []
+    for i, course in enumerate(courses):
+        if isinstance(course, str):
+            # If course is already a string (like "COSC 310")
+            processed_courses.append(course)
+        else:
+            try:
+                # If course is an ObjectId, fetch course details
+                course_doc = courses_collection.find_one({"_id": ObjectId(str(course))})
+                if course_doc:
+                    processed_courses.append(f"{course_doc.get('course_dept')} {course_doc.get('course_num')}")
+                else:
+                    processed_courses.append("Unknown Course")
+            except:
+                processed_courses.append("Invalid Course")
+    
+    return processed_courses
+
+def calculate_student_fees(student):
+    """Helper function to calculate student fees"""
+    registered_courses = student.get("registered_courses", [])
+    total_fees = len(registered_courses) * 600  # $600 per course
+    current_paid = student.get("paid", 0)
+    return {
+        "fees": total_fees,
+        "paid": current_paid,
+        "remaining": total_fees - current_paid
+    }
+
+@app.route("/login", methods=['OPTIONS'])
+def handle_options():
+    return jsonify({}), 200
 
 @app.route("/register", methods=["POST"])
 def register():
@@ -454,13 +498,10 @@ def edit_student():
 @app.route("/api/student/studentprofile", methods=["GET"])
 def get_student_profile():
     student_id = request.args.get("student_id")
-    print(f"Received student_id: '{student_id}'")
-    if not student_id:
-        return jsonify({"error": "Student ID is required"}), 400
+    student, error = get_student_by_id(student_id)
     
-    student = students_collection.find_one({"student_id": str(student_id)})
-    if not student:
-        return jsonify({"error": "Student not found"}), 404
+    if error:
+        return jsonify({"error": error}), 400 if "required" in error else 404
     
     # Calculate GPA
     registered_grades = student.get("registered_courses_grades", [])
@@ -469,40 +510,9 @@ def get_student_profile():
     all_grades_int = [int(grade) for grade in all_grades if grade]
     gpa = sum(all_grades_int) / len(all_grades_int) if all_grades_int else 0
     
-    registered_courses = student.get("registered_courses", [])
-    completed_courses = student.get("completed_courses", [])
-
-    # Process registered courses
-    registered_course_codes = []
-    for course in registered_courses:
-        if isinstance(course, str):
-            # If course is already a string (like "COSC 310")
-            registered_course_codes.append(course)
-        else:
-            try:
-                # If course is an ObjectId, fetch the course details
-                course_doc = courses_collection.find_one({"_id": ObjectId(str(course))})
-                if course_doc:
-                    registered_course_codes.append(f"{course_doc.get('course_dept')} {course_doc.get('course_num')}")
-                else:
-                    registered_course_codes.append("Unknown Course")
-            except:
-                registered_course_codes.append("Invalid Course")
-
-    # Process completed courses
-    completed_course_codes = []
-    for course in completed_courses:
-        if isinstance(course, str):
-            completed_course_codes.append(course)
-        else:
-            try:
-                course_doc = courses_collection.find_one({"_id": ObjectId(str(course))})
-                if course_doc:
-                    completed_course_codes.append(f"{course_doc.get('course_dept')} {course_doc.get('course_num')}")
-                else:
-                    completed_course_codes.append("Unknown Course")
-            except:
-                completed_course_codes.append("Invalid Course")
+    # Process courses using helper function
+    registered_courses = process_course_list(student.get("registered_courses", []))
+    completed_courses = process_course_list(student.get("completed_courses", []))
 
     student_details = {
         "student_id": student.get("student_id"),
@@ -510,18 +520,16 @@ def get_student_profile():
         "last_name": student.get("last_name"),
         "email": student.get("email"),
         "gender": student.get("gender"),
-        "registered_courses": registered_course_codes,
+        "registered_courses": registered_courses,
         "registered_courses_grades": registered_grades,
-        "completed_courses": completed_course_codes,
+        "completed_courses": completed_courses,
         "completed_courses_grades": completed_grades,
         "degree": student.get("degree"),
         "major": student.get("major"),
         "gpa": gpa
     }
     
-    if student_details:
-        return jsonify({"student": student_details}), 200
-    return jsonify({"error": "Student details invalid"}), 404
+    return jsonify({"student": student_details}), 200
 
 @app.before_request
 def log_request():
@@ -705,60 +713,41 @@ def generate_transcript():
 
 @app.route("/api/update-student-fees", methods=["POST"])
 def update_student_fees():
-    try:
-        student_id = request.args.get("student_id")
-        if not student_id:
-            return jsonify({"error": "Student ID is required"}), 400
+    student_id = request.args.get("student_id")
+    student, error = get_student_by_id(student_id)
+    
+    if error:
+        return jsonify({"error": error}), 400 if "required" in error else 404
 
-        student = students_collection.find_one({"student_id": str(student_id)})
-        if not student:
-            return jsonify({"error": "Student not found"}), 404
+    # Calculate fees using helper function
+    finance_info = calculate_student_fees(student)
+    
+    # Update student document
+    students_collection.update_one(
+        {"student_id": str(student_id)},
+        {"$set": {
+            "fees": finance_info["fees"],
+            "paid": finance_info["paid"]
+        }}
+    )
 
-        # Calculate fees based on registered courses ($600 per course)
-        registered_courses = student.get("registered_courses", [])
-        total_fees = len(registered_courses) * 600
-        current_paid = student.get("paid", 0)
-
-        # Update the student document with new fees
-        update_data = {
-            "fees": total_fees,
-            "paid": current_paid
-        }
-
-        # Update the student document
-        students_collection.update_one(
-            {"student_id": str(student_id)},
-            {"$set": update_data}
-        )
-
-        return jsonify({
-            "message": "Fees updated successfully",
-            "fees": update_data["fees"],
-            "paid": update_data["paid"],
-            "remaining": total_fees - current_paid
-        }), 200
-
-    except Exception as e:
-        print(f"Error updating fees: {str(e)}")
-        return jsonify({"error": str(e)}), 500
+    return jsonify(finance_info), 200
 
 @app.route("/api/make-payment", methods=["POST"])
 def make_payment():
     try:
         data = request.json
-        print("Received payment data:", data)  # Debug log
-        
         student_id = data.get("student_id")
+        student, error = get_student_by_id(student_id)
+        
+        if error:
+            return jsonify({"error": error}), 400 if "required" in error else 404
+
         payment_amount = float(data.get("amount"))
         payment_method = data.get("payment_method")
         
-        if not all([student_id, payment_amount, payment_method]):
-            return jsonify({"error": "Missing required payment information"}), 400
-
-        # Get student's current financial status
-        student = students_collection.find_one({"student_id": str(student_id)})
-        if not student:
-            return jsonify({"error": "Student not found"}), 404
+        if not payment_method:
+            return jsonify({"error": "Payment method is required"}), 400
 
         current_fees = student.get("fees", 0)
         current_paid = student.get("paid", 0)
@@ -768,23 +757,19 @@ def make_payment():
         if payment_amount > (current_fees - current_paid):
             return jsonify({"error": "Payment amount exceeds remaining balance"}), 400
 
-        print(f"Updating payment for student {student_id}: Current paid={current_paid}, New paid={new_paid_amount}")  # Debug log
-
         # Update the paid amount
-        result = students_collection.update_one(
+        students_collection.update_one(
             {"student_id": str(student_id)},
             {"$set": {"paid": new_paid_amount}}
         )
 
-        print(f"Update result: {result.modified_count} document(s) modified")  # Debug log
-
-        # Record the payment in finances collection
+        # Record the payment
         payment_record = {
             "student_id": student["_id"],
             "item_name": "payment",
             "amount": payment_amount,
             "payment_method": payment_method,
-            "due_date": datetime.now(),
+            "date": datetime.now(),
             "is_paid": True
         }
         finances_collection.insert_one(payment_record)
@@ -795,7 +780,6 @@ def make_payment():
         }), 200
 
     except Exception as e:
-        print(f"Error processing payment: {str(e)}")  # Debug log
         return jsonify({"error": str(e)}), 500
 
 @app.route("/api/initialize-all-student-fees", methods=["POST"])

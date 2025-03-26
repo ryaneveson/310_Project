@@ -116,6 +116,9 @@ const AdminDashboard = () => {
             <button onClick={() => (window.location.href = "/studentProfileInput")} className="app-button">
               Student Profile Lookup
             </button>
+            <button onClick={() => (window.location.href = "/addFee")} className="app-button">
+              AddFee
+            </button>
           </div>
         </div>
       </div>
