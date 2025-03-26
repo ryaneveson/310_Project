@@ -24,6 +24,7 @@ const EditGrades = () => {
     setUserRole(role);
   }, []);
 
+  //fetch student data from the server, format it to be displayed in the table
   const fetchStudentData = async () => {
     setLoading(true);
     setError("");
@@ -104,6 +105,28 @@ const EditGrades = () => {
     }
   };
 
+//methods to render html elements
+  //render the student search form to search for a student by ID and edit their grades
+  function StudentSearchForm({ studentId, onStudentIdChange, onSearch }) {
+    return (
+      <form onSubmit={onSearch} className="search-container">
+        <label htmlFor="student-id">Student ID:</label>
+        <input
+          type="text"
+          id="student-id"
+          value={studentId}
+          onChange={onStudentIdChange}
+          placeholder="Enter Student ID"
+          className="student-id-input"
+        />
+        <button type="submit" className="search-button">
+          Search
+        </button>
+      </form>
+    );
+  }
+
+  //render the registered courses table
   const renderRegisteredCourses = () => {
     if (grades.registered.length === 0) return null;
   
@@ -141,6 +164,7 @@ const EditGrades = () => {
     );
   };
 
+  //render the completed courses table
   const renderCompletedCourses = () => {
     if (grades.completed.length === 0) return null;
 
@@ -178,8 +202,9 @@ const EditGrades = () => {
     );
   };
 
+  //if userRole is not admin, display access denied message
   if (!userRole) {
-    return <div>Loading...</div>;
+    return <div>This page is only accessible to administrators.</div>;
   }
 
   if (userRole !== "admin") {
@@ -194,6 +219,7 @@ const EditGrades = () => {
     );
   }
 
+//return
   return (
     <div className="dashboard-container">
       <div className="hero">
@@ -235,25 +261,6 @@ const EditGrades = () => {
     </div>
   );
 };
-
-function StudentSearchForm({ studentId, onStudentIdChange, onSearch }) {
-  return (
-    <form onSubmit={onSearch} className="search-container">
-      <label htmlFor="student-id">Student ID:</label>
-      <input
-        type="text"
-        id="student-id"
-        value={studentId}
-        onChange={onStudentIdChange}
-        placeholder="Enter Student ID"
-        className="student-id-input"
-      />
-      <button type="submit" className="search-button">
-        Search
-      </button>
-    </form>
-  );
-}
 
 
 export default EditGrades;
