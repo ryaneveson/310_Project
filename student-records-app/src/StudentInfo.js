@@ -4,17 +4,97 @@ import "./frontend/studentInfoStyles.css";
 import Header from "./Header";
 
 function StudentInformation() {
-    const [userInfo, setUserInfo] = useState({
+    const initialUserState = {
         username: "",
         first_name: "",
         last_name: "",
         email: "",
         gender: "",
         password: ""
-    });
+    };
+
+    const [userInfo, setUserInfo] = useState(initialUserState);
     const [isEditing, setIsEditing] = useState(false);
     const [editedInfo, setEditedInfo] = useState({});
     const [message, setMessage] = useState({ text: "", type: "" });
+
+    // create a helper method for api calls
+    const apiService = {
+        fetchStudentInfo: async (studentId) => {
+            const response = await axios.get(`http://localhost:5000/api/student/studentprofile?student_id=${studentId}`);
+            return response.data.student;
+        },
+        updateUserInfo: async (currentUsername, newInfo) => {
+            return await axios.put(`http://localhost:5000/api/user/update`, {
+                currentUsername,
+                newInfo
+            });
+        }
+    };
+
+    // create a helper method for message handling
+    const showMessage = (text, type = "error") => {
+        setMessage({ text, type });
+    };
+
+    // create a helper method for form rendering
+    const renderFormField = (label, name, type = "text", options = null) => {
+        if (type === "select") {
+            return (
+                <div className="info-field">
+                    <label className="info-label">{label}</label>
+                    <select
+                        name={name}
+                        value={editedInfo[name]}
+                        onChange={handleChange}
+                        className="info-input"
+                    >
+                        {options.map(opt => (
+                            <option key={opt} value={opt}>{opt}</option>
+                        ))}
+                    </select>
+                </div>
+            );
+        }
+
+        return (
+            <div className="info-field">
+                <label className="info-label">{label}</label>
+                <input
+                    type={type}
+                    name={name}
+                    value={editedInfo[name]}
+                    onChange={handleChange}
+                    className="info-input"
+                    placeholder={type === "password" ? "Enter new password" : ""}
+                />
+            </div>
+        );
+    };
+
+    // create a helper method for info display
+    const renderInfoField = (label, value) => (
+        <div className="info-field">
+            <span className="info-label">{label}</span>
+            <span className="info-value">{value}</span>
+        </div>
+    );
+
+    // create a helper method for form validation
+    const validateForm = () => {
+        const requiredFields = ['username', 'first_name', 'last_name', 'email'];
+        for (const field of requiredFields) {
+            if (!editedInfo[field]) {
+                showMessage(`${field.replace('_', ' ')} is required`);
+                return false;
+            }
+        }
+        if (editedInfo.email && !editedInfo.email.includes('@')) {
+            showMessage('Invalid email format');
+            return false;
+        }
+        return true;
+    };
 
     useEffect(() => {
         const fetchUserInfo = async () => {
@@ -25,22 +105,17 @@ function StudentInformation() {
                     return;
                 }
 
-                const response = await axios.get(`http://localhost:5000/api/student/studentprofile?student_id=${studentId}`);
-                const { student } = response.data;
-                
+                const student = await apiService.fetchStudentInfo(studentId);
                 setUserInfo({
                     username: localStorage.getItem("username") || "",
                     first_name: student.first_name || "",
                     last_name: student.last_name || "",
                     email: student.email || "",
                     gender: student.gender || "",
-                    password: "" // Password is not fetched for security
+                    password: ""
                 });
             } catch (err) {
-                setMessage({
-                    text: "Error fetching user information",
-                    type: "error"
-                });
+                showMessage("Error fetching user information");
             }
         };
 
@@ -55,24 +130,15 @@ function StudentInformation() {
 
     const handleSave = async () => {
         try {
-            // Update user information
-            const response = await axios.put(`http://localhost:5000/api/user/update`, {
-                currentUsername: userInfo.username,
-                newInfo: editedInfo
-            });
+            if (!validateForm()) return;
 
+            await apiService.updateUserInfo(userInfo.username, editedInfo);
             setUserInfo(editedInfo);
             localStorage.setItem("username", editedInfo.username);
             setIsEditing(false);
-            setMessage({
-                text: "Information updated successfully!",
-                type: "success"
-            });
+            showMessage("Information updated successfully!", "success");
         } catch (err) {
-            setMessage({
-                text: err.response?.data?.error || "Error updating information",
-                type: "error"
-            });
+            showMessage(err.response?.data?.error || "Error updating information");
         }
     };
 
@@ -97,97 +163,21 @@ function StudentInformation() {
                 <div className="info-section">
                     <div className="info-grid">
                         {isEditing ? (
-                            // Edit Mode
                             <>
-                                <div className="info-field">
-                                    <label className="info-label">Username</label>
-                                    <input
-                                        type="text"
-                                        name="username"
-                                        value={editedInfo.username}
-                                        onChange={handleChange}
-                                        className="info-input"
-                                    />
-                                </div>
-                                <div className="info-field">
-                                    <label className="info-label">Password</label>
-                                    <input
-                                        type="password"
-                                        name="password"
-                                        value={editedInfo.password}
-                                        onChange={handleChange}
-                                        className="info-input"
-                                        placeholder="Enter new password"
-                                    />
-                                </div>
-                                <div className="info-field">
-                                    <label className="info-label">First Name</label>
-                                    <input
-                                        type="text"
-                                        name="first_name"
-                                        value={editedInfo.first_name}
-                                        onChange={handleChange}
-                                        className="info-input"
-                                    />
-                                </div>
-                                <div className="info-field">
-                                    <label className="info-label">Last Name</label>
-                                    <input
-                                        type="text"
-                                        name="last_name"
-                                        value={editedInfo.last_name}
-                                        onChange={handleChange}
-                                        className="info-input"
-                                    />
-                                </div>
-                                <div className="info-field">
-                                    <label className="info-label">Email</label>
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        value={editedInfo.email}
-                                        onChange={handleChange}
-                                        className="info-input"
-                                    />
-                                </div>
-                                <div className="info-field">
-                                    <label className="info-label">Gender</label>
-                                    <select
-                                        name="gender"
-                                        value={editedInfo.gender}
-                                        onChange={handleChange}
-                                        className="info-input"
-                                    >
-                                        <option value="">Select Gender</option>
-                                        <option value="Male">Male</option>
-                                        <option value="Female">Female</option>
-                                        <option value="Other">Other</option>
-                                    </select>
-                                </div>
+                                {renderFormField("Username", "username")}
+                                {renderFormField("Password", "password", "password")}
+                                {renderFormField("First Name", "first_name")}
+                                {renderFormField("Last Name", "last_name")}
+                                {renderFormField("Email", "email", "email")}
+                                {renderFormField("Gender", "gender", "select", ["", "Male", "Female", "Other"])}
                             </>
                         ) : (
-                            // View Mode
                             <>
-                                <div className="info-field">
-                                    <span className="info-label">Username</span>
-                                    <span className="info-value">{userInfo.username}</span>
-                                </div>
-                                <div className="info-field">
-                                    <span className="info-label">First Name</span>
-                                    <span className="info-value">{userInfo.first_name}</span>
-                                </div>
-                                <div className="info-field">
-                                    <span className="info-label">Last Name</span>
-                                    <span className="info-value">{userInfo.last_name}</span>
-                                </div>
-                                <div className="info-field">
-                                    <span className="info-label">Email</span>
-                                    <span className="info-value">{userInfo.email}</span>
-                                </div>
-                                <div className="info-field">
-                                    <span className="info-label">Gender</span>
-                                    <span className="info-value">{userInfo.gender}</span>
-                                </div>
+                                {renderInfoField("Username", userInfo.username)}
+                                {renderInfoField("First Name", userInfo.first_name)}
+                                {renderInfoField("Last Name", userInfo.last_name)}
+                                {renderInfoField("Email", userInfo.email)}
+                                {renderInfoField("Gender", userInfo.gender)}
                             </>
                         )}
                     </div>
