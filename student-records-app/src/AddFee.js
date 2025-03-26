@@ -109,15 +109,43 @@ function AddFee({ mockStudents = null }) {
         setSearchTerm("");
     };
 
-    const exportSelectedToJson = () => {
-        const dataStr = JSON.stringify(selectedStudents, null, 2);
-        const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-        const exportFileDefaultName = 'selected_students.json';
+    const exportSelectedToJson = async () => {
+        try {
+            // Get fees for each selected student
+            const feesPromises = selectedStudents.map(student => 
+                axios.get(`http://localhost:5000/api/student/finances?student_id=${student.studentNumber}`)
+            );
+            
+            const responses = await Promise.all(feesPromises);
+            
+            // Format the data to only include fees and paid status
+            const exportData = responses.reduce((acc, response, index) => {
+                if (response.data.finances) {
+                    acc.push({
+                        student_number: selectedStudents[index].studentNumber,
+                        student_name: `${selectedStudents[index].name} ${selectedStudents[index].lastName}`,
+                        fees: response.data.finances.map(finance => ({
+                            item_name: finance.item_name,
+                            amount: finance.amount,
+                            is_paid: finance.is_paid
+                        }))
+                    });
+                }
+                return acc;
+            }, []);
 
-        const linkElement = document.createElement('a');
-        linkElement.setAttribute('href', dataUri);
-        linkElement.setAttribute('download', exportFileDefaultName);
-        linkElement.click();
+            // Export to JSON file
+            const dataStr = JSON.stringify(exportData, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            const exportFileDefaultName = 'student_fees.json';
+
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+        } catch (error) {
+            alert('Error exporting fees data: ' + error.message);
+        }
     };
 
     if (!userRole) {
