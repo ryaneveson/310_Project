@@ -1,7 +1,8 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import Finances from './Finances';
-import EditGrades from './editGrades';
+import '@testing-library/jest-dom';
+import Finances from '../Finances';
+import EditGrades from '../editGrades';
 
 describe('Role-Based Access Control', () => {
     beforeEach(() => {

@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import Calendar from "./Calendar";
+import Calendar from "../Calendar";
 const axios = require("axios");
 
 jest.mock("axios");

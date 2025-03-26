@@ -1,7 +1,7 @@
 // AddFee.test.js
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import AddFee from "./AddFee";
+import AddFee from "../AddFee";
 import axios from "axios";
 import { act } from "react-dom/test-utils";
 

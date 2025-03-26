@@ -1,6 +1,6 @@
 // AddPaymentMethod.test.js
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import AddPaymentMethod from "./addPaymentMethod"; // Adjust path if needed
+import AddPaymentMethod from "../addPaymentMethod"; // Adjust path if needed
 
 describe("AddPaymentMethod", () => {
   test("renders form fields correctly", () => {

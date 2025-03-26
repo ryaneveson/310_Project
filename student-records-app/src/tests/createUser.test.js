@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import CreateUser from './createUser';
+import CreateUser from '../createUser';
 import '@testing-library/jest-dom';
 
 describe('CreateUser Component', () => {

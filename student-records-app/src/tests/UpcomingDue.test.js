@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen, waitFor, within } from "@testing-library/react";
-import UpcomingDue from "./UpcomingDue";
+import UpcomingDue from "../UpcomingDue";
 import axios from "axios";
 import { act } from "react-dom/test-utils";
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import StudentProfileInput from './studentProfileInput';
+import StudentProfileInput from '../studentProfileInput';
 
 test('renders StudentProfileInput component', () => {
   localStorage.setItem("role","admin");
