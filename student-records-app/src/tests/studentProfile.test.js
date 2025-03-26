@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import StudentProfile from './studentProfile';
+import StudentProfile from '../studentProfile';
 import axios from 'axios';
 
 jest.mock('axios');

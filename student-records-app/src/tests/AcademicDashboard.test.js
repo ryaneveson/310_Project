@@ -1,7 +1,7 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
-import Dashboard from "./AcademicDashboard";
-import AcademicDashboard from "./AcademicDashboard";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import "@testing-library/jest-dom";
+import AcademicDashboard from "../AcademicDashboard";
 
 describe("Dashboard Component", () => {
     beforeEach(() => {

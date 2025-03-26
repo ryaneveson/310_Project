@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import StudentSearch from "./StudentSearch";
+import StudentSearch from "../StudentSearch";
 const axios = require("axios");
 
 jest.mock("axios");

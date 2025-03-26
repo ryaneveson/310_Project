@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
-import StudentRanking from "./studentRanking";
+import StudentRanking from "../studentRanking";
 
 // Mock fetch globally
 global.fetch = jest.fn();

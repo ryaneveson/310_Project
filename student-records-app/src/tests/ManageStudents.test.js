@@ -1,7 +1,7 @@
 // src/__tests__/ManageStudents.test.js
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import ManageStudents from './ManageStudents';
+import ManageStudents from '../ManageStudents';
 
 const mockStudents = [
   {

@@ -1,6 +1,7 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
-import Calendar from './Calendar';
+import { render, screen, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import CompactCalendar from '../Calendar';
 
 describe('Calendar Component (Compact View)', () => {
   const mockEvents = [
@@ -26,7 +27,7 @@ describe('Calendar Component (Compact View)', () => {
   });
 
   test('renders in compact mode with correct styling', () => {
-    render(<Calendar mockEvents={mockEvents} compact={true} />);
+    render(<CompactCalendar mockEvents={mockEvents} compact={true} />);
     
     // Check if calendar container has compact class
     const container = screen.getByTestId('calendar-container');
@@ -34,7 +35,7 @@ describe('Calendar Component (Compact View)', () => {
   });
 
   test('displays correct days of the week', () => {
-    render(<Calendar mockEvents={mockEvents} compact={true} />);
+    render(<CompactCalendar mockEvents={mockEvents} compact={true} />);
     
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
     days.forEach(day => {
@@ -43,7 +44,7 @@ describe('Calendar Component (Compact View)', () => {
   });
 
   test('renders mock events correctly', () => {
-    render(<Calendar mockEvents={mockEvents} compact={true} />);
+    render(<CompactCalendar mockEvents={mockEvents} compact={true} />);
     
     // Check if both classes are displayed
     expect(screen.getByText(/COSC 310/)).toBeInTheDocument();
@@ -55,7 +56,7 @@ describe('Calendar Component (Compact View)', () => {
   });
 
   test('displays correct time slots', () => {
-    render(<Calendar mockEvents={mockEvents} compact={true} />);
+    render(<CompactCalendar mockEvents={mockEvents} compact={true} />);
     
     // Check for some time slots
     expect(screen.getByText('8:00')).toBeInTheDocument();
@@ -64,14 +65,14 @@ describe('Calendar Component (Compact View)', () => {
   });
 
   test('handles empty events array', () => {
-    render(<Calendar mockEvents={[]} compact={true} />);
+    render(<CompactCalendar mockEvents={[]} compact={true} />);
     
     // Calendar should still render without events
     expect(screen.getByText('No courses scheduled')).toBeInTheDocument();
   });
 
   test('event blocks have correct positioning', () => {
-    render(<Calendar mockEvents={mockEvents} compact={true} />);
+    render(<CompactCalendar mockEvents={mockEvents} compact={true} />);
     
     const eventBlocks = screen.getAllByTestId('event-block');
     
