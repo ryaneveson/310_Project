@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./frontend/dashboardStyles.css";
 import ReactDOM from "react-dom/client";
-import HeaderLoader from "./Header";
-import FooterLoader from "./Footer";
 
 //function called when "Save Changes: button is clicked, returns"
 const EditGrades = () => {
@@ -26,6 +24,7 @@ const EditGrades = () => {
     setUserRole(role);
   }, []);
 
+  //fetch student data from the server, format it to be displayed in the table
   const fetchStudentData = async () => {
     setLoading(true);
     setError("");
@@ -106,8 +105,106 @@ const EditGrades = () => {
     }
   };
 
+//methods to render html elements
+  //render the student search form to search for a student by ID and edit their grades
+  function StudentSearchForm({ studentId, onStudentIdChange, onSearch }) {
+    return (
+      <form onSubmit={onSearch} className="search-container">
+        <label htmlFor="student-id">Student ID:</label>
+        <input
+          type="text"
+          id="student-id"
+          value={studentId}
+          onChange={onStudentIdChange}
+          placeholder="Enter Student ID"
+          className="student-id-input"
+        />
+        <button type="submit" className="search-button">
+          Search
+        </button>
+      </form>
+    );
+  }
+
+  //render the registered courses table
+  const renderRegisteredCourses = () => {
+    if (grades.registered.length === 0) return null;
+  
+    return (
+      <div className="grades-table-container">
+        <h4>Registered Courses</h4>
+        <table className="grades-table">
+          <thead>
+            <tr>
+              <th>Course</th>
+              <th>Current Grade</th>
+              <th>New Grade</th>
+            </tr>
+          </thead>
+          <tbody>
+            {grades.registered.map((item, index) => (
+              <tr key={`registered-${index}`}>
+                <td>{item.course}</td>
+                <td>{item.grade || 'N/A'}</td>
+                <td>
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    className="grade-input"
+                    value={item.grade}
+                    onChange={(e) => handleGradeChange('registered', index, e.target.value)}
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  };
+
+  //render the completed courses table
+  const renderCompletedCourses = () => {
+    if (grades.completed.length === 0) return null;
+
+    return (
+      <div className="grades-table-container">
+        <h4>Completed Courses</h4>
+        <table className="grades-table">
+          <thead>
+            <tr>
+              <th>Course</th>
+              <th>Current Grade</th>
+              <th>New Grade</th>
+            </tr>
+          </thead>
+          <tbody>
+            {grades.completed.map((item, index) => (
+              <tr key={`completed-${index}`}>
+                <td>{item.course}</td>
+                <td>{item.grade || 'N/A'}</td>
+                <td>
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    className="grade-input"
+                    value={item.grade}
+                    onChange={(e) => handleGradeChange('completed', index, e.target.value)}
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  };
+
+  //if userRole is not admin, display access denied message
   if (!userRole) {
-    return <div>Loading...</div>;
+    return <div>This page is only accessible to administrators.</div>;
   }
 
   if (userRole !== "admin") {
@@ -122,6 +219,7 @@ const EditGrades = () => {
     );
   }
 
+//return
   return (
     <div className="dashboard-container">
       <div className="hero">
@@ -131,20 +229,11 @@ const EditGrades = () => {
       <div className="dashboard-content">
         <div className="grades-section">
           <div className="student-search">
-            <form onSubmit={handleSearch} className="search-container">
-              <label htmlFor="student-id">Student ID:</label>
-              <input
-                type="text"
-                id="student-id"
-                value={studentId}
-                onChange={handleStudentIdChange}
-                placeholder="Enter Student ID"
-                className="student-id-input"
-              />
-              <button type="submit" className="search-button">
-                Search
-              </button>
-            </form>
+            <StudentSearchForm
+              studentId={studentId}
+              onStudentIdChange={handleStudentIdChange}
+              onSearch={handleSearch}
+            />
           </div>
 
           {loading && <div className="loading">Loading student data...</div>}
@@ -158,72 +247,8 @@ const EditGrades = () => {
 
           {(grades.registered.length > 0 || grades.completed.length > 0) && (
             <div className="grades-tables">
-              {grades.registered.length > 0 && (
-                <div className="grades-table-container">
-                  <h4>Registered Courses</h4>
-                  <table className="grades-table">
-                    <thead>
-                      <tr>
-                        <th>Course</th>
-                        <th>Current Grade</th>
-                        <th>New Grade</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {grades.registered.map((item, index) => (
-                        <tr key={`registered-${index}`}>
-                          <td>{item.course}</td>
-                          <td>{item.grade || 'N/A'}</td>
-                          <td>
-                            <input
-                              type="number"
-                              min="0"
-                              max="100"
-                              className="grade-input"
-                              value={item.grade}
-                              onChange={(e) => handleGradeChange('registered', index, e.target.value)}
-                            />
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-
-              {grades.completed.length > 0 && (
-                <div className="grades-table-container">
-                  <h4>Completed Courses</h4>
-                  <table className="grades-table">
-                    <thead>
-                      <tr>
-                        <th>Course</th>
-                        <th>Current Grade</th>
-                        <th>New Grade</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {grades.completed.map((item, index) => (
-                        <tr key={`completed-${index}`}>
-                          <td>{item.course}</td>
-                          <td>{item.grade || 'N/A'}</td>
-                          <td>
-                            <input
-                              type="number"
-                              min="0"
-                              max="100"
-                              className="grade-input"
-                              value={item.grade}
-                              onChange={(e) => handleGradeChange('completed', index, e.target.value)}
-                            />
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-
+              {renderRegisteredCourses()}
+              {renderCompletedCourses()}
               <div className="actions-container">
                 <button onClick={saveGrades} className="save-button">
                   Save Changes
@@ -237,37 +262,5 @@ const EditGrades = () => {
   );
 };
 
-// Render the EditGrades component inside the #edit-grades div
-const editGradesElement = document.getElementById("edit-grades");
-if (editGradesElement) {
-  const editGradesRoot = ReactDOM.createRoot(editGradesElement);
-  editGradesRoot.render(
-    <React.StrictMode>
-      <EditGrades />
-    </React.StrictMode>
-  );
-}
-
-// Render the header inside the #header div
-const headerElement = document.getElementById("header");
-if (headerElement) {
-  const headerRoot = ReactDOM.createRoot(headerElement);
-  headerRoot.render(
-    <React.StrictMode>
-      <HeaderLoader />
-    </React.StrictMode>
-  );
-}
-
-// Render the footer inside the #footer div
-const footerElement = document.getElementById("footer");
-if (footerElement) {
-  const footerRoot = ReactDOM.createRoot(footerElement);
-  footerRoot.render(
-    <React.StrictMode>
-      <FooterLoader />
-    </React.StrictMode>
-  );
-}
 
 export default EditGrades;
