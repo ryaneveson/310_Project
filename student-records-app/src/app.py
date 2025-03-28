@@ -354,38 +354,6 @@ def register_course():
         return jsonify({"message": "Course registered successfully!"}), 201
     else:
         return jsonify({"error": "Course is full."}), 400
-
-
-@app.route("/api/add-payment", methods=["POST"])
-def add_payment():
-    data = request.json
-    student_id = data.get("student_id")
-    amount = data.get("amount")
-    due_date = data.get("due_date")
-    is_paid = data.get("is_paid")
-    if not student_id:
-        return jsonify({"error": "Student ID is required"}), 400
-    if not amount or not due_date or not is_paid:
-        return jsonify({"error": "Data for payment not provided"}), 400
-    if len(student_id) != 8 or not student_id.isdigit():
-        return jsonify({"error": "Student ID must be an 8-digit number"}), 400
-    try:
-        due_date_obj = datetime.strptime(due_date, "%Y-%m-%d")  # Assuming input format "YYYY-MM-DD"
-    except ValueError:
-        return jsonify({"error": "Invalid due_date format. Use YYYY-MM-DD."}), 400
-    student = students_collection.find_one({"studentNumber": student_id})
-    if not student:
-        return jsonify({"error": "Student not found"}), 404
-    student_object_id = student["_id"]
-    new_payment = {
-        "student_id": student_object_id,
-        "item_name": "payment",
-        "amount": amount,
-        "due_date": due_date_obj,
-        "is_paid": bool(is_paid)
-    }
-    finances_collection.insert_one(new_payment)
-    return jsonify({"message": "Payment record added successfully"}), 201
     
 @app.route("/api/add-fee", methods=["POST"])
 def add_fee():
