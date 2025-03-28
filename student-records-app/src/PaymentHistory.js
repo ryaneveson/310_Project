@@ -1,54 +1,45 @@
 import { useEffect, useState } from "react";
-import { formatPayments, fetchFinances } from "./utils/FinanceUtils.js";
+import { formatPayments, fetchFinances } from "./utils/financeUtils";
+import useUser from "./utils/useUser";
 import "./frontend/financeSummaryStyles.css";
 
-const PaymentHistory = ({ mockPayments = null }) => {
-  const [userRole, setUserRole] = useState(null);
-  const [loading, setLoading] = useState(true);
+const PaymentHistory = () => {
+  const { userRole, loading, studentId, handleLogout, setLoading } = useUser();
   const [payments, setPayments] = useState([]);
-  const studentId = localStorage.getItem("student_id");
 
   useEffect(() => {
-    const role = localStorage.getItem("role");
-    if (!role) {
-      window.location.href = "/";
-      return;
+    if (userRole) {
+      fetchData();
     }
-    setUserRole(role);
-    fetchData(role);
-  }, [studentId]);
+  }, [userRole, studentId]);
 
-  const fetchData = async (role) => {
-    if (mockPayments) {
-      setPayments(formatPayments(mockPayments,true));
-      setLoading(false);
-      return;
-    }
-
-    if (role !== "student") {
-      setLoading(false);
-      return;
-    }
+  const fetchData = async () => {
+    if (userRole !== "student") return;
 
     const financeData = await fetchFinances(studentId);
-    setPayments(formatPayments(financeData,true));
+    setPayments(formatPayments(financeData));
     setLoading(false);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("role");
-    window.location.href = "/";
-  };
+  if (loading) return <div>Loading...</div>;
+
+  if (userRole !== "student") {
+    return (
+      <div className="dashboard-container">
+        <h2>Access Denied</h2>
+        <p>This page is only accessible to students.</p>
+        <button className="logout-button" onClick={handleLogout}>
+          Logout
+        </button>
+      </div>
+    );
+  }
 
   const handleNavigation = (path) => {
     window.location.href = path;
   };
 
   if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!userRole) {
     return <div>Loading...</div>;
   }
 

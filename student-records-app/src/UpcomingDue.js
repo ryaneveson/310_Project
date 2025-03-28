@@ -1,27 +1,23 @@
 import { useEffect, useState } from "react";
-import { formatPayments, fetchFinances } from "./utils/FinanceUtils"; // Import the utility methods
+import { formatPayments, fetchFinances } from "./utils/financeUtils";
+import useUser from "./utils/useUser";
 import "./frontend/financeSummaryStyles.css";
 
 const UpcomingDue = ({ mockDues = null }) => {
-  const [userRole, setUserRole] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { userRole, loading, studentId, setLoading, handleLogout } = useUser();
   const [upcoming, setUpcoming] = useState([]);
-  const studentId = localStorage.getItem("student_id");
 
   useEffect(() => {
-    const role = localStorage.getItem("role");
-    if (!role) {
-      window.location.href = "/";
-      return;
+    if (userRole) {
+      fetchData(userRole);
     }
-    setUserRole(role);
-    fetchData(role);
-  }, [studentId]);
+  }, [userRole, studentId]);
 
   const fetchData = async (role) => {
     if (mockDues) {
+      setLoading(false);
       const formattedUpcoming = mockDues
-        .filter((item) => !(item.item_name === "payment") && new Date(item.due_date) > new Date())
+        .filter((item) => item.item_name !== "payment" && new Date(item.due_date) > new Date())
         .map((item) => ({
           name: item.item_name,
           date: new Date(item.due_date).toLocaleDateString("en-GB", {
@@ -32,33 +28,16 @@ const UpcomingDue = ({ mockDues = null }) => {
           }),
           amount: item.amount,
         }));
+      if (userRole !== "student") return;
       setUpcoming(formattedUpcoming);
-      setLoading(false);
       return;
     }
-
-    if (role !== "student") {
-      setLoading(false);
-      return;
-    }
-
     const financeData = await fetchFinances(studentId);
     setUpcoming(formatPayments(financeData));
     setLoading(false);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("role");
-    window.location.href = "/";
-  };
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!userRole) {
-    return <div>Loading...</div>;
-  }
+  if (loading) return <div>Loading...</div>;
 
   if (userRole !== "student") {
     return (
@@ -78,7 +57,7 @@ const UpcomingDue = ({ mockDues = null }) => {
         <h2>Upcoming Dues</h2>
       </div>
       <div className="summary-container">
-        <div className="summary-table" >
+        <div className="summary-table">
           <h3>Upcoming Items</h3>
           <table>
             <thead>
