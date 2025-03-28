@@ -81,16 +81,28 @@ const UpcomingDue = ({ mockDues = null }) => {
         <div className="apps-card">
           <h3>Financial Actions</h3>
           <div className="apps-buttons">
-            <button onClick={() => (window.location.href = "/Finances")} className="app-button">
+            <button
+              onClick={() => handleNavigation("/Finances")}
+              className="app-button"
+            >
               Finance Dashboard
             </button>
-            <button onClick={() => (window.location.href = "/makePayment")} className="app-button">
+            <button
+              onClick={() => handleNavigation("/makePayment")}
+              className="app-button"
+            >
               Make Payment
             </button>
-            <button onClick={() => (window.location.href = "/addPaymentMethod")} className="app-button">
+            <button
+              onClick={() => handleNavigation("/addPaymentMethod")}
+              className="app-button"
+            >
               Add Payment Method
             </button>
-            <button onClick={() => (window.location.href = "/paymentHistory")} className="app-button">
+            <button
+              onClick={() => handleNavigation("/paymentHistory")}
+              className="app-button"
+            >
               View Payment History
             </button>
           </div>
