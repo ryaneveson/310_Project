@@ -96,3 +96,133 @@ Wait a few moments for both the **development** and **backend** servers to start
 - **Docker Issues:**
   - Ensure Docker is installed and running on your system.
   - If `docker-compose up --build` fails, try running `docker system prune -a` to clear all Docker images.
+
+
+# Test Coverage Report
+
+## Authentication & Access Control
+- AccessControl.test.js (48 lines)
+  ✓ Tests role-based access restrictions
+  ✓ Basic authentication flow
+  Coverage: Basic access control testing, could benefit from more edge cases
+
+## Dashboard Components
+- AcademicDashboard.test.js (41 lines)
+  ✓ Tests GPA calculation
+  ✓ Academic status display
+  Coverage: Limited, needs more tests for resource access and error states
+
+- Dashboard.test.js (62 lines)
+  ✓ Navigation functionality
+  ✓ User role verification
+  Coverage: Moderate, could use more interaction testing
+
+## Student Management
+- StudentSearch.test.js (121 lines)
+  ✓ Search functionality
+  ✓ Filter operations
+  ✓ Export capabilities
+  Coverage: Good coverage of core features
+
+- StudentProfile.test.js (193 lines)
+  ✓ Profile data display
+  ✓ Profile updates
+  ✓ Error handling
+  Coverage: Comprehensive testing of profile management
+
+- StudentProfileInput.test.js (47 lines)
+  ✓ Input validation
+  Coverage: Basic input testing, needs more validation scenarios
+
+- StudentRanking.test.js (96 lines)
+  ✓ Ranking calculations
+  ✓ Filter functionality
+  Coverage: Good core functionality coverage
+
+## Course Management
+- Courses.test.js (129 lines)
+  ✓ Course registration
+  ✓ Course listing
+  ✓ Prerequisites checking
+  Coverage: Good coverage of course operations
+
+- Calendar.test.js (59 lines)
+  ✓ Schedule display
+  Coverage: Basic calendar functionality, needs more event handling tests
+
+- CompactCalendar.test.js (94 lines)
+  ✓ Compact view rendering
+  ✓ Event display
+  Coverage: Good coverage of view modes
+
+## Financial Components
+- Finances.test.js (78 lines)
+  ✓ Balance calculation
+  ✓ Payment history
+  Coverage: Core financial operations tested
+
+- MakePayment.test.js (126 lines)
+  ✓ Payment processing
+  ✓ Validation
+  ✓ Error handling
+  Coverage: Comprehensive payment flow testing
+
+- AddFee.test.js (129 lines)
+  ✓ Fee addition
+  ✓ Validation
+  ✓ Error states
+  Coverage: Good coverage of fee management
+
+- PaymentHistory.test.js (94 lines)
+  ✓ Transaction history
+  ✓ Filtering
+  Coverage: Good historical data handling
+
+- AddPaymentMethod.test.js (75 lines)
+  ✓ Payment method addition
+  ✓ Validation
+  Coverage: Basic payment method management
+
+## Academic Records
+- StudentGrades.test.js (108 lines)
+  ✓ Grade display
+  ✓ GPA calculation
+  Coverage: Good coverage of grade management
+
+- UpcomingDue.test.js (109 lines)
+  ✓ Due date display
+  ✓ Notification testing
+  Coverage: Good coverage of deadline management
+
+## User Management
+- CreateUser.test.js (87 lines)
+  ✓ User creation
+  ✓ Validation
+  Coverage: Basic user creation flow
+
+- ManageStudents.test.js (121 lines)
+  ✓ Student CRUD operations
+  ✓ Bulk operations
+  Coverage: Good administrative function coverage
+
+## Areas Needing Additional Coverage:
+1. Edge Cases:
+   - Invalid data handling
+   - Concurrent operations
+
+2. Integration Testing:
+   - Component interactions
+   - Data flow between components
+
+3. Performance Testing:
+   - Large data set handling (semi irrelevant as this is just a test project) 
+   - Response time, and resource usage (again, would be helpful if this was real software so this is overlooked for now) 
+
+## Overall Coverage Statistics:
+- Total Test Files: 21
+- Total Test Lines: 1,695
+- Component Coverage: Good
+- Functionality Coverage: Moderate to Good
+- Error Handling Coverage: Should Be Improvemed
+
+<img width="496" alt="Screenshot 2025-03-27 at 11 50 05 PM" src="https://github.com/user-attachments/assets/32362a1d-fbcc-455b-b90f-461f8efe824d" />
