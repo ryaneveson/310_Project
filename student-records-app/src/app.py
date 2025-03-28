@@ -119,7 +119,8 @@ def get_courses():
             "room": course["lecture_room"],
             "description": "None",  # Add a placeholder if needed
             "prerequisites": course["prereq"],
-            "capacity": course["capacity"]
+            "capacity": course["capacity"],
+            "waitlist": course["waitlist"]
         })
     return jsonify(transformed_courses)
 
@@ -285,7 +286,6 @@ def register_course():
     course_dept = data.get("course_dept")
     course_num = data.get("course_num")
     course_capacity = data.get("course_capacity")
-    course_waitlist = data.get("course_waitlist")
 
     if not student_id or not course_dept or not course_num:
         return jsonify({"error": "Student ID, course department, and course number are required"}), 400

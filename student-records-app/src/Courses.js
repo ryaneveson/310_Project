@@ -1,7 +1,25 @@
 import React, { useState, useEffect } from "react";
 import "./frontend/courses.css";
 
-function Courses({ mockCourses = null}) {
+// Constants
+const COURSE_LEVELS = [
+  { value: "all", label: "All Levels" },
+  { value: "undergraduate", label: "Undergraduate" },
+  { value: "graduate", label: "Graduate" }
+];
+
+const YEAR_LEVELS = [100, 200, 300, 400, 500];
+
+const FilterBox = ({ title, children }) => (
+  <div className="filter-box">
+    <h3>{title}</h3>
+    <div className="filter-content">
+      {children}
+    </div>
+  </div>
+);
+
+function Courses({ mockCourses = null }) {
 
   const [courses, setCourses] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -11,7 +29,7 @@ function Courses({ mockCourses = null}) {
 
   // Fetch courses from the backend
   useEffect(() => {
-    if(mockCourses){
+    if (mockCourses) {
       setCourses(mockCourses);
       return;
     }
@@ -64,7 +82,7 @@ function Courses({ mockCourses = null}) {
         waitlist_capacity: course.waitlist
       }),
     })
-    .then((response) => response.json())
+      .then((response) => response.json())
       .then((data) => {
         if (data.error) {
           // Display the error message from the backend
@@ -93,63 +111,41 @@ function Courses({ mockCourses = null}) {
         className="search-box"
       />
 
-      {/* Filters and course list side by side */}
       <div className="main-layout">
-        {/* Filters on the left side */}
         <div className="filters">
-          {/* Filter by Year in its own box */}
-          <div className="filter-box">
-            <h3>Filter by Year</h3>
+
+          <FilterBox title="Filter by Year">
             <div className="year-filter">
-              {[1, 2, 3, 4, 5].map((year) => (
+              {YEAR_LEVELS.map(year => (
                 <label key={year}>
                   <input
                     type="checkbox"
                     checked={selectedYears.includes(year.toString())}
                     onChange={() => handleYearChange(year.toString())}
                   />
-                  {year}00 Level
+                  {year} Level
                 </label>
               ))}
             </div>
-          </div>
+          </FilterBox>
 
-          {/* Filter by Level in its own box */}
-          <div className="filter-box">
-            <h3>Filter by Level</h3>
+          <FilterBox title="Filter by Level">
             <div className="level-filter">
-              <label>
-                <input
-                  type="radio"
-                  name="courseLevel"
-                  value="all"
-                  checked={courseLevel === "all"}
-                  onChange={() => handleCourseLevelChange("all")}
-                />
-                All Levels
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  name="courseLevel"
-                  value="undergraduate"
-                  checked={courseLevel === "undergraduate"}
-                  onChange={() => handleCourseLevelChange("undergraduate")}
-                />
-                Undergraduate
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  name="courseLevel"
-                  value="graduate"
-                  checked={courseLevel === "graduate"}
-                  onChange={() => handleCourseLevelChange("graduate")}
-                />
-                Graduate
-              </label>
+              {COURSE_LEVELS.map(level => (
+                <label key={level.value}>
+                  <input
+                    type="radio"
+                    name="courseLevel"
+                    value={level.value}
+                    checked={courseLevel === level.value}
+                    onChange={() => setCourseLevel(level.value)}
+                  />
+                  {level.label}
+                </label>
+              ))}
             </div>
-          </div>
+          </FilterBox>
+
         </div>
         {/* Course list on the right side */}
         <div className="course-list">
@@ -160,9 +156,8 @@ function Courses({ mockCourses = null}) {
                   <div className="course-header">
                     <button
                       onClick={() => toggleCourseDetails(index)}
-                      className={`course-toggle ${
-                        expandedCourse === index ? "expanded" : ""
-                      }`}
+                      className={`course-toggle ${expandedCourse === index ? "expanded" : ""
+                        }`}
                     >
                       <div className="triangle"></div>
                     </button>
@@ -177,30 +172,17 @@ function Courses({ mockCourses = null}) {
                     </button>
                   </div>
                   <div
-                    className={`course-details ${
-                      expandedCourse === index ? "open" : ""
-                    }`}
+                    className={`course-details ${expandedCourse === index ? "open" : ""
+                      }`}
                   >
                     {expandedCourse === index && (
                       <>
-                        <p>
-                          <strong>Date:</strong> {course.date}
-                        </p>
-                        <p>
-                          <strong>Professor:</strong> {course.professor}
-                        </p>
-                        <p>
-                          <strong>Room:</strong> {course.room}
-                        </p>
-                        <p>
-                          <strong>Description:</strong> {course.description}
-                        </p>
-                        <p>
-                          <strong>Pre-requisites:</strong> {course.prerequisites}
-                        </p>
-                        <p>
-                          <strong>Capacity:</strong> {course.capacity}/150      <strong>waitlist:</strong> /5
-                        </p>
+                        <p> <strong>Date:</strong> {course.date} </p>
+                        <p> <strong>Professor:</strong> {course.professor} </p>
+                        <p> <strong>Room:</strong> {course.room} </p>
+                        <p> <strong>Description:</strong> {course.description} </p>
+                        <p> <strong>Pre-requisites:</strong> {course.prerequisites} </p>
+                        <p> <strong>Capacity:</strong> {course.capacity}/150      <strong>Waitlist:</strong> {course.waitlist.length}/5 </p>
                       </>
                     )}
                   </div>
@@ -212,7 +194,6 @@ function Courses({ mockCourses = null}) {
           </ul>
         </div>
       </div>
-
     </div>
   );
 }
