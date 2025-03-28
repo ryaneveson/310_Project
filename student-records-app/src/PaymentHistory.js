@@ -3,7 +3,7 @@ import { formatPayments, fetchFinances } from "./utils/financeUtils";
 import useUser from "./utils/useUser";
 import "./frontend/financeSummaryStyles.css";
 
-const PaymentHistory = () => {
+const PaymentHistory = ({ mockPayments = null}) => {
   const { userRole, loading, studentId, handleLogout, setLoading } = useUser();
   const [payments, setPayments] = useState([]);
 
@@ -14,10 +14,14 @@ const PaymentHistory = () => {
   }, [userRole, studentId]);
 
   const fetchData = async () => {
+    if (mockPayments) {
+      setPayments(formatPayments(mockPayments,true));
+      setLoading(false);
+      return;
+    }
     if (userRole !== "student") return;
-
     const financeData = await fetchFinances(studentId);
-    setPayments(formatPayments(financeData));
+    setPayments(formatPayments(financeData,true));
     setLoading(false);
   };
 
