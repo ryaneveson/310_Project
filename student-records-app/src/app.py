@@ -256,24 +256,21 @@ def get_students_payment_methods():
         return jsonify({"error": "Student ID is required"}), 400
     if len(student_id) != 8 or not student_id.isdigit():
         return jsonify({"error": "Student ID must be an 8-digit number"}), 400
-    student = students_collection.find_one({"student_id": student["_id"]}, {"_id": 0})
+    student = students_collection.find_one({"student_id": student_id})
     if not student:
         return jsonify({"error": "Student not found"}), 404
     payment_methods = list(payment_methods_collection.find({"student_id": student["_id"]}, {"_id": 0}))
-    if not payment_methods:
-        return jsonify({"error": "No payment methods for this student"}), 404
-    payment_details = []
-    for method in payment_methods:
-        payment_details.append({
+    payment_details = [
+        {
             "card_type": method.get("card_type"),
             "card_number": method.get("card_number"),
             "card_name": method.get("card_name"),
             "card_address": method.get("card_address"),
             "expiry_date": method.get("expiry_date"),
             "cvv": method.get("cvv")
-        })
-    if not payment_details:
-        return jsonify({"error": "No payment methods for this student"}), 404
+        }
+        for method in payment_methods
+    ]
     return jsonify({"payment_methods": payment_details}), 200
 
 @app.route("/api/student", methods=["GET"])
@@ -1017,6 +1014,48 @@ def generate_student_report():
         as_attachment=True,
         mimetype='application/pdf'
     )
+
+@app.route("/api/student/payment_methods", methods=["POST"])
+def add_payment_method():
+    try:
+        data = request.json
+        required_fields = ["student_id", "card_type", "card_number", "card_name", 
+                         "card_address", "expiry_date", "cvv"]
+        
+        # Check if all required fields are present
+        if not all(field in data for field in required_fields):
+            return jsonify({"error": "Missing required fields"}), 400
+
+        # Validate student exists
+        student = students_collection.find_one({"student_id": data["student_id"]})
+        if not student:
+            return jsonify({"error": "Student not found"}), 404
+
+        # Create new payment method document
+        payment_method = {
+            "student_id": student["_id"],  # Use the MongoDB _id as reference
+            "card_type": data["card_type"],
+            "card_number": data["card_number"],
+            "card_name": data["card_name"],
+            "card_address": data["card_address"],
+            "expiry_date": data["expiry_date"],
+            "cvv": data["cvv"]
+        }
+
+        # Insert into payment_methods collection
+        result = payment_methods_collection.insert_one(payment_method)
+        
+        if result.inserted_id:
+            return jsonify({
+                "message": "Payment method added successfully",
+                "payment_method_id": str(result.inserted_id)
+            }), 201
+        else:
+            return jsonify({"error": "Failed to add payment method"}), 500
+
+    except Exception as e:
+        print(f"Error adding payment method: {str(e)}")
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
   app.run(debug=True, host="0.0.0.0", port=5000)

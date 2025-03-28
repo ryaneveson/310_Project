@@ -33,16 +33,27 @@ function MakePayment() {
         // Update and fetch fees
         await axios.post(`http://localhost:5000/api/update-student-fees?student_id=${studentId}`);
         
-        // Get student profile for financial info
-        const studentResponse = await axios.get(
-          `http://localhost:5000/api/student/studentprofile?student_id=${studentId}`
-        );
-        const studentData = studentResponse.data.student;
+
+        const financeResponse = await axios.get(`http://localhost:5000/api/student/finances?student_id=${studentId}`);
+        const financeData = financeResponse.data.finances;
+
+        // Calculate next payment due and last payment
+        let totalFees = 0;
+        let totalPaid = 0;
+        let remainingBalance = 0;
+
+        financeData.forEach(item => {
+          totalFees += item.amount;
+          if (item.item_name === "payment") {
+            totalPaid += item.amount;
+          }
+        });
+        remainingBalance = totalFees - totalPaid;
         
         setFinancialInfo({
-          totalFees: studentData.fees || 0,
-          amountPaid: studentData.paid || 0,
-          remainingBalance: (studentData.fees || 0) - (studentData.paid || 0)
+          totalFees: totalFees,
+          amountPaid: totalPaid,
+          remainingBalance: remainingBalance
         });
 
         // Fetch payment methods
@@ -63,7 +74,7 @@ function MakePayment() {
         setBillingMethods(formattedPaymentMethods);
         setLoading(false);
       } catch (err) {
-        console.error("Error fetching data:", err);
+        console.error("Error fetching data:", err.response ? err.response.data : err.message);
         alert("Error loading payment information.");
         setLoading(false);
       }
@@ -135,14 +146,6 @@ function MakePayment() {
             throw new Error(updateResponse.data.error);
         }
 
-        // Record the payment in finances collection
-        await axios.post("http://localhost:5000/api/add-payment", {
-            student_id: studentId,
-            amount: parseFloat(paymentAmount),
-            due_date: new Date().toISOString().split("T")[0],
-            is_paid: true
-        });
-
         alert(`Payment of $${paymentAmount} confirmed using ${selectedMethod} (${selectedCardNumber})`);
         window.location.href = "/Finances";
     } catch (error) {
@@ -188,54 +191,62 @@ function MakePayment() {
       <h2>Choose a payment method: </h2>
       <form onSubmit={handleSubmit}>
         <div className="box-container">
-          {billingMethods.map((method, index) => (
-            <label key={index} className="billing-box radio-option" data-testid="MakePayment-option">
+  {billingMethods.length === 0 ? (
+    <p>No Billing Methods. Please Add a New One.</p>
+  ) : (
+    billingMethods.map((method, index) => (
+      <label key={index} className="billing-box radio-option" data-testid="MakePayment-option">
+        <input
+          type="radio"
+          name="billingMethod"
+          value={method.cardType}
+          onChange={() => {
+            setSelectedMethod(method.cardType);
+            setSelectedCardNumber(method.cardNumber);
+          }}
+        />
+        <div>
+          <h3>{method.cardType}</h3>
+          <p>{formatCardNumber(method.cardNumber)}</p>
+          <p>{method.cardholderName}</p>
+          <p>{method.billingAddress}</p>
+        </div>
+
+        {selectedMethod && selectedMethod === method.cardType && (
+          <div id="temp-input">
+            <label>
+              Enter full card number:<br />
               <input
-                type="radio"
-                name="billingMethod"
-                value={method.cardType}
-                onChange={() => {
-                  setSelectedMethod(method.cardType);
-                  setSelectedCardNumber(method.cardNumber);
-                }}
+                type="text"
+                placeholder="XXXX XXXX XXXX XXXX"
+                className="payment-method-input"
+                onChange={(e) => setNumVer(e.target.value === method.cardNumber)}
               />
-              <div>
-                <h3>{method.cardType}</h3>
-                <p>{formatCardNumber(method.cardNumber)}</p>
-                <p>{method.cardholderName}</p>
-                <p>{method.billingAddress}</p>
-              </div>
-              
-              {selectedMethod && selectedMethod === method.cardType && (
-                <div id="temp-input">
-                  <label>Enter full card number:<br/>
-                    <input
-                      type="text"
-                      placeholder="XXXX XXXX XXXX XXXX"
-                      className="payment-method-input"
-                      onChange={(e) => setNumVer(e.target.value === method.cardNumber)}
-                    />
-                  </label>
-                  <label>Enter CVV:<br/>
-                    <input
-                      type="text"
-                      placeholder="CVV"
-                      className="payment-method-input"
-                      onChange={(e) => setCvvVer(e.target.value === method.cvv)}
-                    />
-                  </label>
-                  <label>Enter Expiry:<br/>
-                    <input
-                      type="text"
-                      placeholder="MM/YY"
-                      className="payment-method-input"
-                      onChange={(e) => setExpVer(e.target.value === method.expiryDate)}
-                    />
-                  </label>
-                </div>
-              )}
             </label>
-          ))}
+            <label>
+              Enter CVV:<br />
+              <input
+                type="text"
+                placeholder="CVV"
+                className="payment-method-input"
+                onChange={(e) => setCvvVer(e.target.value === method.cvv)}
+              />
+            </label>
+            <label>
+              Enter Expiry:<br />
+              <input
+                type="text"
+                placeholder="MM/YY"
+                className="payment-method-input"
+                onChange={(e) => setExpVer(e.target.value === method.expiryDate)}
+              />
+            </label>
+          </div>
+        )}
+      </label>
+    ))
+  )}
+
 
           <div className="billing-box add-payment">
             <a href="/addPaymentMethod">Add New Payment Method</a>
