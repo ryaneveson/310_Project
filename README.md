@@ -2,44 +2,42 @@
 
 ## Overview
 
-**Werkday** is a web platform that provides administrators and students the ability to manage their academic workflows wheter that be course enrollment, grading, finances (i.e. tuition payment), or official document collection. 
+**Werkday** is a website that allows administrators and students to manage academic workflows, including course enrollment, grading, tuition payments, and viewing official documents.
 
-### Current Project Status (Milestone 2 Completion - 60%)
+### Current Project Status (Milestone 3 Completion - 95%)
 
-- Secure login/logout with **2-factor authentication** (Completed)
-- Student search by name, course, or grade (Completed)
-- Sorting/filtering students by various criteria (Completed)
-- Student course enrollment (Completed)
-- Student semester calendar view (Completed)
-- Student financial data storage (Completed)
-- Secure password handling with **hashing** (Completed)
-- Meaningful error messages across the app (Completed)
-- MongoDB database integration (Completed)
+- **Admin Functionalities:**
+  - Secure login/logout with **2-factor authentication** (Completed)
+  - Manage student profiles: add, edit, delete, and view details (Completed)
+  - Assign students to courses (Completed)
+  - Record student grades (Completed)
+  - Generate detailed student reports in JSON format (Completed)
+  - Search, sort, and filter students by various criteria (Completed)
+  - Manage course waitlists (Completed)
 
-#### Still in Progress
-
-- Managing student profiles (CRUD operations)
-- Assigning students to courses and recording grades
-- Generating detailed student reports
-- Course waitlist functionality
-- Saving/loading student records in JSON, CSV, TXT
-- Students dropping courses before a deadline
+- **Student Functionalities:**
+  - Secure login/logout with **2-factor authentication** (Completed)
+  - View and update profile information (Completed)
+  - Enroll in courses and join waitlists if full (Completed)
+  - View semester calendar (Completed)
+  - Store financial information (Completed)
+  - Make tuition payments using stored financial data (Completed)
+  - View payment history (Completed)
+  - Drop courses before a specific deadline (Partially Completed; functionality implemented but not yet linked to the database)
 
 ## Tech Stack
 
 - **Frontend:** React, JavaScript, HTML, CSS
 - **Backend:** Flask API (Python)
 - **Database:** MongoDB Atlas
-- **Security:** Password hashing, **2FA authentication**
-- **Design Patterns:** Singleton (DB connection), Facade (Batch actions), Client-Server
+- **Security:** Password hashing, **2-factor authentication**
 - **Workflow Automation:** Continuous Integration (CI/CD)
 
 ## Prerequisites
 
 Ensure you have the following installed:
 
-- **Python 3**
-- **Node.js & npm**
+- **Docker & Docker Compose**
 - **MongoDB Atlas account**
 - **Git**
 
@@ -49,79 +47,52 @@ Ensure you have the following installed:
 
 ```bash
 git clone https://github.com/ryaneveson/310_Project.git
-cd 310_Project
+cd 310_Project/student-records-app/src
 ```
 
-### 2. Install Backend Dependencies
+### 2. Start the System
+
+Run the following command inside the `src` folder:
 
 ```bash
-cd student-records-app/src
-pip install -r requirements.txt
+docker-compose up --build
 ```
 
-### 3. Start the Flask API
-
-Ensure your MongoDB connection is set up in **`app.py`**. Then, run:
-
-```bash
-python app.py
-```
-
-The backend will run at [http://127.0.0.1:5000](http://127.0.0.1:5000).
-
-### 4. Install Frontend Dependencies
-
-```bash
-cd ../..
-npm install
-```
-
-### 5. Start the React App
-
-```bash
-npm start
-```
-
-The frontend will launch in your browser and communicate with the Flask backend.
+Wait a few moments for both the **development** and **backend** servers to start up.
 
 ## Features
 
 ### Administrator Capabilities
 
-- Secure login/logout with **2FA authentication** (Completed)
-- Search, sort, and filter students (Completed)
-- Manage student profiles (add, edit, delete) (In Progress)
-- Assign students to courses and record grades (In Progress)
-- Generate student reports (export JSON, CSV, TXT) (In Progress)
-- Course waitlists for full enrollment (In Progress)
+- **Secure Authentication:** Log in and out securely using basic user authentication with **2-factor authentication**.
+- **Student Profile Management:** Add, edit, delete, and view student details, including name, ID, and contact information.
+- **Course Management:** Assign students to courses if their timetable allows.
+- **Grade Recording:** Record and update student grades.
+- **Report Generation:** Generate detailed student reports, including enrolled courses, grades, and overall performance, exportable in JSON format.
+- **Student Search and Filtering:** Search for students by attributes such as name, course, or grade range, and sort/filter students by various criteria.
+- **Course Waitlists:** Add students to course waitlists when enrollment is full.
 
 ### Student Capabilities
 
-- Secure login/logout (Completed)
-- Enroll in courses (Completed)
-- View semester calendar (Completed)
-- Store financial/payment information (Completed)
-- Drop courses before deadlines (In Progress)
-- Update profile information (In Progress)
+- **Secure Authentication:** Log in and out securely using basic user authentication with **2-factor authentication**.
+- **Profile Management:** View and update personal profile information, including contact details.
+- **Course Enrollment:** Enroll in courses and request to be added to waitlists when enrollment is full.
+- **Semester Calendar:** View a calendar representation of the semester schedule.
+- **Financial Management:** Store financial information, make tuition payments using stored data, and view payment history.
+- **Course Drop:** Drop courses before a specific deadline (functionality implemented but not yet linked to the database).
 
 ## Database & Security
 
-- Uses **MongoDB Atlas** for cloud database storage.
-- Secure authentication with **password hashing and 2FA**.
-- All API endpoints include validation and authentication checks.
+- **Database:** Utilizes **MongoDB Atlas** for cloud-based data storage.
+- **Security Measures:** Implements secure authentication with **password hashing** and **2-factor authentication**. All API endpoints include validation and authentication checks.
 
 ## Testing & Workflow Automation
 
-- **Unit Testing:** Flask API supports **unittest-based** testing.
-- **CI/CD Pipeline:** Automates code integration and testing.
-- **Singleton Design Pattern:** Used for **MongoDB connection handling**.
-- **Facade Design Pattern:** Batch actions (e.g., adding fees to all students in a class).
-- **Client-Server Architecture:** React frontend communicates with Flask backend.
+- **Unit Testing:** The Flask API supports **unittest-based** testing.
+- **CI/CD Pipeline:** Automates code integration and testing to ensure code quality and streamline deployment.
 
 ## Troubleshooting
 
-- If `pip install` fails, verify **Python 3 and pip** are installed.
-- If `npm start` fails, ensure **Node.js and npm** are installed.
-- If MongoDB is not connecting, check:
-  - Connection string in `app.py`
-  - Database permissions in **MongoDB Atlas**
+- **Docker Issues:**
+  - Ensure Docker is installed and running on your system.
+  - If `docker-compose up --build` fails, try running `docker system prune -a` to clear all Docker images.
