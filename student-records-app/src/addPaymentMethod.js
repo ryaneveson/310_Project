@@ -106,8 +106,9 @@ function AddPaymentMethod() {
       label: "Card Number",
       type: "text",
       value: cardNumber,
-      onChange: (e) => setCardNumber(e.target.value),
-      maxLength: "16"
+      onChange: handleCardNumberChange,
+      maxLength: "19",
+      placeholder: "XXXX XXXX XXXX XXXX"
     },
     {
       id: "expiry-date",
@@ -141,7 +142,7 @@ function AddPaymentMethod() {
         <label htmlFor={id}>{label}:</label>
         {type === "select" ? (
           <select id={id} value={value} onChange={onChange} required {...props}>
-            {options.map((option) => (
+            {options?.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>
