@@ -1,82 +1,49 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { formatPayments, fetchFinances } from "./utils/FinanceUtils";
+import useUser from "./utils/useUser";
 import "./frontend/financeSummaryStyles.css";
 
-const PaymentHistory = ({ mockPayments = null }) => {
-  const [userRole, setUserRole] = useState(null);
-  const [loading, setLoading] = useState(true);
+const PaymentHistory = ({ mockPayments = null}) => {
+  const { userRole, loading, studentId, handleLogout, setLoading } = useUser();
   const [payments, setPayments] = useState([]);
-  const studentId = localStorage.getItem("student_id");
 
   useEffect(() => {
-    const role = localStorage.getItem("role");
-    if (!role) {
-      window.location.href = "/";
-      return;
+    if (userRole) {
+      fetchData();
     }
-    setUserRole(role);
-    fetchData(role);
-  }, [studentId]);
+  }, [userRole, studentId]);
 
-  const fetchData = async (role) => {
+  const fetchData = async () => {
     if (mockPayments) {
-      setPayments(formatPayments(mockPayments));
+      setPayments(formatPayments(mockPayments,true));
       setLoading(false);
       return;
     }
-
-    if (role !== "student") {
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const response = await axios.get(
-        `http://localhost:5000/api/student/finances?student_id=${studentId}`
-      );
-      setPayments(formatPayments(response.data.finances));
-      setLoading(false);
-    } catch (err) {
-      handleFetchError(err);
-    }
+    if (userRole !== "student") return;
+    const financeData = await fetchFinances(studentId);
+    setPayments(formatPayments(financeData,true));
+    setLoading(false);
   };
 
-  const formatPayments = (finances) => {
-    return finances
-      .filter((item) => item.item_name === "payment")
-      .map((item) => ({
-        date: new Date(item.due_date).toLocaleDateString("en-GB", {
-          weekday: "short",
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-        }),
-        amount: item.amount,
-      }));
-  };
+  if (loading) return <div>Loading...</div>;
 
-  const handleFetchError = (err) => {
-    if (err.response && err.response.data && err.response.data.error) {
-      alert(`Error: ${err.response.data.error}`);
-    } else {
-      alert("Error fetching finances.");
-    }
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("role");
-    window.location.href = "/";
-  };
+  if (userRole !== "student") {
+    return (
+      <div className="dashboard-container">
+        <h2>Access Denied</h2>
+        <p>This page is only accessible to students.</p>
+        <button className="logout-button" onClick={handleLogout}>
+          Logout
+        </button>
+      </div>
+    );
+  }
 
   const handleNavigation = (path) => {
     window.location.href = path;
   };
 
   if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!userRole) {
     return <div>Loading...</div>;
   }
 

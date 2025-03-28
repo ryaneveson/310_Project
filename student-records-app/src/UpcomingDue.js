@@ -1,85 +1,47 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { formatPayments, fetchFinances } from "./utils/FinanceUtils";
+import useUser from "./utils/useUser";
 import "./frontend/financeSummaryStyles.css";
 
 const UpcomingDue = ({ mockDues = null }) => {
-  const [userRole, setUserRole] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { userRole, loading, studentId, setLoading, handleLogout } = useUser();
   const [upcoming, setUpcoming] = useState([]);
-  const studentId = localStorage.getItem("student_id");
 
   useEffect(() => {
-    const role = localStorage.getItem("role");
-    if (!role) {
-      window.location.href = "/";
-      return;
+    if (userRole) {
+      fetchData(userRole);
     }
-    setUserRole(role);
-    fetchData(role);
-  }, [studentId]);
+  }, [userRole, studentId]);
 
   const fetchData = async (role) => {
     if (mockDues) {
-      setUpcoming(formatUpcomingDues(mockDues));
       setLoading(false);
+      const formattedUpcoming = mockDues
+        .filter((item) => item.item_name !== "payment" && new Date(item.due_date) > new Date())
+        .map((item) => ({
+          name: item.item_name,
+          date: new Date(item.due_date).toLocaleDateString("en-GB", {
+            weekday: "short",
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          }),
+          amount: item.amount,
+        }));
+      if (userRole !== "student") return;
+      setUpcoming(formattedUpcoming);
       return;
     }
-
-    if (role !== "student") {
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const response = await axios.get(
-        `http://localhost:5000/api/student/finances?student_id=${studentId}`
-      );
-      setUpcoming(formatUpcomingDues(response.data.finances));
-      setLoading(false);
-    } catch (err) {
-      handleFetchError(err);
-    }
-  };
-
-  const formatUpcomingDues = (finances) => {
-    return finances
-      .filter((item) => !(item.item_name === "payment") && new Date(item.due_date) > new Date())
-      .map((item) => ({
-        name: item.item_name,
-        date: new Date(item.due_date).toLocaleDateString("en-GB", {
-          weekday: "short",
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-        }),
-        amount: item.amount,
-      }));
-  };
-
-  const handleFetchError = (err) => {
-    if (err.response && err.response.data && err.response.data.error) {
-      alert(`Error: ${err.response.data.error}`);
-    } else {
-      alert("Error fetching finances.");
-    }
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("role");
-    window.location.href = "/";
+    const financeData = await fetchFinances(studentId);
+    setUpcoming(formatPayments(financeData));
+    setLoading(false);
   };
 
   const handleNavigation = (path) => {
     window.location.href = path;
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!userRole) {
-    return <div>Loading...</div>;
-  }
+  if (loading) return <div>Loading...</div>;
 
   if (userRole !== "student") {
     return (
