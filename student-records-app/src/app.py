@@ -163,7 +163,8 @@ def get_courses():
             "room": course["lecture_room"],
             "description": "None",  # Add a placeholder if needed
             "prerequisites": course["prereq"],
-            "capacity": course["capacity"]
+            "capacity": course["capacity"],
+            "waitlist": course["waitlist"]
         })
     return jsonify(transformed_courses)
 
@@ -353,7 +354,28 @@ def register_course():
             )
         return jsonify({"message": "Course registered successfully!"}), 201
     else:
-        return jsonify({"error": "Course is full."}), 400
+        course = courses_collection.find_one({
+            "course_dept": course_dept,
+            "course_num": course_num
+        })
+        
+        if not course:
+            return jsonify({"error": "Course not found"}), 404
+            
+        waitlist = course.get("waitlist", [])
+        
+        if student_id in waitlist:
+            return jsonify({"error": "Student is already on the waitlist for this course"}), 400
+            
+        if len(waitlist) < 5:
+            courses_collection.update_one(
+                {"course_dept": course_dept, "course_num": course_num},
+                {"$push": {"waitlist": student_id}}
+            )
+            return jsonify({"message": "Course is full. You have been added to the waitlist."}), 202
+        else:
+            return jsonify({"error": "Course is full and waitlist is at maximum capacity."}), 400
+
     
 @app.route("/api/add-fee", methods=["POST"])
 def add_fee():
@@ -961,6 +983,48 @@ def generate_student_report():
         as_attachment=True,
         mimetype='application/pdf'
     )
+
+@app.route("/api/student/payment_methods", methods=["POST"])
+def add_payment_method():
+    try:
+        data = request.json
+        required_fields = ["student_id", "card_type", "card_number", "card_name", 
+                         "card_address", "expiry_date", "cvv"]
+        
+        # Check if all required fields are present
+        if not all(field in data for field in required_fields):
+            return jsonify({"error": "Missing required fields"}), 400
+
+        # Validate student exists
+        student = students_collection.find_one({"student_id": data["student_id"]})
+        if not student:
+            return jsonify({"error": "Student not found"}), 404
+
+        # Create new payment method document
+        payment_method = {
+            "student_id": student["_id"],  # Use the MongoDB _id as reference
+            "card_type": data["card_type"],
+            "card_number": data["card_number"],
+            "card_name": data["card_name"],
+            "card_address": data["card_address"],
+            "expiry_date": data["expiry_date"],
+            "cvv": data["cvv"]
+        }
+
+        # Insert into payment_methods collection
+        result = payment_methods_collection.insert_one(payment_method)
+        
+        if result.inserted_id:
+            return jsonify({
+                "message": "Payment method added successfully",
+                "payment_method_id": str(result.inserted_id)
+            }), 201
+        else:
+            return jsonify({"error": "Failed to add payment method"}), 500
+
+    except Exception as e:
+        print(f"Error adding payment method: {str(e)}")
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
   app.run(debug=True, host="0.0.0.0", port=5000)
