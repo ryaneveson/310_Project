@@ -134,23 +134,29 @@ const AcademicStatusCards = ({ academicInfo }) => (
   </div>
 );
 
-// Component for academic resources
-const AcademicResources = ({ onTranscriptDownload }) => (
-  <div className="apps-card">
-    <h3>Academic Resources</h3>
-    <div className="apps-buttons">
-      <button onClick={() => (window.location.href = "/courses")} className="app-button">
-        Course Registration
-      </button>
-      <button onClick={() => (window.location.href = "/grades")} className="app-button">
-        View Grades
-      </button>
-      <button onClick={onTranscriptDownload} className="app-button">
-        Request Transcript
-      </button>
+const AcademicResources = ({ onTranscriptDownload }) => {
+  const { handleNavigation } = useUser();
+
+  return (
+    <div className="apps-card">
+      <h3>Academic Resources</h3>
+      <div className="apps-buttons">
+        <button onClick={() => handleNavigation("/courses")} className="app-button">
+          Course Registration
+        </button>
+        <button onClick={() => handleNavigation("/grades")} className="app-button">
+          View Grades
+        </button>
+        <button onClick={() => handleNavigation("/calendar")} className="app-button">
+          View Class Schedule
+        </button>
+        <button onClick={onTranscriptDownload} className="app-button">
+          Request Transcript
+        </button>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const AcademicDashboard = () => {
   const { userRole, loading, studentId, handleLogout, setLoading } = useUser();
