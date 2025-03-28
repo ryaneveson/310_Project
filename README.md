@@ -224,3 +224,5 @@ Wait a few moments for both the **development** and **backend** servers to start
 - Component Coverage: Good
 - Functionality Coverage: Moderate to Good
 - Error Handling Coverage: Should Be Improvemed
+
+<img width="496" alt="Screenshot 2025-03-27 at 11 50 05 PM" src="https://github.com/user-attachments/assets/32362a1d-fbcc-455b-b90f-461f8efe824d" />
