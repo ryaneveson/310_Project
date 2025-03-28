@@ -4,7 +4,7 @@ import useUser from "./utils/useUser";
 import "./frontend/financeSummaryStyles.css";
 
 const PaymentHistory = ({ mockPayments = null}) => {
-  const { userRole, loading, studentId, handleLogout, setLoading } = useUser();
+  const { userRole, loading, studentId, handleLogout, setLoading, handleNavigation } = useUser();
   const [payments, setPayments] = useState([]);
 
   useEffect(() => {
@@ -23,24 +23,6 @@ const PaymentHistory = ({ mockPayments = null}) => {
     const financeData = await fetchFinances(studentId);
     setPayments(formatPayments(financeData,true));
     setLoading(false);
-  };
-
-  if (loading) return <div>Loading...</div>;
-
-  if (userRole !== "student") {
-    return (
-      <div className="dashboard-container">
-        <h2>Access Denied</h2>
-        <p>This page is only accessible to students.</p>
-        <button className="logout-button" onClick={handleLogout}>
-          Logout
-        </button>
-      </div>
-    );
-  }
-
-  const handleNavigation = (path) => {
-    window.location.href = path;
   };
 
   if (loading) {

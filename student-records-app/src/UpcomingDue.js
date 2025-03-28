@@ -4,7 +4,7 @@ import useUser from "./utils/useUser";
 import "./frontend/financeSummaryStyles.css";
 
 const UpcomingDue = ({ mockDues = null }) => {
-  const { userRole, loading, studentId, setLoading, handleLogout } = useUser();
+  const { userRole, loading, studentId, setLoading, handleLogout, handleNavigation } = useUser();
   const [upcoming, setUpcoming] = useState([]);
 
   useEffect(() => {
@@ -35,10 +35,6 @@ const UpcomingDue = ({ mockDues = null }) => {
     const financeData = await fetchFinances(studentId);
     setUpcoming(formatPayments(financeData));
     setLoading(false);
-  };
-
-  const handleNavigation = (path) => {
-    window.location.href = path;
   };
 
   if (loading) return <div>Loading...</div>;

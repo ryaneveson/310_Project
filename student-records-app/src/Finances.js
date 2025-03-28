@@ -1,22 +1,12 @@
 import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
+import useUser from "./utils/useUser"; // Import the custom hook
 import "./frontend/dashboardStyles.css";
 
 const Finances = () => {
-  const [userRole, setUserRole] = useState(null);
+  const { userRole, studentId, handleLogout, handleNavigation } = useUser();
   const [financialInfo, setFinancialInfo] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  const studentId = localStorage.getItem("student_id");
-
-  useEffect(() => {
-    const role = localStorage.getItem("role");
-    if (!role) {
-      window.location.href = "/";
-      return;
-    }
-    setUserRole(role);
-  }, []);
 
   const fetchFinancialData = useCallback(async () => {
     if (!studentId) return;
@@ -93,7 +83,7 @@ const Finances = () => {
       <div className="dashboard-container">
         <h2>Access Denied</h2>
         <p>This page is only accessible to students.</p>
-        <button className="logout-button" onClick={() => localStorage.removeItem("role") || (window.location.href = "/")}>
+        <button className="logout-button" onClick={handleLogout}>
           Logout
         </button>
       </div>
@@ -134,10 +124,10 @@ const Finances = () => {
           <div className="apps-card">
             <h3>Financial Actions</h3>
             <div className="apps-buttons">
-              <FinancialActionButton url="/makePayment" label="Make Payment" />
-              <FinancialActionButton url="/addPaymentMethod" label="Add Payment Method" />
-              <FinancialActionButton url="/paymentHistory" label="View Payment History" />
-              <FinancialActionButton url="/upcomingDue" label="View Upcoming Dues" />
+              <FinancialActionButton onClick={() => handleNavigation("/makePayment")} label="Make Payment" />
+              <FinancialActionButton onClick={() => handleNavigation("/addPaymentMethod")} label="Add Payment Method" />
+              <FinancialActionButton onClick={() => handleNavigation("/paymentHistory")} label="View Payment History" />
+              <FinancialActionButton onClick={() => handleNavigation("/upcomingDue")} label="View Upcoming Dues" />
             </div>
           </div>
         </div>
@@ -153,8 +143,8 @@ const FinancialCard = ({ title, children }) => (
   </div>
 );
 
-const FinancialActionButton = ({ url, label }) => (
-  <button onClick={() => (window.location.href = url)} className="app-button">
+const FinancialActionButton = ({ onClick, label }) => (
+  <button onClick={onClick} className="app-button">
     {label}
   </button>
 );
