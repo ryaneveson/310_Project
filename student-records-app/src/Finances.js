@@ -39,11 +39,15 @@ const Finances = () => {
         const financeData = financeResponse.data.finances;
 
         // Calculate next payment due and last payment
+        let totalFees = 0;
+        let totalPaid = 0;
+        let remainingBalance = 0;
         let nextDue = null;
         let lastPayment = null;
         let lastPaymentDate = null;
 
         financeData.forEach(item => {
+          totalFees += item.amount;
           const itemDate = new Date(item.due_date);
           if (item.is_paid === false && (!nextDue || itemDate < new Date(nextDue))) {
             nextDue = itemDate;
@@ -53,13 +57,15 @@ const Finances = () => {
               lastPayment = item.amount;
               lastPaymentDate = itemDate;
             }
+            totalPaid += item.amount;
           }
         });
+        remainingBalance = totalFees - totalPaid;
 
         setFinancialInfo({
-          totalFees: studentData.fees || 0,
-          amountPaid: studentData.paid || 0,
-          remainingBalance: (studentData.fees || 0) - (studentData.paid || 0),
+          totalFees: totalFees,
+          amountPaid: totalPaid,
+          remainingBalance: remainingBalance,
           nextPaymentDue: nextDue ? nextDue.toLocaleDateString('en-GB', {
             weekday: 'short',
             day: '2-digit',
@@ -150,7 +156,6 @@ const Finances = () => {
             <button 
               onClick={() => (window.location.href = "/makePayment")} 
               className="app-button"
-              disabled={financialInfo.remainingBalance <= 0}
             >
               Make Payment
             </button>

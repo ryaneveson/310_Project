@@ -256,24 +256,21 @@ def get_students_payment_methods():
         return jsonify({"error": "Student ID is required"}), 400
     if len(student_id) != 8 or not student_id.isdigit():
         return jsonify({"error": "Student ID must be an 8-digit number"}), 400
-    student = students_collection.find_one({"student_id": student["_id"]}, {"_id": 0})
+    student = students_collection.find_one({"student_id": student_id})
     if not student:
         return jsonify({"error": "Student not found"}), 404
     payment_methods = list(payment_methods_collection.find({"student_id": student["_id"]}, {"_id": 0}))
-    if not payment_methods:
-        return jsonify({"error": "No payment methods for this student"}), 404
-    payment_details = []
-    for method in payment_methods:
-        payment_details.append({
+    payment_details = [
+        {
             "card_type": method.get("card_type"),
             "card_number": method.get("card_number"),
             "card_name": method.get("card_name"),
             "card_address": method.get("card_address"),
             "expiry_date": method.get("expiry_date"),
             "cvv": method.get("cvv")
-        })
-    if not payment_details:
-        return jsonify({"error": "No payment methods for this student"}), 404
+        }
+        for method in payment_methods
+    ]
     return jsonify({"payment_methods": payment_details}), 200
 
 @app.route("/api/student", methods=["GET"])
