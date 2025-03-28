@@ -8,7 +8,7 @@ const COURSE_LEVELS = [
   { value: "graduate", label: "Graduate" }
 ];
 
-const YEAR_LEVELS = [100, 200, 300, 400, 500];
+const YEAR_LEVELS = [1, 2, 3, 4, 5];
 
 const FilterBox = ({ title, children }) => (
   <div className="filter-box">
@@ -123,7 +123,7 @@ function Courses({ mockCourses = null }) {
                     checked={selectedYears.includes(year.toString())}
                     onChange={() => handleYearChange(year.toString())}
                   />
-                  {year} Level
+                  {year}00 Level
                 </label>
               ))}
             </div>
