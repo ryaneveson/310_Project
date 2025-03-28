@@ -6,7 +6,7 @@ const UpcomingDue = ({mockDues=null}) => {
   const [userRole, setUserRole] = useState(null);
   const [loading, setLoading] = useState(true);
   const [upcoming, setUpcoming] = useState([]);
-  const studentId = "10000001";
+  const studentId = localStorage.getItem("student_id");
 
   useEffect(() => {
     const role = localStorage.getItem("role");
