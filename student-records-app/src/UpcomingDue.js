@@ -88,7 +88,7 @@ const UpcomingDue = ({ mockDues = null }) => {
                 <th>Amount</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody data-testid="upcoming-table">
               {upcoming.map((item, index) => (
                 <tr key={index}>
                   <td className="summary-name">{item.name}</td>
