@@ -37,6 +37,10 @@ const UpcomingDue = ({ mockDues = null }) => {
     setLoading(false);
   };
 
+  const handleNavigation = (path) => {
+    window.location.href = path;
+  };
+
   if (loading) return <div>Loading...</div>;
 
   if (userRole !== "student") {
