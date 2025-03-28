@@ -285,6 +285,7 @@ def register_course():
     course_dept = data.get("course_dept")
     course_num = data.get("course_num")
     course_capacity = data.get("course_capacity")
+    course_waitlist = data.get("course_waitlist")
 
     if not student_id or not course_dept or not course_num:
         return jsonify({"error": "Student ID, course department, and course number are required"}), 400
@@ -312,7 +313,27 @@ def register_course():
             )
         return jsonify({"message": "Course registered successfully!"}), 201
     else:
-        return jsonify({"error": "Course is full."}), 400
+        course = courses_collection.find_one({
+            "course_dept": course_dept,
+            "course_num": course_num
+        })
+        
+        if not course:
+            return jsonify({"error": "Course not found"}), 404
+            
+        waitlist = course.get("waitlist", [])
+        
+        if student_id in waitlist:
+            return jsonify({"error": "Student is already on the waitlist for this course"}), 400
+            
+        if len(waitlist) < 5:
+            courses_collection.update_one(
+                {"course_dept": course_dept, "course_num": course_num},
+                {"$push": {"waitlist": student_id}}
+            )
+            return jsonify({"message": "Course is full. You have been added to the waitlist."}), 202
+        else:
+            return jsonify({"error": "Course is full and waitlist is at maximum capacity."}), 400
 
 
 @app.route("/api/add-payment", methods=["POST"])

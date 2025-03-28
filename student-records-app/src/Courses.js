@@ -60,7 +60,8 @@ function Courses({ mockCourses = null}) {
         student_id: student_id,
         course_dept: course.dept,
         course_num: course.courseNum,
-        course_capacity: course.capacity
+        course_capacity: course.capacity,
+        waitlist_capacity: course.waitlist
       }),
     })
     .then((response) => response.json())
@@ -198,7 +199,7 @@ function Courses({ mockCourses = null}) {
                           <strong>Pre-requisites:</strong> {course.prerequisites}
                         </p>
                         <p>
-                          <strong>Capacity:</strong> {course.capacity}/150
+                          <strong>Capacity:</strong> {course.capacity}/150      <strong>waitlist:</strong> /5
                         </p>
                       </>
                     )}
