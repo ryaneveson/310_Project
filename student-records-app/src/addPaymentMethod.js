@@ -87,61 +87,88 @@ function AddPaymentMethod() {
     }
   };
 
+  const formFields = [
+    {
+      id: "payment-method",
+      label: "Payment Method",
+      type: "select",
+      value: paymentMethod,
+      onChange: (e) => setPaymentMethod(e.target.value),
+      options: [
+        { value: "", label: "Select" },
+        { value: "Visa", label: "Visa" },
+        { value: "MasterCard", label: "MasterCard" },
+        { value: "DebitCard", label: "PayPal" }
+      ]
+    },
+    {
+      id: "card-number",
+      label: "Card Number",
+      type: "text",
+      value: cardNumber,
+      onChange: handleCardNumberChange,
+      maxLength: "19",
+      placeholder: "XXXX XXXX XXXX XXXX"
+    },
+    {
+      id: "expiry-date",
+      label: "Expiry Date",
+      type: "month",
+      value: expiryDate,
+      onChange: (e) => setExpiryDate(e.target.value)
+    },
+    {
+      id: "cvv",
+      label: "CVV",
+      type: "text",
+      value: cvv,
+      onChange: (e) => setCvv(e.target.value),
+      maxLength: "4"
+    },
+    {
+      id: "billing-address",
+      label: "Billing Address",
+      type: "textarea",
+      value: billingAddress,
+      onChange: (e) => setBillingAddress(e.target.value)
+    }
+  ];
+
+  const renderField = (field) => {
+    const { id, label, type, value, onChange, options, ...props } = field;
+
+    return (
+      <div key={id}>
+        <label htmlFor={id}>{label}:</label>
+        {type === "select" ? (
+          <select id={id} value={value} onChange={onChange} required {...props}>
+            {options?.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        ) : type === "textarea" ? (
+          <textarea id={id} value={value} onChange={onChange} required {...props} />
+        ) : (
+          <input
+            id={id}
+            type={type}
+            value={value}
+            onChange={onChange}
+            required
+            {...props}
+          />
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="payment-method-container">
       <h2>Add Payment Method</h2>
       <form onSubmit={handleSubmit}>
-        <label htmlFor="payment-method">Payment Method:</label>
-        <select
-          id="payment-method"
-          value={paymentMethod}
-          onChange={(e) => setPaymentMethod(e.target.value)}
-          required
-        >
-          <option value="">Select</option>
-          <option value="Visa">Visa</option>
-          <option value="MasterCard">MasterCard</option>
-          <option value="DebitCard">PayPal</option>
-        </select>
-
-        <label htmlFor="card-number">Card Number:</label>
-        <input
-          id="card-number"
-          type="text"
-          value={cardNumber}
-          onChange={handleCardNumberChange}
-          required
-          placeholder="XXXX XXXX XXXX XXXX"
-          maxLength="19"
-        />
-
-        <label htmlFor="expiry-date">Expiry Date:</label>
-        <input
-          id="expiry-date"
-          type="month"
-          value={expiryDate}
-          onChange={(e) => setExpiryDate(e.target.value)}
-          required
-        />
-
-        <label htmlFor="cvv">CVV:</label>
-        <input
-          id="cvv"
-          type="text"
-          value={cvv}
-          onChange={(e) => setCvv(e.target.value)}
-          required
-          maxLength="4"
-        />
-
-        <label htmlFor="billing-address">Billing Address:</label>
-        <textarea
-          id="billing-address"
-          value={billingAddress}
-          onChange={(e) => setBillingAddress(e.target.value)}
-          required
-        ></textarea>
-
+        {formFields.map(renderField)}
         <button type="submit">Add Payment Method</button>
       </form>
     </div>
