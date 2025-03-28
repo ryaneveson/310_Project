@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./frontend/dashboardStyles.css";
-import ubcoImage from './frontend/img/UBCO6.jpg';
+import ubcoImage from './frontend/img/UBCO4.jpg';
 import Calendar from './Calendar';
 
 const handleLogout = () => {
@@ -118,6 +118,9 @@ const AdminDashboard = () => {
             </button>
             <button onClick={() => (window.location.href = "/addFee")} className="app-button">
               AddFee
+            </button>
+            <button onClick={() => (window.location.href = "/manageStudents")} className="app-button">
+              Manage Students
             </button>
           </div>
         </div>

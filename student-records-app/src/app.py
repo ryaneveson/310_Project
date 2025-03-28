@@ -83,21 +83,38 @@ def handle_options():
 def register():
     data = request.json
     username = data.get("username")
-    password = data.get("password").encode("utf-8")
-    role = data.get("role", "student")  # default to student if not specified
+    password = data.get("password")
+    student_id = data.get("student_id")
 
-    if students_collection.find_one({"username": username}):
+    if not all([username, password, student_id]):
+        return jsonify({"error": "All fields are required"}), 400
+
+    # Check if username is already taken
+    existing_user = students_collection.find_one({"username": username})
+    if existing_user:
         return jsonify({"error": "Username already exists"}), 400
 
-    hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
+    try:
+        # Update the existing student record instead of creating a new one
+        result = students_collection.update_one(
+            {"student_id": str(student_id)},
+            {
+                "$set": {
+                    "username": username,
+                    "password": password,
+                    "role": "student"
+                }
+            }
+        )
 
-    students_collection.insert_one({
-        "username": username,
-        "password": hashed_password.decode("utf-8"),
-        "role": role
-    })
+        if result.modified_count == 0:
+            return jsonify({"error": "Student not found"}), 404
 
-    return jsonify({"message": "User registered successfully!"}), 201
+        return jsonify({"message": "User registered successfully!"}), 201
+
+    except Exception as e:
+        print(f"Registration error: {str(e)}")
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/login", methods=["POST"])
 def login():
@@ -925,8 +942,7 @@ def generate_student_report():
                 ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
                 ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
                 ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                ('FONTSIZE', (0, 0), (-1, 0), 12),
+                ('FONTNAME', (0, 0), (-1, 0), 12),
                 ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
                 ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
                 ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
@@ -967,8 +983,7 @@ def generate_student_report():
                 ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
                 ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
                 ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                ('FONTSIZE', (0, 0), (-1, 0), 12),
+                ('FONTNAME', (0, 0), (-1, 0), 12),
                 ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
                 ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
                 ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
@@ -996,6 +1011,40 @@ def generate_student_report():
         as_attachment=True,
         mimetype='application/pdf'
     )
+
+@app.route("/createUser", methods=["POST", "OPTIONS"])
+def verify_new_user():
+    if request.method == "OPTIONS":
+        response = make_response()
+        response.headers.add('Access-Control-Allow-Methods', 'POST')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+        return response
+
+    try:
+        data = request.json
+        student_id = data.get("student_id")
+        
+        if not student_id:
+            return jsonify({"error": "Student ID is required"}), 400
+
+        # Check if student exists in database
+        student = students_collection.find_one({"student_id": str(student_id)})
+        
+        if not student:
+            return jsonify({"error": "Student not found"}), 404
+            
+        # Check if student already has an account
+        if student.get("username"):
+            return jsonify({"error": "Student already has an account"}), 400
+
+        return jsonify({
+            "success": True,
+            "message": "Student verified successfully"
+        }), 200
+
+    except Exception as e:
+        print(f"Error during student verification: {str(e)}")
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
   app.run(debug=True, host="0.0.0.0", port=5000)
