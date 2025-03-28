@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { formatPayments, fetchFinances } from "./utils/financeUtils";
+import { formatPayments, fetchFinances } from "./utils/FinanceUtils";
 import useUser from "./utils/useUser";
 import "./frontend/financeSummaryStyles.css";
 
