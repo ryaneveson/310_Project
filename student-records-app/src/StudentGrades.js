@@ -28,6 +28,8 @@ const StudentGrades = () => {
     const [studentData, setStudentData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [dropStatus, setDropStatus] = useState('');
+    const [deadlinePassed, setDeadlinePassed] = useState({});
 
     useEffect(() => {
         const fetchStudentData = async () => {
@@ -57,6 +59,51 @@ const StudentGrades = () => {
         fetchStudentData();
     }, []);
 
+    const handleDropCourse = async (course) => {
+        if (!window.confirm(`Are you sure you want to drop ${course}?`)) {
+            return;
+        }
+
+        try {
+            const response = await fetch('http://localhost:5000/api/drop-course', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    student_id: studentData.student_id,
+                    course: course
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                setStudentData(prev => ({
+                    ...prev,
+                    registered_courses: prev.registered_courses.filter(c => c !== course),
+                    registered_courses_grades: prev.registered_courses_grades.filter((_, index) => 
+                        prev.registered_courses[index] !== course
+                    )
+                }));
+                setDropStatus('Course dropped successfully');
+            } else {
+                if (data.deadline_passed) {
+                    setDeadlinePassed(prev => ({
+                        ...prev,
+                        [course]: true
+                    }));
+                }
+                setDropStatus(`Error: ${data.error}`);
+            }
+        } catch (err) {
+            setDropStatus('Failed to drop course. Please try again.');
+            console.error('Error dropping course:', err);
+        }
+
+        setTimeout(() => setDropStatus(''), 3000);
+    };
+
     if (loading) return <div className="loading">Loading...</div>;
     if (error) return <div className="error">{error}</div>;
     if (!studentData) return <div className="error">No data available</div>;
@@ -82,6 +129,12 @@ const StudentGrades = () => {
                     </div>
                 </div>
 
+                {dropStatus && (
+                    <div className={`status-message ${dropStatus.includes('Error') ? 'error' : 'success'}`}>
+                        {dropStatus}
+                    </div>
+                )}
+
                 <div className="courses-container">
                     <div className="course-section">
                         <h2>Current Courses</h2>
@@ -92,6 +145,7 @@ const StudentGrades = () => {
                                         <th>Course</th>
                                         <th>Grade</th>
                                         <th>Status</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -101,6 +155,20 @@ const StudentGrades = () => {
                                             <td>{studentData.registered_courses_grades[index] || 'In Progress'}</td>
                                             <td>
                                                 <span className="status current">Current</span>
+                                            </td>
+                                            <td>
+                                                <button 
+                                                    className="course-drop-button"
+                                                    onClick={() => handleDropCourse(course)}
+                                                    disabled={deadlinePassed[course]}
+                                                >
+                                                    Drop Course
+                                                </button>
+                                                {deadlinePassed[course] && (
+                                                    <div className="deadline-warning">
+                                                        Drop deadline passed
+                                                    </div>
+                                                )}
                                             </td>
                                         </tr>
                                     ))}
