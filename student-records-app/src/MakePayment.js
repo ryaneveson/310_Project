@@ -89,6 +89,7 @@ const CardVerification = ({ method, setNumVer, setCvvVer, setExpVer }) => {
         Enter Expiry:
         <input
           type="month"
+          placeholder="MM/YY"
           value={expiry}
           onChange={(e) => setExpiry(e.target.value)}
           required
@@ -104,7 +105,7 @@ const PaymentMethod = ({ billingMethods, selectedMethod, setSelectedMethod, sele
       <p>No Billing Methods. Please Add a New One.</p>
     ) : (
       billingMethods.map((method, index) => (
-        <label key={index} className="billing-box radio-option">
+        <label key={index} data-testid="MakePayment-option" className="billing-box radio-option">
           <input
             type="radio"
             name="billingMethod"

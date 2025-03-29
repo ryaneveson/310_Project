@@ -98,7 +98,7 @@ describe("MakePayment Component", () => {
       target: { value: "123" },
     });
     fireEvent.change(screen.getByPlaceholderText("MM/YY"), {
-      target: { value: "12/25" },
+      target: { value: "2025-12" },
     });
     fireEvent.click(screen.getByText(/confirm payment/i));
     await waitFor(() => {

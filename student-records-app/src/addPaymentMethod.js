@@ -83,7 +83,7 @@ function AddPaymentMethod() {
         setCvv("");
         setBillingAddress("");
       } else {
-        alert(`Error: adding payment method: ${data.error}`);
+        alert(`Error adding payment method: ${data.error}`);
         console.log(response);
         console.log(data.error);
       }
