@@ -3,12 +3,13 @@ import "./frontend/addPaymentMethod.css";
 import useUser from "./utils/useUser";
 
 function AddPaymentMethod() {
-  const { userRole, studentId, username, handleLogout } = useUser();
+  const { userRole, studentId, handleLogout } = useUser();
   const [paymentMethod, setPaymentMethod] = useState("");
   const [cardNumber, setCardNumber] = useState("");
   const [expiryDate, setExpiryDate] = useState("");
   const [cvv, setCvv] = useState("");
   const [billingAddress, setBillingAddress] = useState("");
+  const [username, setUsername] = useState("");
 
   if (userRole !== "student") {
     return (
@@ -49,10 +50,9 @@ function AddPaymentMethod() {
       return;
     }
 
-    const formattedExpiryDate = new Date(expiryDate).toLocaleDateString('en-US', {
-      month: '2-digit',
-      year: '2-digit'
-    });
+    const formattedExpiryDate = expiryDate.split("-").map((part, index) => 
+      index === 0 ? part.slice(2) : part
+    ).reverse().join("/");
 
     const paymentData = {
       student_id: studentId,
@@ -63,7 +63,7 @@ function AddPaymentMethod() {
       expiry_date: formattedExpiryDate,
       cvv: cvv
     };
-
+    console.log(paymentData);
     try {
       const response = await fetch("http://localhost:5000/api/student/payment_methods", {
         method: "POST",
@@ -83,7 +83,9 @@ function AddPaymentMethod() {
         setCvv("");
         setBillingAddress("");
       } else {
-        alert(`Error adding payment method: ${data.error}`);
+        alert(`Error: adding payment method: ${data.error}`);
+        console.log(response);
+        console.log(data.error);
       }
     } catch (error) {
       alert(`Error adding payment method: ${error.message}`);
@@ -94,6 +96,9 @@ function AddPaymentMethod() {
     <div className="payment-method-container">
       <h2>Add Payment Method</h2>
       <form onSubmit={handleSubmit}>
+      <label>Card Name:
+          <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} required />
+        </label>
         <label>Payment Method:
           <select value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)} required>
             <option value="">Select</option>
@@ -109,7 +114,7 @@ function AddPaymentMethod() {
           <input type="month" value={expiryDate} onChange={(e) => setExpiryDate(e.target.value)} required />
         </label>
         <label>CVV:
-          <input type="text" value={cvv} onChange={(e) => setCvv(e.target.value)} maxLength="4" required />
+          <input type="text" value={cvv} onChange={(e) => setCvv(e.target.value)} maxLength="3" required />
         </label>
         <label>Billing Address:
           <textarea value={billingAddress} onChange={(e) => setBillingAddress(e.target.value)} required />

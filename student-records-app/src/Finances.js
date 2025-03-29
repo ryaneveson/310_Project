@@ -30,7 +30,6 @@ const Finances = () => {
     let nextDue = null, lastPayment = null, lastPaymentDate = null;
 
     financeRecords.forEach(item => {
-      totalFees += item.amount;
       const itemDate = new Date(item.due_date);
 
       if (!item.is_paid && (!nextDue || itemDate < new Date(nextDue))) {
@@ -43,6 +42,8 @@ const Finances = () => {
           lastPaymentDate = itemDate;
         }
         totalPaid += item.amount;
+      }else{
+        totalFees += item.amount;
       }
     });
 
