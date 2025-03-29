@@ -170,13 +170,56 @@ function MakePayment() {
     );
   }
 
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const studentId = localStorage.getItem("student_id");
+
+    if (!paymentAmount || parseFloat(paymentAmount) <= 0) {
+      alert("Please enter a valid payment amount greater than $0.");
+      return;
+    }
+
+    if (!selectedMethod) {
+      alert("Please select a payment method.");
+      return;
+  }
+  
+  if (!numVer || !cvvVer || !expVer) {
+      const tempInputDiv = document.getElementById("temp-input");
+      if (tempInputDiv && !tempInputDiv.querySelector(".error-message")) {
+          tempInputDiv.innerHTML += "<p class='error-message' style='color: red;'>Invalid card details. Please check your input.</p>";
+      }
+      return;
+  }
+
+    try {
+      console.log("Submitting payment:", {
+        student_id: studentId,
+        amount: parseFloat(paymentAmount),
+        payment_method: selectedMethod
+    });
+      await axios.post("http://localhost:5000/api/make-payment", {
+        student_id: studentId,
+        amount: parseFloat(paymentAmount),
+        payment_method: selectedMethod
+      });
+
+      alert(`Payment of $${paymentAmount} confirmed using ${selectedMethod} (${selectedCardNumber})`);
+      window.location.href = "/Finances";
+    } catch (error) {
+      console.error("Payment error:", error);
+      alert("Error processing payment. Please try again.");
+    }
+  };
+
   return (
     <div className="container" id="makePayment">
       <h2>Make a Payment</h2>
       <FinancialSummary financialInfo={financialInfo} paymentAmount={paymentAmount} setPaymentAmount={setPaymentAmount} handleBlur={() => setPaymentAmount(parseFloat(paymentAmount).toFixed(2))} />
       <h2>Choose a payment method:</h2>
-      <form>
+      <form onSubmit={handleSubmit}>
         <PaymentMethod billingMethods={billingMethods} selectedMethod={selectedMethod} setSelectedMethod={setSelectedMethod} selectedCardNumber={selectedCardNumber} setSelectedCardNumber={setSelectedCardNumber} setNumVer={setNumVer} setCvvVer={setCvvVer} setExpVer={setExpVer} />
+        <button type="submit" className="confirm-button" disabled={financialInfo.remainingBalance <= 0}>Confirm Payment</button>
       </form>
     </div>
   );
