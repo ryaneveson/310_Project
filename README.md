@@ -43,7 +43,6 @@ Ensure you have the following installed:
 
 ## Getting Started
 
-#### use "John" "mypassword" for Admin, and "Sami" "mypassword" for Student
 ### 1. Clone the Repository
 
 ```bash
@@ -60,6 +59,7 @@ docker-compose up --build
 ```
 
 Wait a few moments for both the **development** and **backend** servers to start up.
+use "John" "mypassword" for Admin, and "Sami" "mypassword" for Student
 
 ## Features
 
