@@ -6,12 +6,10 @@ import "./frontend/dashboardStyles.css";
 const Finances = () => {
   const { userRole, studentId, handleLogout, handleNavigation } = useUser();
   const [financialInfo, setFinancialInfo] = useState(null);
-  const [loading, setLoading] = useState(true);
 
   const fetchFinancialData = useCallback(async () => {
     if (!studentId) return;
 
-    setLoading(true);
     try {
       await axios.post(`http://localhost:5000/api/update-student-fees?student_id=${studentId}`);
 
@@ -24,8 +22,6 @@ const Finances = () => {
     } catch (error) {
       console.error("Error fetching financial data:", error);
       alert("Error fetching financial information.");
-    } finally {
-      setLoading(false);
     }
   }, [studentId]);
 
@@ -34,7 +30,6 @@ const Finances = () => {
     let nextDue = null, lastPayment = null, lastPaymentDate = null;
 
     financeRecords.forEach(item => {
-      totalFees += item.amount;
       const itemDate = new Date(item.due_date);
 
       if (!item.is_paid && (!nextDue || itemDate < new Date(nextDue))) {
@@ -47,6 +42,8 @@ const Finances = () => {
           lastPaymentDate = itemDate;
         }
         totalPaid += item.amount;
+      }else{
+        totalFees += item.amount;
       }
     });
 
@@ -76,7 +73,7 @@ const Finances = () => {
     fetchFinancialData();
   }, [fetchFinancialData]);
 
-  if (!userRole) return <div>Loading...</div>;
+  if (!userRole) return <div>Loading...</div>;  // Loading state for userRole
 
   if (userRole !== "student") {
     return (
@@ -96,9 +93,8 @@ const Finances = () => {
         <h2>Financial Information</h2>
       </div>
 
-      {loading ? (
-        <div>Loading...</div>
-      ) : (
+      {/* Conditional rendering based on financialInfo */}
+      {financialInfo ? (
         <div className="dashboard-content">
           <div className="info-cards">
             <FinancialCard title="Account Balance">
@@ -131,6 +127,8 @@ const Finances = () => {
             </div>
           </div>
         </div>
+      ) : (
+        <div>Loading financial data...</div>  // This shows when financial info is not yet available
       )}
     </div>
   );

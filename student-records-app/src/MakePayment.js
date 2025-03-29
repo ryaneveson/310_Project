@@ -31,37 +31,73 @@ const FinancialSummary = ({ financialInfo, paymentAmount, setPaymentAmount, hand
   </div>
 );
 
-const CardVerification = ({ method, setNumVer, setCvvVer, setExpVer }) => (
-  <div id="card-verification">
-    <br></br><label>
-      Enter full card number:<br></br>
-      <input
-        type="text"
-        placeholder="XXXX XXXX XXXX XXXX"
-        className="payment-method-input"
-        onChange={(e) => setNumVer(e.target.value === method.cardNumber)}
-      />
-    </label><br></br>
-    <label>
-      Enter CVV:<br></br>
-      <input
-        type="text"
-        placeholder="CVV"
-        className="payment-method-input"
-        onChange={(e) => setCvvVer(e.target.value === method.cvv)}
-      />
-    </label><br></br>
-    <label>
-      Enter Expiry:<br></br>
-      <input
-        type="text"
-        placeholder="MM/YY"
-        className="payment-method-input"
-        onChange={(e) => setExpVer(e.target.value === method.expiryDate)}
-      />
-    </label>
-  </div>
-);
+const CardVerification = ({ method, setNumVer, setCvvVer, setExpVer }) => {
+  const [cardNum, setCardNum] = useState("");
+  const [cvv, setCvv] = useState("");
+  const [expiry, setExpiry] = useState("");
+
+  useEffect(() => {
+    setNumVer(cardNum === method.cardNumber);
+  }, [cardNum, method.cardNumber, setNumVer]);
+
+  useEffect(() => {
+    setCvvVer(cvv === method.cvv);
+  }, [cvv, method.cvv, setCvvVer]);
+
+  useEffect(() => {
+    if (expiry) {
+      const [year, month] = expiry.split("-");
+      setExpVer(`${month}/${year.slice(-2)}` === method.expiryDate);
+    }
+  }, [expiry, method.expiryDate, setExpVer]);
+
+  const formatCardNumber = (value) => {
+    const cleaned = value.replace(/\D/g, ""); // Remove non-numeric characters
+    return cleaned.replace(/(\d{4})(?=\d)/g, "$1 ").trim(); // Add spaces every 4 digits
+  };
+  
+  const handleCardNumberChange = (e) => {
+    const formatted = formatCardNumber(e.target.value);
+    setCardNum(formatted); // Store formatted value
+  };
+
+  return (
+    <div id="card-verification">
+      <label>
+        Enter full card number:
+        <input
+          type="text"
+          placeholder="XXXX XXXX XXXX XXXX"
+          value={cardNum}
+          onChange={handleCardNumberChange}
+          maxLength="19"
+          required
+        />
+      </label><br></br>
+      <label>
+        Enter CVV:
+        <input
+          type="text"
+          placeholder="CVV"
+          value={cvv}
+          onChange={(e) => setCvv(e.target.value)}
+          maxLength="4"
+          required
+        />
+      </label><br></br>
+      <label>
+        Enter Expiry:
+        <input
+          type="month"
+          placeholder="MM/YY"
+          value={expiry}
+          onChange={(e) => setExpiry(e.target.value)}
+          required
+        />
+      </label>
+    </div>
+  );
+};
 
 const PaymentMethod = ({ billingMethods, selectedMethod, setSelectedMethod, selectedCardNumber, setSelectedCardNumber, setNumVer, setCvvVer, setExpVer }) => (
   <div className="box-container">
@@ -69,7 +105,7 @@ const PaymentMethod = ({ billingMethods, selectedMethod, setSelectedMethod, sele
       <p>No Billing Methods. Please Add a New One.</p>
     ) : (
       billingMethods.map((method, index) => (
-        <label key={index} className="billing-box radio-option">
+        <label key={index} data-testid="MakePayment-option" className="billing-box radio-option">
           <input
             type="radio"
             name="billingMethod"
@@ -77,13 +113,14 @@ const PaymentMethod = ({ billingMethods, selectedMethod, setSelectedMethod, sele
             onChange={() => {
               setSelectedMethod(method.cardType);
               setSelectedCardNumber(method.cardNumber);
+              setNumVer(false);
+              setCvvVer(false);
+              setExpVer(false);
             }}
           />
           <div>
             <h3>{method.cardType}</h3>
             <p>{formatCardNumber(method.cardNumber)}</p>
-            <p>{method.cardholderName}</p>
-            <p>{method.billingAddress}</p>
           </div>
           {selectedMethod && selectedCardNumber === method.cardNumber && (
             <CardVerification
@@ -124,7 +161,7 @@ function MakePayment() {
         const { data: financeData } = await axios.get(
           `http://localhost:5000/api/student/finances?student_id=${studentId}`
         );
-        const totalFees = financeData.finances.reduce((sum, item) => sum + item.amount, 0);
+        const totalFees = financeData.finances.filter(item => item.item_name !== "payment").reduce((sum, item) => sum + item.amount, 0);
         const totalPaid = financeData.finances.filter(item => item.item_name === "payment").reduce((sum, item) => sum + item.amount, 0);
         const remainingBalance = totalFees - totalPaid;
 
@@ -170,13 +207,57 @@ function MakePayment() {
     );
   }
 
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const studentId = localStorage.getItem("student_id");
+
+    if (!paymentAmount || parseFloat(paymentAmount) <= 0) {
+      alert("Please enter a valid payment amount greater than $0.");
+      return;
+    }
+
+    if (!selectedMethod) {
+      alert("Please select a payment method.");
+      return;
+  }
+  console.log(numVer +" "+cvvVer+" "+expVer);
+  
+  if (!numVer || !cvvVer || !expVer) {
+      const tempInputDiv = document.getElementById("card-verification");
+      if (tempInputDiv && !tempInputDiv.querySelector(".error-message")) {
+          tempInputDiv.innerHTML += "<p class='error-message' style='color: red;'>Invalid card details. Please check your input.</p>";
+      }
+      return;
+  }
+
+    try {
+      console.log("Submitting payment:", {
+        student_id: studentId,
+        amount: parseFloat(paymentAmount),
+        payment_method: selectedMethod
+    });
+      await axios.post("http://localhost:5000/api/make-payment", {
+        student_id: studentId,
+        amount: parseFloat(paymentAmount),
+        payment_method: selectedMethod
+      });
+
+      alert(`Payment of $${paymentAmount} confirmed using ${selectedMethod} (${selectedCardNumber})`);
+      window.location.href = "/Finances";
+    } catch (error) {
+      console.error("Payment error:", error);
+      alert("Error processing payment. Please try again.");
+    }
+  };
+
   return (
     <div className="container" id="makePayment">
       <h2>Make a Payment</h2>
       <FinancialSummary financialInfo={financialInfo} paymentAmount={paymentAmount} setPaymentAmount={setPaymentAmount} handleBlur={() => setPaymentAmount(parseFloat(paymentAmount).toFixed(2))} />
       <h2>Choose a payment method:</h2>
-      <form>
+      <form onSubmit={handleSubmit}>
         <PaymentMethod billingMethods={billingMethods} selectedMethod={selectedMethod} setSelectedMethod={setSelectedMethod} selectedCardNumber={selectedCardNumber} setSelectedCardNumber={setSelectedCardNumber} setNumVer={setNumVer} setCvvVer={setCvvVer} setExpVer={setExpVer} />
+        <button type="submit" className="confirm-button" disabled={financialInfo.remainingBalance <= 0}>Confirm Payment</button>
       </form>
     </div>
   );

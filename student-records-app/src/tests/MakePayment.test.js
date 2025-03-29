@@ -1,6 +1,6 @@
-/* import React from "react";
+import React from "react";
 import { render, screen, waitFor, fireEvent, within } from "@testing-library/react";
-import MakePayment from "./MakePayment";
+import MakePayment from "../MakePayment";
 import axios from "axios";
 
 jest.mock("axios");
@@ -78,7 +78,7 @@ describe("MakePayment Component", () => {
     await waitFor(() => {
       expect(screen.queryByText("Loading...")).not.toBeInTheDocument();
     });
-    expect(screen.getByText(/how much to pay/i)).toBeInTheDocument();
+    expect(screen.getByText(/Remaining Balance/i)).toBeInTheDocument();
     const option = within(screen.getByTestId("MakePayment-option"));
     expect(option.getByText(/Visa/)).toBeInTheDocument();
   });
@@ -98,7 +98,7 @@ describe("MakePayment Component", () => {
       target: { value: "123" },
     });
     fireEvent.change(screen.getByPlaceholderText("MM/YY"), {
-      target: { value: "12/25" },
+      target: { value: "2025-12" },
     });
     fireEvent.click(screen.getByText(/confirm payment/i));
     await waitFor(() => {
@@ -122,4 +122,4 @@ describe("MakePayment Component", () => {
     fireEvent.click(screen.getByText(/confirm payment/i));
     expect(screen.getByText(/invalid card details/i)).toBeInTheDocument();
   });
-}); */
+});
