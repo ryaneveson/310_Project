@@ -3,7 +3,7 @@ from flask_cors import CORS
 from pymongo import MongoClient
 import bcrypt
 from bson import ObjectId
-from datetime import datetime, timedelta
+from datetime import datetime
 from flask_cors import CORS
 import os
 from reportlab.lib import colors
@@ -1058,90 +1058,6 @@ def add_payment_method():
         print(f"Error adding payment method: {str(e)}")
 
         return jsonify({"error": str(e)}), 500
-
-@app.route("/api/drop-course", methods=["POST"])
-def drop_course():
-    try:
-        data = request.json
-        student_id = data.get("student_id")
-        course = data.get("course")
-
-        if not student_id or not course:
-            return jsonify({"error": "Student ID and course are required"}), 400
-
-        # Find student
-        student = students_collection.find_one({"student_id": str(student_id)})
-        if not student:
-            return jsonify({"error": "Student not found"}), 404
-
-        # Get course details
-        dept, num = course.split()
-        course_details = courses_collection.find_one({
-            "course_dept": dept,
-            "course_num": num
-        })
-
-        if not course_details:
-            return jsonify({"error": "Course not found"}), 404
-
-        # Check drop deadline
-        if not is_within_drop_deadline(course_details.get("start_date", "")):
-            return jsonify({
-                "error": "Drop deadline has passed for this course",
-                "deadline_passed": True
-            }), 400
-
-        # Check if course exists in registered courses
-        if course not in student.get("registered_courses", []):
-            return jsonify({"error": "Course not found in student's registered courses"}), 404
-
-        # Get course details to update capacity
-        dept, num = course.split()
-        
-        # Remove course from student's registered courses and its grade
-        registered_courses = student.get("registered_courses", [])
-        registered_grades = student.get("registered_courses_grades", [])
-        course_index = registered_courses.index(course)
-        
-        registered_courses.pop(course_index)
-        if course_index < len(registered_grades):
-            registered_grades.pop(course_index)
-
-        # Update student document
-        result = students_collection.update_one(
-            {"student_id": str(student_id)},
-            {
-                "$set": {
-                    "registered_courses": registered_courses,
-                    "registered_courses_grades": registered_grades
-                }
-            }
-        )
-
-        # Decrease course capacity
-        courses_collection.update_one(
-            {"course_dept": dept, "course_num": num},
-            {"$inc": {"capacity": -1}}
-        )
-
-        if result.modified_count > 0:
-            return jsonify({"message": "Course dropped successfully"}), 200
-        else:
-            return jsonify({"error": "Failed to drop course"}), 500
-
-    except Exception as e:
-        print(f"Error dropping course: {str(e)}")
-        return jsonify({"error": str(e)}), 500
-
-# Add this helper function
-def is_within_drop_deadline(course_start_date):
-    """Check if current date is within the drop deadline (2 weeks after start)"""
-    try:
-        start_date = datetime.strptime(course_start_date, "%Y-%m-%d")
-        deadline = start_date + timedelta(weeks=2)  # 2 weeks after start date
-        return datetime.now() <= deadline
-    except:
-        return False  # If date parsing fails, return False
 
 if __name__ == "__main__":
   app.run(debug=True, host="0.0.0.0", port=5000)
