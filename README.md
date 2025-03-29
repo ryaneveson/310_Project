@@ -43,6 +43,7 @@ Ensure you have the following installed:
 
 ## Getting Started
 
+#### use "John" "mypassword" for Admin, and "Sami" "mypassword" for Student
 ### 1. Clone the Repository
 
 ```bash
