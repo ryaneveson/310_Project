@@ -20,6 +20,7 @@ describe("AddPaymentMethod", () => {
     // Setup localStorage mock values
     mockLocalStorage.getItem.mockImplementation((key) => {
       const values = {
+        "role": "student",
         "student_id": "test_student_id",
         "username": "Test User"
       };

@@ -20,6 +20,8 @@ const useUser = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("role");
+    localStorage.removeItem("student_id");
+    localStorage.removeItem("username");
     handleNavigation("/");
   };
 
