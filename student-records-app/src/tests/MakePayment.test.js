@@ -1,6 +1,6 @@
-/* import React from "react";
+import React from "react";
 import { render, screen, waitFor, fireEvent, within } from "@testing-library/react";
-import MakePayment from "./MakePayment";
+import MakePayment from "../MakePayment";
 import axios from "axios";
 
 jest.mock("axios");
@@ -122,4 +122,4 @@ describe("MakePayment Component", () => {
     fireEvent.click(screen.getByText(/confirm payment/i));
     expect(screen.getByText(/invalid card details/i)).toBeInTheDocument();
   });
-}); */
+});
