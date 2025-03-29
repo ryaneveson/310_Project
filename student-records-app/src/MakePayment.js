@@ -69,7 +69,7 @@ const PaymentMethod = ({ billingMethods, selectedMethod, setSelectedMethod, sele
       <p>No Billing Methods. Please Add a New One.</p>
     ) : (
       billingMethods.map((method, index) => (
-        <label key={index} className="billing-box radio-option">
+        <label key={index} data-testId="MakePayment-option" className="billing-box radio-option">
           <input
             type="radio"
             name="billingMethod"
@@ -185,7 +185,7 @@ function MakePayment() {
   }
   
   if (!numVer || !cvvVer || !expVer) {
-      const tempInputDiv = document.getElementById("temp-input");
+      const tempInputDiv = document.getElementById("card-verification");
       if (tempInputDiv && !tempInputDiv.querySelector(".error-message")) {
           tempInputDiv.innerHTML += "<p class='error-message' style='color: red;'>Invalid card details. Please check your input.</p>";
       }

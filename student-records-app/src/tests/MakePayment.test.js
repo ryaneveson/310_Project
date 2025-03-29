@@ -78,7 +78,7 @@ describe("MakePayment Component", () => {
     await waitFor(() => {
       expect(screen.queryByText("Loading...")).not.toBeInTheDocument();
     });
-    expect(screen.getByText(/how much to pay/i)).toBeInTheDocument();
+    expect(screen.getByText(/Remaining Balance/i)).toBeInTheDocument();
     const option = within(screen.getByTestId("MakePayment-option"));
     expect(option.getByText(/Visa/)).toBeInTheDocument();
   });
