@@ -59,6 +59,7 @@ docker-compose up --build
 ```
 
 Wait a few moments for both the **development** and **backend** servers to start up.
+#### Use "John" "mypassword" for Admin, and "Sami" "mypassword" for Student
 
 ## Features
 

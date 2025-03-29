@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import useUser from "./utils/useUser";
 import "./frontend/dashboardStyles.css"; 
 
 // GPA conversion map based on the provided grade scale
@@ -133,6 +134,7 @@ const AcademicStatusCards = ({ academicInfo }) => (
   </div>
 );
 
+
 // Component for academic resources
 const AcademicResources = ({ onTranscriptDownload }) => (
   <div className="apps-card">
@@ -144,26 +146,23 @@ const AcademicResources = ({ onTranscriptDownload }) => (
       <button onClick={() => (window.location.href = "/grades")} className="app-button">
         View Courses
       </button>
+      <button onClick={() => handleNavigation("/calendar")} className="app-button">
+        View Class Schedule
+      </button>
       <button onClick={onTranscriptDownload} className="app-button">
         Request Transcript
       </button>
     </div>
-  </div>
-);
+  );
+};
 
 const AcademicDashboard = () => {
-  const [userRole, setUserRole] = useState(null);
-  const studentId = localStorage.getItem("student_id");
+  const { userRole, loading, studentId, handleLogout, setLoading } = useUser();
   const academicInfo = useAcademicInfo(studentId);
 
   useEffect(() => {
-    const role = localStorage.getItem("role");
-    if (!role) {
-      window.location.href = "/";
-      return;
-    }
-    setUserRole(role);
-  }, []);
+    setLoading(false);
+  }, [userRole, studentId]);
 
   const handleTranscriptDownload = async () => {
     try {
@@ -173,14 +172,14 @@ const AcademicDashboard = () => {
       }
 
       const response = await fetch(`http://localhost:5000/api/generate-transcript?student_id=${studentId}`, {
-        method: 'GET',
+        method: "GET",
       });
 
-      if (!response.ok) throw new Error('Failed to generate transcript');
+      if (!response.ok) throw new Error("Failed to generate transcript");
 
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
       link.download = `transcript_${studentId}.pdf`;
       document.body.appendChild(link);
@@ -188,22 +187,19 @@ const AcademicDashboard = () => {
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      console.error('Error downloading transcript:', error);
-      alert('Failed to download transcript. Please try again.');
+      console.error("Error downloading transcript:", error);
+      alert("Failed to download transcript. Please try again.");
     }
   };
 
-  if (!userRole) return <div>Loading...</div>;
+  if (loading) return <div>Loading...</div>;
 
   if (userRole !== "student") {
     return (
       <div className="dashboard-container">
         <h2>Access Denied</h2>
         <p>This page is only accessible to students.</p>
-        <button className="logout-button" onClick={() => {
-          localStorage.removeItem("role");
-          window.location.href = "/";
-        }}>
+        <button className="logout-button" onClick={handleLogout}>
           Logout
         </button>
       </div>

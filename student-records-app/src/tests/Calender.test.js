@@ -16,6 +16,10 @@ const testEvents = [
 ];
 
 describe("Calendar Component", () => {
+  beforeEach(() => {
+    localStorage.setItem("role", "student");
+  });
+
   test("renders all time slots from 8:00 to 20:00", () => {
     render(<Calendar mockEvents={testEvents}/>);
     

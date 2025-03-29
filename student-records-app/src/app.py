@@ -759,29 +759,14 @@ def make_payment():
         data = request.json
         student_id = data.get("student_id")
         student, error = get_student_by_id(student_id)
+        print(f"Student data: {student}")
+
         
         if error:
             return jsonify({"error": error}), 400 if "required" in error else 404
 
         payment_amount = float(data.get("amount"))
         payment_method = data.get("payment_method")
-        
-        if not payment_method:
-            return jsonify({"error": "Payment method is required"}), 400
-
-        current_fees = student.get("fees", 0)
-        current_paid = student.get("paid", 0)
-        new_paid_amount = current_paid + payment_amount
-
-        # Validate payment amount
-        if payment_amount > (current_fees - current_paid):
-            return jsonify({"error": "Payment amount exceeds remaining balance"}), 400
-
-        # Update the paid amount
-        students_collection.update_one(
-            {"student_id": str(student_id)},
-            {"$set": {"paid": new_paid_amount}}
-        )
 
         # Record the payment
         payment_record = {
@@ -795,8 +780,7 @@ def make_payment():
         finances_collection.insert_one(payment_record)
 
         return jsonify({
-            "message": "Payment processed successfully",
-            "new_balance": current_fees - new_paid_amount
+            "message": "Payment processed successfully"
         }), 200
 
     except Exception as e:
