@@ -20,10 +20,16 @@ const useUser = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("role");
-    window.location.href = "/";
+    localStorage.removeItem("student_id");
+    localStorage.removeItem("username");
+    handleNavigation("/");
   };
 
-  return { userRole, loading, studentId, handleLogout, setLoading };
+  const handleNavigation = (destination) => {
+    window.location.href = destination;
+  };
+
+  return { userRole, loading, studentId, handleLogout, setLoading, handleNavigation };
 };
 
 export default useUser;

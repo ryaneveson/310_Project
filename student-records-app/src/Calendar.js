@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import "./calendar.css";
+import useUser from "./utils/useUser"; // Make sure the path is correct
+import "./frontend/calendar.css";
 
 const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 const hours = Array.from({ length: 25 }, (_, i) => 8 + i * 0.5); // 8:00 - 20:00 PM in 30-min increments
@@ -14,8 +15,8 @@ const dayMap = {
 };
 
 function Calendar({ mockEvents = null, compact = false }) {
+  const { userRole, loading, handleLogout, setLoading } = useUser();
   const [events, setEvents] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -30,7 +31,6 @@ function Calendar({ mockEvents = null, compact = false }) {
         const studentId = localStorage.getItem("student_id");
         if (!studentId) {
           setError("No student ID found");
-          setLoading(false);
           return;
         }
 
@@ -38,12 +38,11 @@ function Calendar({ mockEvents = null, compact = false }) {
         
         if (response.data.error) {
           setError(response.data.error);
-          setLoading(false);
           return;
         }
 
         const courseData = response.data.courses;
-        
+
         // Transform the data for calendar display
         const formattedEvents = courseData.map(course => ({
           day: dayMap[course.day] || course.day,
@@ -54,12 +53,11 @@ function Calendar({ mockEvents = null, compact = false }) {
         }));
 
         setEvents(formattedEvents);
-        setLoading(false);
       } catch (err) {
         console.error("Error fetching courses:", err);
         setError(err.response?.data?.error || "Error fetching courses");
-        setLoading(false);
       }
+      setLoading(false);
     };
 
     fetchCourses();
@@ -68,6 +66,18 @@ function Calendar({ mockEvents = null, compact = false }) {
   if (loading) return <div>Loading calendar...</div>;
   if (error) return <div>Error: {error}</div>;
   if (events.length === 0) return <div>No courses scheduled</div>;
+
+  if (userRole !== "student") {
+    return (
+      <div className="dashboard-container">
+        <h2>Access Denied</h2>
+        <p>This page is only accessible to students.</p>
+        <button className="logout-button" onClick={handleLogout}>
+          Logout
+        </button>
+      </div>
+    );
+  }
 
   const parseTime = (timeStr) => {
     const [hours, minutes] = timeStr.split(":").map(Number);

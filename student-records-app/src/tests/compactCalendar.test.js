@@ -24,6 +24,7 @@ describe('Calendar Component (Compact View)', () => {
   beforeEach(() => {
     // Mock axios to prevent actual API calls
     jest.mock('axios');
+    localStorage.setItem("role", "student");
   });
 
   test('renders in compact mode with correct styling', () => {
