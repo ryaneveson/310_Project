@@ -5,7 +5,7 @@
 }
 
 :root {
-  --primary: #003B71;
+  --primary: #eeeeee;
   --primary-light: #E3F2FD;
   --secondary: #00bfff;
   --background: #ffffff;
@@ -805,4 +805,106 @@ tr:hover td {
 /* Ensure the header doesn't overlap */
 header {
   z-index: 10;
+}
+
+/* Add these styles to your existing CSS */
+
+.course-drop-button {
+    background: #ffebee !important;
+    color: #d32f2f !important;
+    border: 2px solid #ef5350 !important;
+    padding: 6px 12px !important;
+    border-radius: 20px !important;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.8rem !important;
+    font-weight: 500;
+    margin: 0;
+    line-height: 1;
+    width: auto !important;
+    height: auto !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    display: inline-block !important;
+    white-space: nowrap;
+    text-transform: none !important;
+    box-shadow: none !important;
+}
+
+.course-drop-button:hover {
+    background-color: #ffcdd2 !important;
+    color: #d32f2f !important;
+    border-color: #d32f2f !important;
+}
+
+.course-drop-button:disabled {
+    background-color: #e0e0e0 !important;
+    color: #9e9e9e !important;
+    border-color: #bdbdbd !important;
+    cursor: not-allowed;
+}
+
+.deadline-warning {
+    font-size: 0.75rem;
+    color: #d32f2f;
+    margin-top: 0.25rem;
+}
+
+.status-message {
+    padding: 1rem;
+    margin: 1rem 0;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.status-message.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.status-message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Ensure the action column isn't too wide */
+.rankings-table table th:last-child,
+.rankings-table table td:last-child {
+    width: 120px;
+}
+
+/* Make the selector more specific to override other styles */
+.rankings-table .drop-button {
+    background-color: var(--primary) !important;
+    color: #ef5350 !important;
+    border: 2px solid #ef5350 !important;
+    padding: 6px 12px !important; /* Reduced padding */
+    border-radius: 20px !important;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.8rem !important; /* Smaller font */
+    font-weight: 500;
+    margin: 0;
+    line-height: 1;
+    width: auto !important; /* Override any width settings */
+    height: auto !important; /* Override any height settings */
+    min-width: 0 !important; /* Override any min-width */
+    min-height: 0 !important; /* Override any min-height */
+    display: inline-block !important;
+    white-space: nowrap;
+}
+
+.rankings-table .drop-button:hover {
+    background-color: #ef5350 !important;
+    color: white !important;
+    border-color: #ef5350 !important;
+}
+
+.rankings-table .drop-button:disabled {
+    background-color: #e0e0e0 !important;
+    color: #9e9e9e !important;
+    border-color: #bdbdbd !important;
+    cursor: not-allowed;
 } 

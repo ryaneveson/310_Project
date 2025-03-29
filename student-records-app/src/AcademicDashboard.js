@@ -142,7 +142,7 @@ const AcademicResources = ({ onTranscriptDownload }) => (
         Course Registration
       </button>
       <button onClick={() => (window.location.href = "/grades")} className="app-button">
-        View Grades
+        View Courses
       </button>
       <button onClick={onTranscriptDownload} className="app-button">
         Request Transcript
