@@ -25,6 +25,7 @@
 
 table {
     width: 100%;
+    max-width: 317px;
     border-collapse: collapse;
 }
 
@@ -60,6 +61,7 @@ tbody tr:nth-child(even) {
 
 /* Style for the button container */
 .search-button-container {
+    width: 300px;
     position: absolute;
     text-align: right; /* Align the button to the right */
     margin-bottom: 20px; /* Add space below the button */
@@ -68,7 +70,7 @@ tbody tr:nth-child(even) {
 }
 
 /* Style for the button itself */
-.search-button {
+.profile_search-button {
     padding: 10px 20px;
     font-size: 16px;
     background-color: #007bff;
