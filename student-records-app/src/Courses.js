@@ -92,12 +92,21 @@ function Courses({ mockCourses = null }) {
         waitlist_capacity: course.waitlist
       }),
     })
-      .then((response) => response.json())
-      .then((data) => {
+      .then((response) => {
+        // Store the status code before parsing the JSON
+        const status = response.status;
+        return response.json().then(data => ({data, status}));
+      })
+      .then(({data, status}) => {
         if (data.error) {
           alert(data.error);
         } else {
-          alert(`Successfully registered for ${course.name}!`);
+          // Different messages based on status code
+          if (status === 202) {
+            alert(`Successfully added to Waitlist for ${course.name}`);
+          } else {
+            alert(`Successfully registered for ${course.name}!`);
+          }
           if (userRole === "student") {
             window.location.href = "/academicdashboard";
           }
