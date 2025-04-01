@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import HeaderLoader from "./Header";
 import FooterLoader from "./Footer";
 import "./frontend/studentRanking.css";
+import axios from "axios";
 
 function StudentRanking() {
   const [students, setStudents] = useState([]);
@@ -72,7 +73,7 @@ function StudentRanking() {
       if (filters.course && !student.classes.includes(filters.course)) return false;
       
       // Major filter
-      if (filters.major && student.major !== filters.major) return false;
+      if (filters.major && student.major && student.major !== filters.major) return false;
       
       // Year filter (based on student number)
       if (filters.year && !student.studentNumber.startsWith(filters.year)) return false;
@@ -103,6 +104,91 @@ function StudentRanking() {
   if (error) return <div className="error">Error: {error}</div>;
 
   const filteredStudents = filterStudents();
+
+  // Add this new function to handle PDF export
+  const exportRankingsToPdf = async () => {
+    try {
+      const studentsToExport = filteredStudents
+        .sort((a, b) => b.gpa - a.gpa)
+        .map((student, index) => ({
+          rank: index + 1,
+          studentId: student.studentNumber,
+          name: `${student.name} ${student.lastName}`,
+          gpa: student.gpa,
+          major: student.major || 'Undeclared'
+        }));
+
+      if (studentsToExport.length === 0) {
+        alert("No students to export");
+        return;
+      }
+
+      const response = await axios.post(
+        'http://localhost:5000/api/generate-rankings-report',
+        { 
+          students: studentsToExport,
+          filters: {
+            minGPA: filters.minGPA || "None",
+            maxGPA: filters.maxGPA || "None",
+            course: filters.course || "All",
+            major: filters.major || "All",
+            year: filters.year || "All"
+          }
+        },
+        { 
+          responseType: 'blob',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      // Check if the response is actually a JSON error message
+      if (response.data.type === 'application/json') {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const errorData = JSON.parse(reader.result);
+          alert(`Error: ${errorData.error}`);
+        };
+        reader.readAsText(response.data);
+        return;
+      }
+
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `student_rankings_${new Date().toISOString().split('T')[0]}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Error exporting PDF:", error);
+      if (error.response && error.response.data) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const errorData = JSON.parse(reader.result);
+            alert(`Server Error: ${errorData.error}`);
+          } catch {
+            alert("Error generating PDF report. Please try again later.");
+          }
+        };
+        reader.readAsText(error.response.data);
+      } else {
+        alert("Error generating PDF report. Please try again later.");
+      }
+    }
+  };
+
+  // Add this helper function at the top of your component
+  const formatCourseList = (courses) => {
+    if (courses.length <= 3) {
+      return courses.join(", ");
+    }
+    return courses.slice(0, 3).join(", ") + ", ...";
+  };
 
   return (
     <div className="student-ranking">
@@ -175,7 +261,15 @@ function StudentRanking() {
         </div>
 
         <div className="rankings-table">
-          <h2>Student Rankings</h2>
+          <div className="rankings-header">
+            <h2>Student Rankings</h2>
+            <button 
+              className="export-pdf-button"
+              onClick={exportRankingsToPdf}
+            >
+              Export Rankings (PDF)
+            </button>
+          </div>
           <table>
             <thead>
               <tr>
@@ -195,9 +289,11 @@ function StudentRanking() {
                     <td>{index + 1}</td>
                     <td>{`${student.name} ${student.lastName}`}</td>
                     <td>{student.studentNumber}</td>
-                    <td>{student.major}</td>
+                    <td>{student.major || 'Undeclared'}</td>
                     <td>{student.gpa.toFixed(2)}</td>
-                    <td>{student.classes.join(", ")}</td>
+                    <td className="courses-cell" title={student.classes.join(", ")}>
+                      {formatCourseList(student.classes)}
+                    </td>
                   </tr>
               ))}
             </tbody>

@@ -34,12 +34,14 @@ const Finances = () => {
 
       if (!item.is_paid && (!nextDue || itemDate < new Date(nextDue))) {
         nextDue = itemDate;
+        console.log("up date"+item.due_date);
       }
 
       if (item.item_name === "payment") {
         if (!lastPaymentDate || itemDate > new Date(lastPaymentDate)) {
           lastPayment = item.amount;
           lastPaymentDate = itemDate;
+          console.log("due date"+item.date);
         }
         totalPaid += item.amount;
       }else{
