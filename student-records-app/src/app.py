@@ -781,7 +781,7 @@ def make_payment():
             "item_name": "payment",
             "amount": payment_amount,
             "payment_method": payment_method,
-            "date": datetime.now(),
+            "due_date": datetime.now(),
             "is_paid": True
         }
         finances_collection.insert_one(payment_record)
