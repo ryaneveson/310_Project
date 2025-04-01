@@ -295,44 +295,51 @@ def get_students_studentSearch():
     students = list(students_collection.find({}, {"_id": 0}))
     if not students:
         return jsonify({"error": "No students found"}), 404
+    
     student_details = []
     for student in students:
+        # Handle grades
         registered_grades = student.get("registered_courses_grades", [])
         completed_grades = student.get("completed_courses_grades", [])
         all_grades = registered_grades + completed_grades
-        all_grades_int = [int(grade) for grade in all_grades]
-        if all_grades_int:
-            gpa = sum(all_grades_int) / len(all_grades_int)
-        else:
-            gpa = 0
+        all_grades_int = [int(grade) for grade in all_grades if grade and str(grade).isdigit()]
+        gpa = sum(all_grades_int) / len(all_grades_int) if all_grades_int else 0
+
+        # Handle courses
         registered_courses = student.get("registered_courses", [])
         completed_courses = student.get("completed_courses", [])
         all_course_ids = registered_courses + completed_courses
         course_codes = []
+
         for course_id in all_course_ids:
-            try:
-                course = courses_collection.find_one({"_id": ObjectId(course_id)})
-                if course:
-                    # Check if both course_dept and course_num are available
-                    course_dept = course.get("course_dept", "")
-                    course_num = course.get("course_num", "")
-                    if course_dept and course_num:
-                        course_codes.append(f"{course_dept} {course_num}")
-                    else:
-                        # If course_dept or course_num is missing, handle gracefully
-                        course_codes.append("Unknown Course")
-                else:
-                    course_codes.append("Course not found")
-            except Exception as e:
-                course_codes.append("Invalid course ID")
-                print(f"Error fetching course {course_id}: {e}")
+            if isinstance(course_id, str):
+                # If it's already a string (like "COSC 310"), use it directly
+                course_codes.append(course_id)
+            else:
+                try:
+                    # If it's an ObjectId, fetch the course details
+                    course = courses_collection.find_one({"_id": ObjectId(str(course_id))})
+                    if course:
+                        course_dept = course.get("course_dept", "")
+                        course_num = course.get("course_num", "")
+                        if course_dept and course_num:
+                            course_codes.append(f"{course_dept} {course_num}")
+                        else:
+                            course_codes.append("Unknown Course")
+                except Exception as e:
+                    print(f"Error fetching course {course_id}: {e}")
+                    # Skip invalid course IDs instead of adding them to the list
+                    continue
+
         student_details.append({
             "name": student.get("first_name"),
             "lastName": student.get("last_name"),
             "studentNumber": student.get("student_id"),
+            "major": student.get("major", "Undeclared"),  # Add default value for major
             "gpa": gpa,
             "classes": course_codes
         })
+
     if not student_details:
         return jsonify({"error": "No students found"}), 404
     return jsonify({"students": student_details}), 200
@@ -1059,5 +1066,99 @@ def add_payment_method():
 
         return jsonify({"error": str(e)}), 500
 
+@app.route('/api/generate-rankings-report', methods=['POST'])
+def generate_rankings_report():
+    try:
+        data = request.json
+        if not data or 'students' not in data:
+            return jsonify({'error': 'No student data provided'}), 400
+            
+        students = data['students']
+        filters = data.get('filters', {})
+        
+        # Create a buffer for the PDF
+        buffer = BytesIO()
+        
+        # Create the PDF document
+        doc = SimpleDocTemplate(
+            buffer,
+            pagesize=letter,
+            rightMargin=72,
+            leftMargin=72,
+            topMargin=72,
+            bottomMargin=72
+        )
+        
+        # Get styles
+        styles = getSampleStyleSheet()
+        
+        # Create the elements list
+        elements = []
+        
+        # Add title
+        title = Paragraph("Student Rankings Report", styles['Heading1'])
+        elements.append(title)
+        elements.append(Spacer(1, 20))
+        
+        # Add filter information
+        filter_info = [
+            "Filters Applied:",
+            f"Min GPA: {filters.get('minGPA', 'None')}",
+            f"Max GPA: {filters.get('maxGPA', 'None')}",
+            f"Course: {filters.get('course', 'All')}",
+            f"Major: {filters.get('major', 'All')}",
+            f"Year: {filters.get('year', 'All')}"
+        ]
+        for line in filter_info:
+            elements.append(Paragraph(line, styles['Normal']))
+        
+        elements.append(Spacer(1, 20))
+        
+        # Create table data
+        table_data = [['Rank', 'Student ID', 'Name', 'Major', 'GPA']]
+        for student in students:
+            table_data.append([
+                str(student.get('rank', '')),
+                student.get('studentId', ''),
+                student.get('name', ''),
+                student.get('major', 'Undeclared'),  # Default to 'Undeclared' if major is missing
+                f"{float(student.get('gpa', 0)):.2f}"
+            ])
+        
+        # Create table
+        table = Table(table_data)
+        table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 0), 14),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+            ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
+            ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 1), (-1, -1), 12),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black)
+        ]))
+        
+        elements.append(table)
+        
+        # Build PDF
+        doc.build(elements)
+        
+        # Get the value of the BytesIO buffer
+        pdf = buffer.getvalue()
+        buffer.close()
+        
+        return send_file(
+            BytesIO(pdf),
+            mimetype='application/pdf',
+            as_attachment=True,
+            download_name='student_rankings.pdf'
+        )
+    
+    except Exception as e:
+        print(f"Error generating rankings report: {str(e)}")  # Add logging
+        return jsonify({'error': str(e)}), 500
 if __name__ == "__main__":
   app.run(debug=True, host="0.0.0.0", port=5000)

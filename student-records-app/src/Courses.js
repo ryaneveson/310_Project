@@ -26,6 +26,7 @@ function Courses({ mockCourses = null }) {
   const [selectedYears, setSelectedYears] = useState([]);
   const [expandedCourse, setExpandedCourse] = useState(null);
   const [courseLevel, setCourseLevel] = useState("all"); // New state for course level filter
+  const [userRole, setUserRole] = useState(null);
 
   // Fetch courses from the backend
   useEffect(() => {
@@ -37,6 +38,11 @@ function Courses({ mockCourses = null }) {
       .then((response) => response.json())
       .then((data) => setCourses(data))
       .catch((error) => console.error("Error fetching courses:", error));
+  }, []);
+
+  useEffect(() => {
+    const role = localStorage.getItem("role");
+    setUserRole(role);
   }, []);
 
   const handleYearChange = (year) => {
@@ -164,12 +170,14 @@ function Courses({ mockCourses = null }) {
                     <span className="course-name">
                       {course.dept} {course.courseNum} - {course.name}
                     </span>
-                    <button
-                      onClick={() => handleRegister(course, index)}
-                      className="auth-button"
-                    >
-                      Register
-                    </button>
+                    {userRole !== "admin" && (
+                      <button
+                        onClick={() => handleRegister(course, index)}
+                        className="auth-button"
+                      >
+                        Register
+                      </button>
+                    )}
                   </div>
                   <div
                     className={`course-details ${expandedCourse === index ? "open" : ""

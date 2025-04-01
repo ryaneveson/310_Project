@@ -44,8 +44,8 @@ test("renders Header with admin role", async () => {
 
   // Wait for the dropdown to appear with admin-specific items
   await waitFor(() => expect(screen.getByText("Home")).toBeInTheDocument());
-  expect(screen.getByText("Course Managment")).toBeInTheDocument();
-  expect(screen.getByText("Grade managment")).toBeInTheDocument();
+  expect(screen.getByText("Course Management")).toBeInTheDocument();
+  expect(screen.getByText("Grade Management")).toBeInTheDocument();
   expect(screen.getByText("Student Search")).toBeInTheDocument();
   expect(screen.getByText("Student Ranking")).toBeInTheDocument();
   expect(screen.getByText("Lookup Student")).toBeInTheDocument();
