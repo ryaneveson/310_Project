@@ -4,7 +4,7 @@
 
 **Werkday** is a website that allows administrators and students to manage academic workflows, including course enrollment, grading, tuition payments, and viewing official documents.
 
-### Current Project Status (Milestone 3 Completion - 95%)
+### Current Project Status (Milestone 4 Completion - 100%)
 
 - **Admin Functionalities:**
   - Secure login/logout with **2-factor authentication** (Completed)
