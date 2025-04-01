@@ -1,7 +1,87 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, memo } from "react";
 import axios from "axios";
 import "./frontend/dashboardStyles.css";
 import ReactDOM from "react-dom/client";
+
+// First, modify the StudentSearchForm to be a memoized component at the top of the file
+const StudentSearchForm = memo(({ studentId, onStudentIdChange, onSearch }) => {
+    const [localStudentId, setLocalStudentId] = useState(studentId);
+
+    useEffect(() => {
+        setLocalStudentId(studentId);
+    }, [studentId]);
+
+    const handleLocalChange = (e) => {
+        setLocalStudentId(e.target.value);
+        onStudentIdChange(e);
+    };
+
+    return (
+        <form onSubmit={onSearch} className="search-container">
+            <label htmlFor="student-id">Student ID:</label>
+            <input
+                type="text"
+                id="student-id"
+                value={localStudentId}
+                onChange={handleLocalChange}
+                placeholder="Enter Student ID"
+                className="student-id-input"
+            />
+            <button type="submit" className="search-button">
+                Search
+            </button>
+        </form>
+    );
+});
+
+// Also create a memoized GradeTable component
+const GradeTable = memo(({ title, grades, onGradeChange }) => {
+    const [localGrades, setLocalGrades] = useState(grades);
+
+    useEffect(() => {
+        setLocalGrades(grades);
+    }, [grades]);
+
+    const handleLocalGradeChange = (index, value) => {
+        const newGrades = [...localGrades];
+        newGrades[index] = { ...newGrades[index], grade: value };
+        setLocalGrades(newGrades);
+        onGradeChange(index, value);
+    };
+
+    return (
+        <div className="grades-table-container">
+            <h4>{title}</h4>
+            <table className="grades-table">
+                <thead>
+                    <tr>
+                        <th>Course</th>
+                        <th>Current Grade</th>
+                        <th>New Grade</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {localGrades.map((item, index) => (
+                        <tr key={`${title.toLowerCase()}-${index}`}>
+                            <td>{item.course}</td>
+                            <td>{item.grade || 'N/A'}</td>
+                            <td>
+                                <input
+                                    type="number"
+                                    min="0"
+                                    max="100"
+                                    className="grade-input"
+                                    value={item.grade}
+                                    onChange={(e) => handleLocalGradeChange(index, e.target.value)}
+                                />
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    );
+});
 
 //function called when "Save Changes: button is clicked, returns"
 const EditGrades = () => {
@@ -107,98 +187,26 @@ const EditGrades = () => {
 
 //methods to render html elements
   //render the student search form to search for a student by ID and edit their grades
-  function StudentSearchForm({ studentId, onStudentIdChange, onSearch }) {
-    return (
-      <form onSubmit={onSearch} className="search-container">
-        <label htmlFor="student-id">Student ID:</label>
-        <input
-          type="text"
-          id="student-id"
-          value={studentId}
-          onChange={onStudentIdChange}
-          placeholder="Enter Student ID"
-          className="student-id-input"
-        />
-        <button type="submit" className="search-button">
-          Search
-        </button>
-      </form>
-    );
-  }
-
-  //render the registered courses table
   const renderRegisteredCourses = () => {
     if (grades.registered.length === 0) return null;
-  
     return (
-      <div className="grades-table-container">
-        <h4>Registered Courses</h4>
-        <table className="grades-table">
-          <thead>
-            <tr>
-              <th>Course</th>
-              <th>Current Grade</th>
-              <th>New Grade</th>
-            </tr>
-          </thead>
-          <tbody>
-            {grades.registered.map((item, index) => (
-              <tr key={`registered-${index}`}>
-                <td>{item.course}</td>
-                <td>{item.grade || 'N/A'}</td>
-                <td>
-                  <input
-                    type="number"
-                    min="0"
-                    max="100"
-                    className="grade-input"
-                    value={item.grade}
-                    onChange={(e) => handleGradeChange('registered', index, e.target.value)}
-                  />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <GradeTable
+        title="Registered Courses"
+        grades={grades.registered}
+        onGradeChange={(index, value) => handleGradeChange('registered', index, value)}
+      />
     );
   };
 
   //render the completed courses table
   const renderCompletedCourses = () => {
     if (grades.completed.length === 0) return null;
-
     return (
-      <div className="grades-table-container">
-        <h4>Completed Courses</h4>
-        <table className="grades-table">
-          <thead>
-            <tr>
-              <th>Course</th>
-              <th>Current Grade</th>
-              <th>New Grade</th>
-            </tr>
-          </thead>
-          <tbody>
-            {grades.completed.map((item, index) => (
-              <tr key={`completed-${index}`}>
-                <td>{item.course}</td>
-                <td>{item.grade || 'N/A'}</td>
-                <td>
-                  <input
-                    type="number"
-                    min="0"
-                    max="100"
-                    className="grade-input"
-                    value={item.grade}
-                    onChange={(e) => handleGradeChange('completed', index, e.target.value)}
-                  />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <GradeTable
+        title="Completed Courses"
+        grades={grades.completed}
+        onGradeChange={(index, value) => handleGradeChange('completed', index, value)}
+      />
     );
   };
 
