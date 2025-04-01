@@ -20,15 +20,19 @@ const FilterBox = ({ title, children }) => (
 );
 
 function Courses({ mockCourses = null }) {
-
   const [courses, setCourses] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedYears, setSelectedYears] = useState([]);
   const [expandedCourse, setExpandedCourse] = useState(null);
-  const [courseLevel, setCourseLevel] = useState("all"); // New state for course level filter
+  const [courseLevel, setCourseLevel] = useState("all");
+  const [userRole, setUserRole] = useState(null);
+  const [studentId, setStudentId] = useState(""); // For admin use
+  const [searchStudentId, setSearchStudentId] = useState(""); // For admin to search students
 
-  // Fetch courses from the backend
   useEffect(() => {
+    const role = localStorage.getItem("role");
+    setUserRole(role);
+
     if (mockCourses) {
       setCourses(mockCourses);
       return;
@@ -68,7 +72,13 @@ function Courses({ mockCourses = null }) {
   };
 
   const handleRegister = (course, index) => {
-    const student_id = localStorage.getItem("student_id");
+    const student_id = userRole === "admin" ? studentId : localStorage.getItem("student_id");
+    
+    if (userRole === "admin" && !student_id) {
+      alert("Please enter a student ID first");
+      return;
+    }
+
     fetch("http://localhost:5000/api/register-course", {
       method: "POST",
       headers: {
@@ -85,12 +95,12 @@ function Courses({ mockCourses = null }) {
       .then((response) => response.json())
       .then((data) => {
         if (data.error) {
-          // Display the error message from the backend
           alert(data.error);
         } else {
-          // Display the success message
-          alert(`You have registered for ${course.name}!`);
-          window.location.href = "/academicdashboard";
+          alert(`Successfully registered for ${course.name}!`);
+          if (userRole === "student") {
+            window.location.href = "/academicdashboard";
+          }
         }
       })
       .catch((error) => {
@@ -98,11 +108,50 @@ function Courses({ mockCourses = null }) {
         alert("An error occurred while registering for the course. Please try again.");
       });
   };
+
+  const handleStudentSearch = () => {
+    if (!searchStudentId.trim()) {
+      alert("Please enter a student ID");
+      return;
+    }
+    setStudentId(searchStudentId);
+  };
+
   return (
     <div className="container">
       <h2>Available Courses</h2>
 
-      {/* Search bar at the top */}
+      {/* Admin student search section */}
+      {userRole === "admin" && (
+        <div className="admin-controls">
+          <h3>Register Student for Course</h3>
+          <div className="student-search">
+            <input
+              type="text"
+              placeholder="Enter Student ID..."
+              value={searchStudentId}
+              onChange={(e) => setSearchStudentId(e.target.value)}
+              className="search-box"
+            />
+            <button onClick={handleStudentSearch} className="search-button">
+              Set Student
+            </button>
+          </div>
+          {studentId && (
+            <div className="selected-student">
+              Currently selecting courses for Student ID: {studentId}
+              <button 
+                onClick={() => setStudentId("")} 
+                className="clear-button"
+              >
+                Clear
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Course search bar */}
       <input
         type="text"
         placeholder="Search for a course..."
@@ -168,7 +217,7 @@ function Courses({ mockCourses = null }) {
                       onClick={() => handleRegister(course, index)}
                       className="auth-button"
                     >
-                      Register
+                      {userRole === "admin" ? "Register Student" : "Register"}
                     </button>
                   </div>
                   <div
