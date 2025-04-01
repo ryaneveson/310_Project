@@ -33,8 +33,8 @@ const DropDown = ({ menuOpen }) => {
     return (
       <ul daa-testid={`logged-admin-${menuOpen ? "open" : "closed"}`} className={`dropdown-menu ${menuOpen ? "open" : ""}`}>
         <li><a href="/Dashboard">Home</a></li>
-        <li><a href="/courses">Course Managment</a></li>
-        <li><a href="/editGrades">Grade managment</a></li>
+        <li><a href="/courses">Course Management</a></li>
+        <li><a href="/editGrades">Grade Management</a></li>
         <li><a href="/studentSearch">Student Search</a></li>
         <li><a href="/studentRanking">Student Ranking</a></li>
         <li><a href="/studentProfileInput">Lookup Student</a></li>
