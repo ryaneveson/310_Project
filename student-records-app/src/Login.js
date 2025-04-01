@@ -6,8 +6,6 @@ const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [step, setStep] = useState(1); // Step 1: Login, Step 2: 2FA
-  const [code, setCode] = useState("");
 
   useEffect(() => {
     fetch("/footer.html")
@@ -58,7 +56,8 @@ const Login = () => {
           return;
         }
 
-        setStep(2);
+        // Redirect directly to dashboard after successful login
+        window.location.href = "/dashboard";
       } else {
         setError(data.error || "Invalid username or password!");
       }
@@ -67,71 +66,37 @@ const Login = () => {
       setError("An error occurred during login. Please try again.");
     }
   };
-  
-  const handle2FA = (e) => {
-    e.preventDefault();
-    if (code === "123456") {
-      const role = localStorage.getItem("role");
-      console.log('Current role in localStorage before redirect:', role);
-      
-      if (!role) {
-        setError("Error: No role found in localStorage");
-        return;
-      }
-
-      console.log(`${role.charAt(0).toUpperCase() + role.slice(1)} logged in!`);
-      window.location.href = "/dashboard";
-    } else {
-      setError("Invalid 2FA code!");
-    }
-  };
 
   return (
     <div className="page-container">
       <div className="content-wrap">
         <div className="auth-container">
           <div className="auth-box">
-            <h2 className="auth-title">{step === 1 ? "Login" : "Enter 2FA Code"}</h2>
-            {step === 1 ? (
-              <form onSubmit={handleLogin}>
-                <input
-                  type="text"
-                  placeholder="Username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  required
-                  className="auth-input"
-                />
-                <input
-                  type="password"
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="auth-input"
-                />
-                <button type="submit" className="auth-button">Login</button>
-              </form>
-            ) : (
-              <form onSubmit={handle2FA}>
-                <input
-                  type="text"
-                  placeholder="Enter 2FA Code"
-                  value={code}
-                  onChange={(e) => setCode(e.target.value)}
-                  required
-                  className="auth-input"
-                />
-                <button type="submit" className="auth-button">Verify</button>
-              </form>
-            )}
+            <h2 className="auth-title">Login</h2>
+            <form onSubmit={handleLogin}>
+              <input
+                type="text"
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+                className="auth-input"
+              />
+              <input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="auth-input"
+              />
+              <button type="submit" className="auth-button">Login</button>
+            </form>
             {error && <p className="auth-error">{error}</p>}
-            {step === 1 && (
-              <p className="auth-footer">
-                Don't have an account?{" "}
-                <Link to="/createUser" className="auth-link">Create one here</Link>
-              </p>
-            )}
+            <p className="auth-footer">
+              Don't have an account?{" "}
+              <Link to="/createUser" className="auth-link">Create one here</Link>
+            </p>
           </div>
         </div>
       </div>
