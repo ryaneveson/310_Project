@@ -158,20 +158,9 @@ function StudentSearch({mockStudents = null}) {
         }
 
         try {
-            const response = await axios.get(
-                `http://localhost:5000/api/generate-student-report?student_ids=${selectedStudents.map(s => s.studentNumber).join(",")}`,
-                { responseType: 'blob' }
-            );
-
-            const blob = new Blob([response.data], { type: 'application/pdf' });
-            const url = window.URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `student_report_${new Date().toISOString().split('T')[0]}.pdf`;
-            document.body.appendChild(link);
-            link.click();
-            window.URL.revokeObjectURL(url);
-            document.body.removeChild(link);
+            // Open the PDF in a new tab instead of trying to download it
+            const studentIds = selectedStudents.map(s => s.studentNumber).join(",");
+            window.open(`http://localhost:5000/api/generate-student-report?student_ids=${studentIds}`, '_blank');
         } catch (error) {
             console.error("Error exporting PDF:", error);
             alert("Error generating PDF report");

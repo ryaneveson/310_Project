@@ -11,6 +11,9 @@ from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 from io import BytesIO
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.lib.fonts import addMapping
 
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
@@ -872,6 +875,12 @@ def generate_student_report():
     doc = SimpleDocTemplate(buffer, pagesize=letter)
     elements = []
     styles = getSampleStyleSheet()
+    
+    # Register Helvetica font family explicitly
+    styles['Title'].fontName = 'Helvetica-Bold'
+    styles['Normal'].fontName = 'Helvetica'
+    styles['Heading1'].fontName = 'Helvetica-Bold'
+    styles['Heading2'].fontName = 'Helvetica-Bold'
 
     # Add title
     elements.append(Paragraph("Student Report", styles['Title']))
@@ -899,11 +908,9 @@ def generate_student_report():
             for i, course in enumerate(registered_courses):
                 course_name = ""
                 if isinstance(course, str):
-                    # If course is already a string (like "COSC 310")
                     course_name = course
                 else:
                     try:
-                        # If course is an ObjectId, fetch course details
                         course_doc = courses_collection.find_one({"_id": ObjectId(str(course))})
                         if course_doc:
                             course_name = f"{course_doc.get('course_dept')} {course_doc.get('course_num')}"
@@ -913,18 +920,18 @@ def generate_student_report():
                         course_name = "Invalid Course"
                 
                 grade = registered_grades[i] if i < len(registered_grades) else "N/A"
-                data.append([course_name, grade])
+                data.append([course_name, str(grade)])  # Convert grade to string
             
             table = Table(data)
             table.setStyle(TableStyle([
                 ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
                 ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
                 ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                ('FONTNAME', (0, 0), (-1, 0), 12),
+                ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),  # Use Helvetica for all cells
+                ('FONTSIZE', (0, 0), (-1, 0), 12),
                 ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
                 ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
                 ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
-                ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
                 ('FONTSIZE', (0, 1), (-1, -1), 10),
                 ('GRID', (0, 0), (-1, -1), 1, colors.black)
             ]))
@@ -961,7 +968,8 @@ def generate_student_report():
                 ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
                 ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
                 ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                ('FONTNAME', (0, 0), (-1, 0), 12),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica'),
+                ('FONTSIZE', (0, 0), (-1, 0), 12),
                 ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
                 ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
                 ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
@@ -973,7 +981,7 @@ def generate_student_report():
 
         # Add GPA
         all_grades = registered_grades + completed_grades
-        all_grades_int = [int(grade) for grade in all_grades if grade]
+        all_grades_int = [int(grade) for grade in all_grades if grade and str(grade).isdigit()]
         gpa = sum(all_grades_int) / len(all_grades_int) if all_grades_int else 0
         elements.append(Spacer(1, 10))
         elements.append(Paragraph(f"Current GPA: {gpa:.2f}", styles['Normal']))
