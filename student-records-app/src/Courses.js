@@ -86,10 +86,12 @@ function Courses({ mockCourses = null }) {
       },
       body: JSON.stringify({
         student_id: student_id,
+        course_id: course.id,
         course_dept: course.dept,
         course_num: course.courseNum,
         course_capacity: course.capacity,
-        waitlist_capacity: course.waitlist
+        waitlist_capacity: course.waitlist,
+        lecture_time: course.date
       }),
     })
       .then((response) => {

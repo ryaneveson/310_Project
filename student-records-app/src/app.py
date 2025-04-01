@@ -167,11 +167,12 @@ def submit_student_id():
 
 @app.route("/api/courses", methods=["GET"])
 def get_courses():
-    courses = list(courses_collection.find({}, {"_id": 0}))  # Exclude MongoDB _id field
+    courses = list(courses_collection.find({}))  # Exclude MongoDB _id field
     # Transform the data to match the frontend's expected schema
     transformed_courses = []
     for course in courses:
         transformed_courses.append({
+            "id": str(course["_id"]),
             "dept": course["course_dept"],
             "name": course["course_name"],
             "courseNum": str(course["course_num"]),  # Ensure courseNum is a string
@@ -348,9 +349,11 @@ def get_students_studentSearch():
 def register_course():
     data = request.json
     student_id = data.get("student_id")
+    course_id = data.get("course_id")
     course_dept = data.get("course_dept")
     course_num = data.get("course_num")
     course_capacity = data.get("course_capacity")
+    lecture_time = data.get("lecture_time")
 
     if not student_id or not course_dept or not course_num:
         return jsonify({"error": "Student ID, course department, and course number are required"}), 400
@@ -359,33 +362,39 @@ def register_course():
     if not student:
         return jsonify({"error": "Student not found"}), 404
     
-    # Concatenate the course department and number
-    course_identifier = f"{course_dept} {course_num}"
-
-    if course_identifier in student.get("registered_courses", []):
-        return jsonify({"error": "Student is already registered for this course"}), 400
-    
-    if course_capacity < 150:
-        # Add the course to the student's registered courses
-        students_collection.update_one(
-            {"student_id": student_id},
-            {"$push": {"registered_courses": course_identifier}},
-            upsert=True
-        )
-        courses_collection.update_one(
-                {"course_dept": course_dept, "course_num": course_num},
-                {"$inc": {"capacity": +1}}
-            )
-        return jsonify({"message": "Course registered successfully!"}), 201
-    else:
-        course = courses_collection.find_one({
+    course = courses_collection.find_one({
             "course_dept": course_dept,
             "course_num": course_num
-        })
-        
-        if not course:
-            return jsonify({"error": "Course not found"}), 404
-            
+        })        
+    if not course:
+        return jsonify({"error": "Course not found"}), 404
+
+    StudentRegisteredCourses = student.get("registered_courses", [])
+    StudentRegisteredLectureTime = []
+
+    if ObjectId(course_id) in StudentRegisteredCourses:
+        return jsonify({"error": "Student is already registered for this course"}), 400
+
+    for courses in StudentRegisteredCourses:
+        RegisteredCourse = courses_collection.find_one({"_id": ObjectId(courses)})
+        StudentRegisteredLectureTime.append(RegisteredCourse["lecture_time"])
+
+    # Add the course to the student's registered courses
+    if course_capacity < 150:
+        if lecture_time in StudentRegisteredLectureTime:
+             return jsonify({"error": "Course conflicts in timetable."}), 400
+        else:
+            students_collection.update_one(
+                {"student_id": student_id},
+                {"$push": {"registered_courses": ObjectId(course_id)}},
+                upsert=True
+            )
+            courses_collection.update_one(
+                    {"_id": ObjectId(course_id)},
+                    {"$inc": {"capacity": +1}}
+                )
+            return jsonify({"message": "Course registered successfully!"}), 201
+    else:            
         waitlist = course.get("waitlist", [])
         
         if student_id in waitlist:
