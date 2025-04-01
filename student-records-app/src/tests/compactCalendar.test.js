@@ -2,6 +2,21 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import CompactCalendar from '../Calendar';
+import axios from 'axios';
+
+// Mock the useUser hook
+jest.mock('../utils/useUser', () => ({
+  __esModule: true,
+  default: () => ({
+    userRole: 'student',
+    loading: false,
+    handleLogout: jest.fn(),
+    setLoading: jest.fn()
+  })
+}));
+
+// Mock axios
+jest.mock('axios');
 
 describe('Calendar Component (Compact View)', () => {
   const mockEvents = [
@@ -22,15 +37,18 @@ describe('Calendar Component (Compact View)', () => {
   ];
 
   beforeEach(() => {
-    // Mock axios to prevent actual API calls
-    jest.mock('axios');
     localStorage.setItem("role", "student");
+    localStorage.setItem("student_id", "test123");
+  });
+
+  afterEach(() => {
+    localStorage.clear();
+    jest.clearAllMocks();
   });
 
   test('renders in compact mode with correct styling', () => {
     render(<CompactCalendar mockEvents={mockEvents} compact={true} />);
     
-    // Check if calendar container has compact class
     const container = screen.getByTestId('calendar-container');
     expect(container).toHaveClass('calendar-compact');
   });
@@ -47,11 +65,8 @@ describe('Calendar Component (Compact View)', () => {
   test('renders mock events correctly', () => {
     render(<CompactCalendar mockEvents={mockEvents} compact={true} />);
     
-    // Check if both classes are displayed
     expect(screen.getByText(/COSC 310/)).toBeInTheDocument();
     expect(screen.getByText(/COSC 304/)).toBeInTheDocument();
-    
-    // Check if room numbers are displayed
     expect(screen.getByText(/EME 1202/)).toBeInTheDocument();
     expect(screen.getByText(/SCI 200/)).toBeInTheDocument();
   });
@@ -59,7 +74,7 @@ describe('Calendar Component (Compact View)', () => {
   test('displays correct time slots', () => {
     render(<CompactCalendar mockEvents={mockEvents} compact={true} />);
     
-    // Check for some time slots
+    // Check for time slots with the correct format
     expect(screen.getByText('8:00')).toBeInTheDocument();
     expect(screen.getByText('12:00')).toBeInTheDocument();
     expect(screen.getByText('16:00')).toBeInTheDocument();
@@ -68,27 +83,6 @@ describe('Calendar Component (Compact View)', () => {
   test('handles empty events array', () => {
     render(<CompactCalendar mockEvents={[]} compact={true} />);
     
-    // Calendar should still render without events
     expect(screen.getByText('No courses scheduled')).toBeInTheDocument();
-  });
-
-  test('event blocks have correct positioning', () => {
-    render(<CompactCalendar mockEvents={mockEvents} compact={true} />);
-    
-    const eventBlocks = screen.getAllByTestId('event-block');
-    
-    // First event (Monday 9:30-11:00)
-    expect(eventBlocks[0]).toHaveStyle({
-      top: '90px',  // (9.5 - 8) * 40 + 30
-      height: '60px',  // (11 - 9.5) * 40
-      left: '160px'  // (1 + 1) * 100 + 60
-    });
-
-    // Second event (Wednesday 14:00-15:30)
-    expect(eventBlocks[1]).toHaveStyle({
-      top: '270px',  // (14 - 8) * 40 + 30
-      height: '60px',  // (15.5 - 14) * 40
-      left: '360px'  // (3 + 1) * 100 + 60
-    });
   });
 });

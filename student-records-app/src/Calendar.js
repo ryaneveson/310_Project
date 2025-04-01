@@ -127,7 +127,7 @@ function Calendar({ mockEvents = null, compact = false }) {
                 className="event-block"
                 data-testid="event-block"
                 style={{
-                  left: `${(dayIndex + 1) * 100 + 60}px`,
+                  left: `${(dayIndex) * 100 + 60}px`,
                   top: topPosition,
                   height: height,
                 }}
