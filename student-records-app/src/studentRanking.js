@@ -194,7 +194,7 @@ function StudentRanking() {
           <h2>Filters</h2>
           <div className="filter-group">
             <label>
-              Min GPA:
+              Min Average:
               <input
                 type="number"
                 name="minGPA"
@@ -207,7 +207,7 @@ function StudentRanking() {
             </label>
             
             <label>
-              Max GPA:
+              Max Average:
               <input
                 type="number"
                 name="maxGPA"
@@ -272,7 +272,7 @@ function StudentRanking() {
                 <th>Name</th>
                 <th>Student ID</th>
                 <th>Major</th>
-                <th>GPA</th>
+                <th>Average</th>
                 <th>Courses</th>
               </tr>
             </thead>
