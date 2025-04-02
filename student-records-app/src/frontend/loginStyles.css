@@ -1,4 +1,3 @@
-/* Import Modern Font */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
 
 :root {
@@ -12,14 +11,12 @@
   --shadow: rgba(0, 0, 0, 0.1);
 }
 
-/* General Reset */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* Full Page Styling */
 body {
   font-family: 'Poppins', sans-serif;
   background: var(--background);
@@ -29,7 +26,6 @@ body {
   place-items: center;
 }
 
-/* Auth Container */
 .auth-container {
   width: 100%;
   min-height: 100vh;
@@ -38,7 +34,6 @@ body {
   padding: 40px 20px;
 }
 
-/* Auth Box (Minimalist Card Design) */
 .auth-box {
   background: var(--white);
   padding: 3rem 4.5rem;
@@ -61,7 +56,6 @@ body {
     0 10px 10px -5px var(--shadow);
 }
 
-/* Title */
 .auth-title {
   font-size: 2.2rem;
   font-weight: 600;
@@ -72,7 +66,6 @@ body {
   width: 100%;
 }
 
-/* Input Fields */
 .auth-input {
   width: 100%;
   padding: 1rem 1.25rem;
@@ -88,7 +81,6 @@ body {
   box-shadow: 0 0 0 4px rgba(0, 67, 133, 0.1);
 }
 
-/* 3D Button Effect */
 .auth-button2 {
   width: 50%;
   margin: 1rem auto;
@@ -129,7 +121,6 @@ body {
   transform: translateY(1px);
 }
 
-/* Error & Success Messages */
 .auth-error {
   color: var(--error);
   font-size: 0.875rem;
@@ -156,7 +147,6 @@ body {
   max-width: 500px;
 }
 
-/* Footer Links */
 .auth-footer {
   margin-top: 2rem;
   font-size: 0.875rem;

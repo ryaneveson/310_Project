@@ -52,13 +52,13 @@ const CardVerification = ({ method, setNumVer, setCvvVer, setExpVer }) => {
   }, [expiry, method.expiryDate, setExpVer]);
 
   const formatCardNumber = (value) => {
-    const cleaned = value.replace(/\D/g, ""); // Remove non-numeric characters
-    return cleaned.replace(/(\d{4})(?=\d)/g, "$1 ").trim(); // Add spaces every 4 digits
+    const cleaned = value.replace(/\D/g, ""); 
+    return cleaned.replace(/(\d{4})(?=\d)/g, "$1 ").trim(); 
   };
   
   const handleCardNumberChange = (e) => {
     const formatted = formatCardNumber(e.target.value);
-    setCardNum(formatted); // Store formatted value
+    setCardNum(formatted); 
   };
 
   return (

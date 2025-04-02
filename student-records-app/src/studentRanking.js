@@ -10,7 +10,6 @@ function StudentRanking() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
-  // Filter states
   const [filters, setFilters] = useState({
     minGPA: "",
     maxGPA: "",
@@ -19,7 +18,6 @@ function StudentRanking() {
     year: ""
   });
   
-  // Unique values for filters
   const [filterOptions, setFilterOptions] = useState({
     courses: new Set(),
     majors: new Set(),
@@ -39,7 +37,6 @@ function StudentRanking() {
       const data = await response.json();
       setStudents(data.students);
       
-      // Extract unique values for filters
       const options = {
         courses: new Set(),
         majors: new Set(),
@@ -49,7 +46,6 @@ function StudentRanking() {
       data.students.forEach(student => {
         student.classes.forEach(course => options.courses.add(course));
         if (student.major) options.majors.add(student.major);
-        // Assuming student ID format starts with year (e.g., "20230001")
         const year = student.studentNumber.substring(0, 4);
         options.years.add(year);
       });
@@ -106,7 +102,6 @@ function StudentRanking() {
 
   const filteredStudents = filterStudents();
 
-  // Add this new function to handle PDF export
   const exportRankingsToPdf = async () => {
     try {
       const studentsToExport = filteredStudents
@@ -144,7 +139,6 @@ function StudentRanking() {
         }
       );
 
-      // Check if the response is actually a JSON error message
       if (response.data.type === 'application/json') {
         const reader = new FileReader();
         reader.onload = () => {
@@ -183,7 +177,6 @@ function StudentRanking() {
     }
   };
 
-  // Add this helper function at the top of your component
   const formatCourseList = (courses) => {
     if (courses.length <= 3) {
       return courses.join(", ");

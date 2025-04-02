@@ -48,11 +48,11 @@
   }
   
   .hour-cell {
-    border-bottom: 1px solid #ddd; /* aligning with the time-slot border */
+    border-bottom: 1px solid #ddd; 
     border-left: 1px solid #ddd;
     position: relative;
     transform: translateY(-1000px);
-    box-sizing: border-box; /* make sure border is part of the elements total size */
+    box-sizing: border-box; 
   }
   
   .event-block {

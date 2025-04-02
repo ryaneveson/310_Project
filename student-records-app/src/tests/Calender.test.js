@@ -6,7 +6,7 @@ const axios = require("axios");
 jest.mock("axios");
 
 const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
-const hours = Array.from({ length: 25 }, (_, i) => 8 + i * 0.5); // 8:00 - 20:00 in 30-min increments
+const hours = Array.from({ length: 25 }, (_, i) => 8 + i * 0.5); 
 
 const testEvents = [
   { day: "Monday", startTime: "9:00", endTime: "11:00", classCode: "COSC 111", room: "COM 201" },
@@ -45,15 +45,14 @@ describe("Calendar Component", () => {
       const eventElement = screen.getByText(new RegExp(classCode, "i")).closest(".event-block");
       expect(eventElement).toBeInTheDocument();
 
-      const dayIndex = days.indexOf(day) + 2; // calendar grid starts from column 2
+      const dayIndex = days.indexOf(day) + 2; 
       const startHour = parseFloat(startTime.split(":")[0]) + (parseFloat(startTime.split(":")[1]) / 60);
       const endHour = parseFloat(endTime.split(":")[0]) + (parseFloat(endTime.split(":")[1]) / 60);
       
       const expectedGridColumn = `${dayIndex}`;
-      const top = `${(((startHour - 8) * 80) + 50) + "px"}`; // mapping hour to grid row
-      const height = `${((endHour - startHour) * 80) + "px"}`; //mapping duration to height
+      const top = `${(((startHour - 8) * 80) + 50) + "px"}`; 
+      const height = `${((endHour - startHour) * 80) + "px"}`; 
 
-      // check if styles are correctly applied
       expect(eventElement).toHaveStyle(`grid-column-start: ${expectedGridColumn}`);
       expect(eventElement).toHaveStyle(`top: ${top}`);
       expect(eventElement).toHaveStyle(`height: ${height}`)

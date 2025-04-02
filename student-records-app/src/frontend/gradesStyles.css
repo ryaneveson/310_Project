@@ -666,7 +666,6 @@ tr:hover td {
   padding: 0 2rem;
 }
 
-/* Academic Record Card */
 .academic-record {
   background: white;
   padding: 2rem;
@@ -708,7 +707,6 @@ tr:hover td {
   color: var(--text-dark);
 }
 
-/* Courses Section */
 .courses-section {
   background: white;
   padding: 2rem;
@@ -727,7 +725,6 @@ tr:hover td {
   margin-bottom: 1.5rem;
 }
 
-/* Table Styles */
 .courses-table {
   width: 100%;
   border-collapse: separate;
@@ -764,7 +761,6 @@ tr:hover td {
   background-color: var(--gray-50);
 }
 
-/* Course Status Badge */
 .status-badge {
   display: inline-block;
   padding: 0.375rem 0.75rem;
@@ -775,13 +771,11 @@ tr:hover td {
   color: var(--navy);
 }
 
-/* Grade Column */
 .grade-column {
   font-weight: 600;
   color: var(--navy);
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
   .grades-container {
     padding: 0 1rem;
@@ -804,14 +798,12 @@ tr:hover td {
   }
 }
 
-/* Loading State */
 .loading {
   text-align: center;
   padding: 2rem;
   color: var(--gray-700);
 }
 
-/* Error State */
 .error {
   background: #FEE2E2;
   color: #991B1B;
@@ -821,7 +813,54 @@ tr:hover td {
   text-align: center;
 }
 
-/* Ensure the header doesn't overlap */
 header {
   z-index: 10;
+}
+
+.drop-button2 {
+    background: #e74c3c !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 16px !important;
+    padding: 6px 12px !important;
+    cursor: pointer !important;
+    font-size: 14px !important;
+    transition: background-color 0.3s !important;
+    box-shadow: none !important;
+    text-transform: none !important;
+    font-weight: normal !important;
+    margin: 0 !important;
+    display: inline-block !important;
+    text-align: center !important;
+    line-height: normal !important;
+    width: auto !important;
+    height: auto !important;
+}
+
+.drop-button2:hover {
+    background-color: #c0392b !important;
+}
+
+.drop-button2:disabled {
+    background-color: #95a5a6 !important;
+    cursor: not-allowed !important;
+}
+
+.drop-button2.dropped {
+    background-color: #27ae60 !important;
+}
+
+.drop-button2.error {
+    background-color: #e67e22 !important;
+}
+
+.rankings-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.rankings-table th, .rankings-table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
 } 

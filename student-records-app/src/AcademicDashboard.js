@@ -3,7 +3,6 @@ import useUser from "./utils/useUser";
 import "./frontend/dashboardStyles.css"; 
 import PageBackground from './components/PageBackground';
 
-// GPA conversion map based on the provided grade scale
 const gradeToGPAMap = new Map([
   [90, 4.33], // 90-100 = 4.33
   [89, 4.30], // 89 = 4.30
@@ -55,19 +54,16 @@ const calculateGPA = (grades) => {
   
   if (averageGrade < 50) return 0;
   
-  // Find the closest grade in the map
   let closestGrade = [...gradeToGPAMap.keys()].reduce((prev, curr) => {
     return Math.abs(curr - averageGrade) < Math.abs(prev - averageGrade) ? curr : prev;
   });
   
   return gradeToGPAMap.get(closestGrade);
 };
-
-// Constants
+  
 const CREDITS_PER_COURSE = 3;
 const TOTAL_CREDITS_REQUIRED = 120;
 
-// Custom hooks
 const useAcademicInfo = (studentId) => {
   const [academicInfo, setAcademicInfo] = useState({
     gpa: 0,
@@ -87,12 +83,10 @@ const useAcademicInfo = (studentId) => {
           const completedGrades = data.student.completed_courses_grades.map(Number);
           const allGrades = [...registeredGrades, ...completedGrades];
           
-          // Calculate GPA using new formula
           const gpa = allGrades.length > 0
             ? calculateGPA(allGrades)
             : 0;
           
-          // Calculate credits
           const completedCredits = data.student.completed_courses.length * CREDITS_PER_COURSE;
           const inProgressCredits = data.student.registered_courses.length * CREDITS_PER_COURSE;
           const remainingCredits = TOTAL_CREDITS_REQUIRED - completedCredits;
@@ -117,7 +111,6 @@ const useAcademicInfo = (studentId) => {
   return academicInfo;
 };
 
-// Component for the academic status cards
 const AcademicStatusCards = ({ academicInfo }) => (
   <div className="info-cards">
     <div className="cardAcademic">

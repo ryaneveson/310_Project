@@ -3,7 +3,6 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import StudentSearch from "../StudentSearch";
 import axios from "axios";
 
-// Mock axios properly
 jest.mock('axios', () => ({
     get: jest.fn()
 }));
@@ -15,14 +14,12 @@ describe("Selected Students Functionality", () => {
     ];
 
     beforeEach(() => {
-        // Mock localStorage
         const localStorageMock = {
             getItem: jest.fn(() => 'admin'),
             removeItem: jest.fn()
         };
         Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 
-        // Mock axios response
         axios.get.mockResolvedValue({
             data: {
                 students: testStudents
@@ -30,7 +27,6 @@ describe("Selected Students Functionality", () => {
         });
     });
 
-    // Clear all mocks after each test
     afterEach(() => {
         jest.clearAllMocks();
     });

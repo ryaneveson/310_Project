@@ -7,7 +7,6 @@ import FooterLoader from './Footer';
 
 import reportWebVitals from './reportWebVitals';
 
-// Render the header inside the #header div
 const headerElement = document.getElementById('header');
 if (headerElement) {
   const headerRoot = ReactDOM.createRoot(headerElement);
@@ -17,7 +16,7 @@ if (headerElement) {
     </React.StrictMode>
   );
 }
-// Render the header inside the #header div
+
 const footerElement = document.getElementById('footer');
 if (footerElement) {
   const footerRoot = ReactDOM.createRoot(footerElement);
@@ -28,7 +27,6 @@ if (footerElement) {
   );
 }
 
-//render the main root App
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>

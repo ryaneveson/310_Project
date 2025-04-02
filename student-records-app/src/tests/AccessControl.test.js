@@ -11,15 +11,6 @@ describe('Role-Based Access Control', () => {
         window.location = { href: jest.fn()  };
     });
 
- /*   test('denies admin access to financial dashboard', async () => {
-        localStorage.setItem('role', 'admin');
-        render(<Finances />);
-        await waitFor(() => {
-            expect(screen.queryByText("Loading...")).not.toBeInTheDocument();
-        });
-        expect(screen.getByText('Access Denied')).toBeInTheDocument();
-    }); */
-
     test('denies student access to grade editing', () => {
         localStorage.setItem('role', 'student');
         render(<EditGrades />);

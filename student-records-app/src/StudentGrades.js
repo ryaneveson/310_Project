@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import './frontend/gradesStyles.css';
 import PageBackground from './components/PageBackground';
 
-// Import the GPA calculation from AcademicDashboard
 const gradeToGPAMap = new Map([
     [90, 4.33], [89, 4.30], [88, 4.20], [87, 4.10], [86, 4.00],
     [85, 3.95], [84, 3.90], [83, 3.85], [82, 3.80], [81, 3.75],
@@ -29,6 +28,7 @@ const StudentGrades = () => {
     const [studentData, setStudentData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [dropStatus, setDropStatus] = useState({});
 
     useEffect(() => {
         const fetchStudentData = async () => {
@@ -57,6 +57,64 @@ const StudentGrades = () => {
 
         fetchStudentData();
     }, []);
+
+    const handleDropCourse = async (courseIndex) => {
+        const studentId = localStorage.getItem('student_id');
+        if (!studentId) {
+            setError('Please log in to drop courses');
+            return;
+        }
+
+        setDropStatus(prev => ({ ...prev, [courseIndex]: 'dropping' }));
+
+        try {
+            const courseToDrop = studentData.registered_courses[courseIndex];
+            
+            const response = await fetch('http://localhost:5000/api/drop-course', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    student_id: studentId,
+                    course: courseToDrop
+                }),
+            });
+
+            const data = await response.json();
+
+            if (data.error) {
+                throw new Error(data.error);
+            }
+
+            const updatedStudentData = { ...studentData };
+            updatedStudentData.registered_courses = updatedStudentData.registered_courses.filter((_, index) => index !== courseIndex);
+            updatedStudentData.registered_courses_grades = updatedStudentData.registered_courses_grades.filter((_, index) => index !== courseIndex);
+            
+            setStudentData(updatedStudentData);
+            setDropStatus(prev => ({ ...prev, [courseIndex]: 'dropped' }));
+            
+            setTimeout(() => {
+                setDropStatus(prev => {
+                    const newStatus = { ...prev };
+                    delete newStatus[courseIndex];
+                    return newStatus;
+                });
+            }, 3000);
+            
+        } catch (err) {
+            setDropStatus(prev => ({ ...prev, [courseIndex]: 'error' }));
+            setError('Failed to drop course: ' + err.message);
+            
+            setTimeout(() => {
+                setDropStatus(prev => {
+                    const newStatus = { ...prev };
+                    delete newStatus[courseIndex];
+                    return newStatus;
+                });
+            }, 3000);
+        }
+    };
 
     if (loading) return <div className="loading">Loading...</div>;
     if (error) return <div className="error">{error}</div>;
@@ -94,6 +152,7 @@ const StudentGrades = () => {
                                             <th>Course</th>
                                             <th>Grade</th>
                                             <th>Status</th>
+                                            <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -103,6 +162,17 @@ const StudentGrades = () => {
                                                 <td>{studentData.registered_courses_grades[index] || 'In Progress'}</td>
                                                 <td>
                                                     <span className="status current">Current</span>
+                                                </td>
+                                                <td>
+                                                    {dropStatus[index] === 'dropping' ? (
+                                                        <button className="drop-button2" disabled>Dropping...</button>
+                                                    ) : dropStatus[index] === 'dropped' ? (
+                                                        <button className="drop-button2 dropped" disabled>Dropped</button>
+                                                    ) : dropStatus[index] === 'error' ? (
+                                                        <button className="drop-button2 error" onClick={() => handleDropCourse(index)}>Try Again</button>
+                                                    ) : (
+                                                        <button className="drop-button2" onClick={() => handleDropCourse(index)}>Drop</button>
+                                                    )}
                                                 </td>
                                             </tr>
                                         ))}

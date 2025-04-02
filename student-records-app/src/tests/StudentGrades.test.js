@@ -2,10 +2,8 @@ import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import StudentGrades from '../StudentGrades';
 
-// Mock the fetch function
 global.fetch = jest.fn();
 
-// Mock localStorage
 const mockLocalStorage = {
     getItem: jest.fn()
 };

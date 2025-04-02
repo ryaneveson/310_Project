@@ -4,7 +4,6 @@ import '@testing-library/jest-dom';
 import CompactCalendar from '../Calendar';
 import axios from 'axios';
 
-// Mock the useUser hook
 jest.mock('../utils/useUser', () => ({
   __esModule: true,
   default: () => ({
@@ -15,7 +14,6 @@ jest.mock('../utils/useUser', () => ({
   })
 }));
 
-// Mock axios
 jest.mock('axios');
 
 describe('Calendar Component (Compact View)', () => {
@@ -74,7 +72,6 @@ describe('Calendar Component (Compact View)', () => {
   test('displays correct time slots', () => {
     render(<CompactCalendar mockEvents={mockEvents} compact={true} />);
     
-    // Check for time slots with the correct format
     expect(screen.getByText('8:00')).toBeInTheDocument();
     expect(screen.getByText('12:00')).toBeInTheDocument();
     expect(screen.getByText('16:00')).toBeInTheDocument();

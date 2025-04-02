@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import useUser from "./utils/useUser"; // Make sure the path is correct
+import useUser from "./utils/useUser"; 
 import "./frontend/calendar.css";
 import PageBackground from './components/PageBackground';
 
 const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
-const hours = Array.from({ length: 25 }, (_, i) => 8 + i * 0.5); // 8:00 - 20:00 PM in 30-min increments
+const hours = Array.from({ length: 25 }, (_, i) => 8 + i * 0.5); 
 
 const dayMap = {
   "Mon": "Monday",
@@ -44,7 +44,6 @@ function Calendar({ mockEvents = null, compact = false }) {
 
         const courseData = response.data.courses;
 
-        // Transform the data for calendar display
         const formattedEvents = courseData.map(course => ({
           day: dayMap[course.day] || course.day,
           startTime: course.startTime,
@@ -158,7 +157,6 @@ function Calendar({ mockEvents = null, compact = false }) {
     </div>
   );
 
-  // Return compact calendar without PageBackground, or regular calendar with PageBackground
   return compact ? calendarContent : (
     <PageBackground>
       {calendarContent}

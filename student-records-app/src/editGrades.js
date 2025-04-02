@@ -3,7 +3,6 @@ import axios from "axios";
 import "./frontend/dashboardStyles.css";
 import PageBackground from './components/PageBackground';
 
-// First, modify the StudentSearchForm to be a memoized component at the top of the file
 const StudentSearchForm = memo(({ studentId, onStudentIdChange, onSearch }) => {
     const [localStudentId, setLocalStudentId] = useState(studentId);
 
@@ -34,7 +33,6 @@ const StudentSearchForm = memo(({ studentId, onStudentIdChange, onSearch }) => {
     );
 });
 
-// Also create a memoized GradeTable component
 const GradeTable = memo(({ title, grades, onGradeChange }) => {
     const [localGrades, setLocalGrades] = useState(grades);
 
@@ -91,8 +89,8 @@ const EditGrades = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [grades, setGrades] = useState({
-    registered: [],    // [{course: "COSC 310", grade: "85"}, ...]
-    completed: []      // [{course: "COSC 304", grade: "90"}, ...]
+    registered: [],    
+    completed: []      
   });
 
   useEffect(() => {

@@ -10,7 +10,6 @@ function StudentSearch({mockStudents = null}) {
     const [allClasses, setAllClasses] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    // State management
     const [selectedClasses, setSelectedClasses] = useState(new Set());
     const [searchTerm, setSearchTerm] = useState(""); 
     const [maxGpa, setMaxGpa] = useState(100);
@@ -31,7 +30,7 @@ function StudentSearch({mockStudents = null}) {
                 ...new Set(
                     mockStudents
                         .flatMap(student => student.classes)
-                        .filter(className => /^[A-Z]{4} [0-9]{3}$/.test(className)) //excludes all courses that dont follow the standard naming convention
+                        .filter(className => /^[A-Z]{4} [0-9]{3}$/.test(className)) 
                 )
             ].sort();
             setAllClasses(allUniqueClasses);
@@ -53,7 +52,6 @@ function StudentSearch({mockStudents = null}) {
                 }));
                 setStudents(formattedStudents);
 
-                // Extract unique classes from all students
                 const uniqueClasses = [...new Set(
                     formattedStudents
                         .flatMap(student => student.classes)
@@ -159,7 +157,6 @@ function StudentSearch({mockStudents = null}) {
         }
 
         try {
-            // Open the PDF in a new tab instead of trying to download it
             const studentIds = selectedStudents.map(s => s.studentNumber).join(",");
             window.open(`http://localhost:5000/api/generate-student-report?student_ids=${studentIds}`, '_blank');
         } catch (error) {
@@ -291,7 +288,6 @@ function StudentSearch({mockStudents = null}) {
                 </div>
             </article>
             <article id="search-results">
-                {/* ... existing search results code ... */}
             </article>
 
             <div className="selected-students-card">
