@@ -5,11 +5,11 @@
 #makePayment .input-container {
     position: relative;
     display: inline-block;
+    margin-right: 10px; 
 }
 
 #makePayment .currency-input {
     padding: 0.25rem;
-    padding-left: 1.5rem; /* Adjust for dollar sign */
     width: 120px;
     border: 1px solid #004385;
     border-radius: 5px;
@@ -21,6 +21,7 @@
     margin: 2rem 3rem;
     justify-content: space-around;
     align-items: flex-start;
+    margin-top: -10px;
 }
 #makePayment .box-container > *{
     background-color: white;
@@ -55,7 +56,7 @@
     color: #004385;
 }
 #makePayment .amount {
-    background-color: white;
+    background-color: rgba(255, 255, 255, 0.9);
     padding: 1rem 1.5rem;
     box-shadow: 20px 20px 10px rgba(0, 0, 0, 0.05); /* Soft Shadow */
     border: 3px solid #004385;
@@ -65,9 +66,12 @@
     max-width: 100%; /* Prevents it from overflowing */
     white-space: nowrap; /* Prevents wrapping inside the element */
     margin-top: 0;
+    margin-left: 13em; 
+    position: relative; 
 }
 #makePayment .amount > * {
     padding: 0.25rem;
+    align-items: center;
 }
 #makePayment .confirm-button {
     padding: 1rem 1.5rem;
@@ -84,4 +88,15 @@
     margin-top: 0.5rem;
     display: flex;
     flex-direction: column;
+}
+
+#makePayment.container2{
+    max-width: 1200px;
+    margin: 0 auto;
+    margin-top: 100px; 
+    padding: 20px;
+    border-radius: 50px; /* Optional: Add rounded corners */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Optional: Add a subtle shadow */
+    background: rgba(255, 255, 255, 1);
+    border: 10px solid #004385;
 }

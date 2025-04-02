@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import useUser from "./utils/useUser";
 import "./frontend/dashboardStyles.css"; 
+import PageBackground from './components/PageBackground';
 
 // GPA conversion map based on the provided grade scale
 const gradeToGPAMap = new Map([
@@ -119,13 +120,13 @@ const useAcademicInfo = (studentId) => {
 // Component for the academic status cards
 const AcademicStatusCards = ({ academicInfo }) => (
   <div className="info-cards">
-    <div className="card">
+    <div className="cardAcademic">
       <h3>Current Semester</h3>
       <p>Spring 2024</p>
       <p>Full-time Status</p>
       <p>Credits In Progress: {academicInfo.creditsInProgress}</p>
     </div>
-    <div className="card">
+    <div className="cardAcademic">
       <h3>Academic Progress</h3>
       <p>GPA: {academicInfo.gpa}</p>
       <p>Credits Completed: {academicInfo.creditsCompleted}</p>
@@ -198,28 +199,32 @@ const AcademicDashboard = () => {
 
   if (userRole !== "student") {
     return (
-      <div className="dashboard-container">
-        <h2>Access Denied</h2>
-        <p>This page is only accessible to students.</p>
-        <button className="logout-button" onClick={handleLogout}>
-          Logout
-        </button>
-      </div>
+      <PageBackground>
+        <div className="dashboard-container">
+          <h2>Access Denied</h2>
+          <p>This page is only accessible to students.</p>
+          <button className="logout-button" onClick={handleLogout}>
+            Logout
+          </button>
+        </div>
+      </PageBackground>
     );
   }
 
   return (
-    <div className="dashboard-container">
-      <div className="hero">
-        <h2>Academic Dashboard</h2>
-        <p>Welcome to your academic overview</p>
-      </div>
+    <PageBackground>
+      <div className="dashboard-container">
+        <div className="hero">
+          <h2>Academic Dashboard</h2>
+          <p>Welcome to your academic overview</p>
+        </div>
 
-      <div className="dashboard-content">
-        <AcademicStatusCards academicInfo={academicInfo} />
-        <AcademicResources onTranscriptDownload={handleTranscriptDownload} />
+        <div className="dashboard-content">
+          <AcademicStatusCards academicInfo={academicInfo} />
+          <AcademicResources onTranscriptDownload={handleTranscriptDownload} />
+        </div>
       </div>
-    </div>
+    </PageBackground>
   );
 };
 

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./frontend/loginStyles.css";
+import PageBackground from './components/PageBackground';
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -68,10 +69,11 @@ const Login = () => {
   };
 
   return (
-    <div className="page-container">
-      <div className="content-wrap">
-        <div className="auth-container">
-          <div className="auth-box">
+    <PageBackground>
+      <div className="page-container">
+        <div className="content-wrap">
+          <div className="auth-container">
+            <div className="auth-box">
             <h2 className="auth-title">Login</h2>
             <form onSubmit={handleLogin}>
               <input
@@ -90,7 +92,7 @@ const Login = () => {
                 required
                 className="auth-input"
               />
-              <button type="submit" className="auth-button">Login</button>
+              <button type="submit" className="auth-button2">Login</button>
             </form>
             {error && <p className="auth-error">{error}</p>}
             <p className="auth-footer">
@@ -100,11 +102,8 @@ const Login = () => {
           </div>
         </div>
       </div>
-      
-      <footer className="footer">
-        {/* Your footer content */}
-      </footer>
     </div>
+  </PageBackground>
   );
 };
 

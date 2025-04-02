@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import './frontend/gradesStyles.css';
+import PageBackground from './components/PageBackground';
 
 // Import the GPA calculation from AcademicDashboard
 const gradeToGPAMap = new Map([
@@ -63,79 +64,81 @@ const StudentGrades = () => {
 
     return (
         <div className="student-ranking">
-            <div className="ranking-container">
-                <div className="student-header">
-                    <h2>Academic Record</h2>
-                    <div className="student-info-card">
-                        <div className="info-item">
-                            <span>Name:</span> {studentData.first_name} {studentData.last_name}
-                        </div>
-                        <div className="info-item">
-                            <span>Student ID:</span> {studentData.student_id}
-                        </div>
-                        <div className="info-item">
-                            <span>Major:</span> {studentData.major}
-                        </div>
-                        <div className="info-item">
-                            <span>GPA:</span> {calculateGPA([...studentData.registered_courses_grades, ...studentData.completed_courses_grades].map(Number)).toFixed(2)}
-                        </div>
-                    </div>
-                </div>
-
-                <div className="courses-container">
-                    <div className="course-section">
-                        <h2>Current Courses</h2>
-                        <div className="rankings-table">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Course</th>
-                                        <th>Grade</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {studentData.registered_courses.map((course, index) => (
-                                        <tr key={`current-${index}`}>
-                                            <td>{course}</td>
-                                            <td>{studentData.registered_courses_grades[index] || 'In Progress'}</td>
-                                            <td>
-                                                <span className="status current">Current</span>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+            <PageBackground>
+                <div className="ranking-container">
+                    <div className="student-header">
+                        <h2>Academic Record</h2>
+                        <div className="student-info-card">
+                            <div className="info-item">
+                                <span>Name:</span> {studentData.first_name} {studentData.last_name}
+                            </div>
+                            <div className="info-item">
+                                <span>Student ID:</span> {studentData.student_id}
+                            </div>
+                            <div className="info-item">
+                                <span>Major:</span> {studentData.major}
+                            </div>
+                            <div className="info-item">
+                                <span>GPA:</span> {calculateGPA([...studentData.registered_courses_grades, ...studentData.completed_courses_grades].map(Number)).toFixed(2)}
+                            </div>
                         </div>
                     </div>
 
-                    <div className="course-section">
-                        <h2>Completed Courses</h2>
-                        <div className="rankings-table">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Course</th>
-                                        <th>Grade</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {studentData.completed_courses.map((course, index) => (
-                                        <tr key={`completed-${index}`}>
-                                            <td>{course}</td>
-                                            <td>{studentData.completed_courses_grades[index]}</td>
-                                            <td>
-                                                <span className="status completed">Completed</span>
-                                            </td>
+                    <div className="courses-container">
+                        <div className="course-section">
+                            <h2>Current Courses</h2>
+                            <div className="rankings-table">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Course</th>
+                                            <th>Grade</th>
+                                            <th>Status</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        {studentData.registered_courses.map((course, index) => (
+                                            <tr key={`current-${index}`}>
+                                                <td>{course}</td>
+                                                <td>{studentData.registered_courses_grades[index] || 'In Progress'}</td>
+                                                <td>
+                                                    <span className="status current">Current</span>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div className="course-section">
+                            <h2>Completed Courses</h2>
+                            <div className="rankings-table">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Course</th>
+                                            <th>Grade</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {studentData.completed_courses.map((course, index) => (
+                                            <tr key={`completed-${index}`}>
+                                                <td>{course}</td>
+                                                <td>{studentData.completed_courses_grades[index]}</td>
+                                                <td>
+                                                    <span className="status completed">Completed</span>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </PageBackground>
         </div>
     );
 };

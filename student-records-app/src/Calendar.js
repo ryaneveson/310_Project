@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import useUser from "./utils/useUser"; // Make sure the path is correct
 import "./frontend/calendar.css";
+import PageBackground from './components/PageBackground';
 
 const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 const hours = Array.from({ length: 25 }, (_, i) => 8 + i * 0.5); // 8:00 - 20:00 PM in 30-min increments
@@ -84,25 +85,22 @@ function Calendar({ mockEvents = null, compact = false }) {
     return hours + (minutes / 60);
   };
 
-  return (
+  const calendarContent = (
     <div data-testid="calendar-container" className={`calendar-container ${compact ? 'calendar-compact' : ''}`}>
       <div className="calendar-grid">
-        {/* column headers */}
-        <div className="time-column">Weekly Schedule</div>
+        <div className="time-column">Schedule</div>
         {days.map((day) => (
           <div key={day} className="day-header">
             {day}
           </div>
         ))}
 
-        {/* time slots */}
         {hours.map((hour) => (
           <div key={hour} className="time-slot">
             {Math.floor(hour)}:{hour % 1 === 0 ? "00" : "30"}
           </div>
         ))}
 
-        {/* schedule Grid */}
         {days.map((day) => (
           <div key={day} className="day-column">
             {hours.map((hour) => (
@@ -158,6 +156,13 @@ function Calendar({ mockEvents = null, compact = false }) {
         })}
       </div>
     </div>
+  );
+
+  // Return compact calendar without PageBackground, or regular calendar with PageBackground
+  return compact ? calendarContent : (
+    <PageBackground>
+      {calendarContent}
+    </PageBackground>
   );
 }
 
