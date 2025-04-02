@@ -87,11 +87,11 @@ describe("MakePayment Component", () => {
     global.alert = jest.fn();
     render(<MakePayment />);
     await waitFor(() => screen.getByText(/confirm payment/i));
-    fireEvent.change(screen.getByPlaceholderText("0.00"), { // Enter payment amount
+    fireEvent.change(screen.getByPlaceholderText("$0.00"), {
       target: { value: "100.00" },
     });
-    fireEvent.click(screen.getByLabelText(/visa/i)); // Select payment method
-    fireEvent.change(screen.getByPlaceholderText("XXXX XXXX XXXX XXXX"), { // Fill in card validation
+    fireEvent.click(screen.getByLabelText(/visa/i));
+    fireEvent.change(screen.getByPlaceholderText("XXXX XXXX XXXX XXXX"), {
       target: { value: "1111 2222 3333 4444" },
     });
     fireEvent.change(screen.getByPlaceholderText("CVV"), {
@@ -112,7 +112,7 @@ describe("MakePayment Component", () => {
   test("shows validation error when card info is incorrect", async () => {
     render(<MakePayment />);
     await waitFor(() => screen.getByText(/confirm payment/i));
-    fireEvent.change(screen.getByPlaceholderText("0.00"), {
+    fireEvent.change(screen.getByPlaceholderText("$0.00"), {
       target: { value: "100.00" },
     });
     fireEvent.click(screen.getByLabelText(/visa/i));

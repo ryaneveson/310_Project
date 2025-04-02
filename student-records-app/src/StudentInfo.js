@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./frontend/studentInfoStyles.css";
-import Header from "./Header";
+import PageBackground from './components/PageBackground';
 
 function StudentInformation() {
     const initialUserState = {
@@ -41,13 +41,13 @@ function StudentInformation() {
     const renderFormField = (label, name, type = "text", options = null) => {
         if (type === "select") {
             return (
-                <div className="info-field">
-                    <label className="info-label">{label}</label>
+                <div className="info-field2">
+                    <label className="info-label2">{label}</label>
                     <select
                         name={name}
                         value={editedInfo[name]}
                         onChange={handleChange}
-                        className="info-input"
+                        className="info-input2"
                     >
                         {options.map(opt => (
                             <option key={opt} value={opt}>{opt}</option>
@@ -58,14 +58,14 @@ function StudentInformation() {
         }
 
         return (
-            <div className="info-field">
-                <label className="info-label">{label}</label>
+            <div className="info-field2">
+                <label className="info-label2">{label}</label>
                 <input
                     type={type}
                     name={name}
                     value={editedInfo[name]}
                     onChange={handleChange}
-                    className="info-input"
+                    className="info-input2"
                     placeholder={type === "password" ? "Enter new password" : ""}
                 />
             </div>
@@ -74,9 +74,9 @@ function StudentInformation() {
 
     // create a helper method for info display
     const renderInfoField = (label, value) => (
-        <div className="info-field">
-            <span className="info-label">{label}</span>
-            <span className="info-value">{value}</span>
+        <div className="info-field2">
+            <span className="info-label2">{label}</span>
+            <span className="info-value2">{value}</span>
         </div>
     );
 
@@ -156,12 +156,11 @@ function StudentInformation() {
     };
 
     return (
-        <div>
-            <Header />
-            <div className="student-info-container">
-                <h2 className="student-info-header">Personal Information</h2>
-                <div className="info-section">
-                    <div className="info-grid">
+        <PageBackground>
+            <div className="student-info-container2">
+                <h2 className="student-info-header2">Personal Information</h2>
+                <div className="info-section2">
+                    <div className="info-grid2">
                         {isEditing ? (
                             <>
                                 {renderFormField("Username", "username")}
@@ -182,31 +181,31 @@ function StudentInformation() {
                         )}
                     </div>
 
-                    <div className="button-container">
+                    <div className="button-container2">
                         {isEditing ? (
                             <>
-                                <button className="edit-button save-button" onClick={handleSave}>
+                                <button className="edit-button2 save-button2" onClick={handleSave}>
                                     Save Changes
                                 </button>
-                                <button className="edit-button cancel-button" onClick={handleCancel}>
+                                <button className="edit-button2 cancel-button2" onClick={handleCancel}>
                                     Cancel
                                 </button>
                             </>
                         ) : (
-                            <button className="edit-button" onClick={handleEdit}>
+                            <button className="edit-button2" onClick={handleEdit}>
                                 Edit Information
                             </button>
                         )}
                     </div>
 
                     {message.text && (
-                        <div className={message.type === "error" ? "error-message" : "success-message"}>
+                        <div className={message.type === "error" ? "error-message2" : "success-message2"}>
                             {message.text}
                         </div>
                     )}
                 </div>
             </div>
-        </div>
+        </PageBackground>
     );
 }
 

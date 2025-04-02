@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./frontend/courses.css";
-
+import PageBackground from './components/PageBackground';
 // Constants
 const COURSE_LEVELS = [
   { value: "all", label: "All Levels" },
@@ -129,6 +129,7 @@ function Courses({ mockCourses = null }) {
   };
 
   return (
+    <PageBackground>
     <div className="container">
       <h2>Available Courses</h2>
 
@@ -255,6 +256,7 @@ function Courses({ mockCourses = null }) {
         </div>
       </div>
     </div>
+    </PageBackground>
   );
 }
 

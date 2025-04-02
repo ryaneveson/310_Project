@@ -1,49 +1,50 @@
-.student-info-container {
+.student-info-container2 {
     max-width: 800px;
     margin: 2rem auto;
     padding: 2rem;
     background-color: #ffffff;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-top: 100px;
 }
 
-.student-info-header {
+.student-info-header2 {
     color: #2c3e50;
     margin-bottom: 2rem;
     text-align: center;
     font-size: 2rem;
 }
 
-.info-section {
+.info-section2 {
     background-color: #f8f9fa;
     padding: 1.5rem;
     border-radius: 6px;
     margin-bottom: 1.5rem;
 }
 
-.info-grid {
+.info-grid2 {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 1.5rem;
 }
 
-.info-field {
+.info-field2 {
     margin-bottom: 1rem;
 }
 
-.info-label {
+.info-label2 {
     display: block;
     color: #2c3e50;
     font-weight: 600;
     margin-bottom: 0.5rem;
 }
 
-.info-value {
+.info-value2 {
     font-size: 1.1rem;
     color: #34495e;
 }
 
-.info-input {
+.info-input2 {
     width: 100%;
     padding: 0.75rem;
     border: 1px solid #ddd;
@@ -52,20 +53,20 @@
     transition: border-color 0.2s;
 }
 
-.info-input:focus {
+.info-input2:focus {
     border-color: #3498db;
     outline: none;
     box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
 }
 
-.button-container {
+.button-container2 {
     display: flex;
     gap: 1rem;
     justify-content: center;
     margin-top: 2rem;
 }
 
-.edit-button {
+.edit-button2 {
     background-color: #3498db;
     color: white;
     border: none;
@@ -76,33 +77,33 @@
     transition: background-color 0.2s;
 }
 
-.edit-button:hover {
+.edit-button2:hover {
     background-color: #2980b9;
 }
 
-.save-button {
+.save-button2 {
     background-color: #2ecc71;
 }
 
-.save-button:hover {
+.save-button2:hover {
     background-color: #27ae60;
 }
 
-.cancel-button {
+.cancel-button2 {
     background-color: #e74c3c;
 }
 
-.cancel-button:hover {
+.cancel-button2:hover {
     background-color: #c0392b;
 }
 
-.error-message {
+.error-message2 {
     color: #e74c3c;
     text-align: center;
     margin-top: 1rem;
 }
 
-.success-message {
+.success-message2 {
     color: #2ecc71;
     text-align: center;
     margin-top: 1rem;

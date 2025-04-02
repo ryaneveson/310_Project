@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import useUser from "./utils/useUser"; // Import the custom hook
 import "./frontend/dashboardStyles.css";
+import PageBackground from './components/PageBackground';
 
 const Finances = () => {
   const { userRole, studentId, handleLogout, handleNavigation } = useUser();
@@ -79,60 +80,64 @@ const Finances = () => {
 
   if (userRole !== "student") {
     return (
-      <div className="dashboard-container">
-        <h2>Access Denied</h2>
-        <p>This page is only accessible to students.</p>
-        <button className="logout-button" onClick={handleLogout}>
-          Logout
-        </button>
-      </div>
+      <PageBackground>
+        <div className="dashboard-container">
+          <h2>Access Denied</h2>
+          <p>This page is only accessible to students.</p>
+          <button className="logout-button" onClick={handleLogout}>
+            Logout
+          </button>
+        </div>
+      </PageBackground>
     );
   }
 
   return (
-    <div className="dashboard-container">
-      <div className="hero">
-        <h2>Financial Information</h2>
-      </div>
+    <PageBackground>
+      <div className="dashboard-container">
+        <div className="hero">
+          <h2>Financial Information</h2>
+        </div>
 
-      {/* Conditional rendering based on financialInfo */}
-      {financialInfo ? (
-        <div className="dashboard-content">
-          <div className="info-cards">
-            <FinancialCard title="Account Balance">
-              <p>Total Tuition: ${financialInfo.totalFees.toFixed(2)}</p>
-              <p>Amount Paid: ${financialInfo.amountPaid.toFixed(2)}</p>
-              <p>Remaining Balance: ${financialInfo.remainingBalance.toFixed(2)}</p>
-              <p>Registered Courses: {financialInfo.registeredCourses} (${(financialInfo.registeredCourses * 600).toFixed(2)})</p>
-              {financialInfo.nextPaymentDue && <p>Next Payment Due: {financialInfo.nextPaymentDue}</p>}
-            </FinancialCard>
+        {/* Conditional rendering based on financialInfo */}
+        {financialInfo ? (
+          <div className="dashboard-content">
+            <div className="info-cards">
+              <FinancialCard title="Account Balance">
+                <p>Total Tuition: ${financialInfo.totalFees.toFixed(2)}</p>
+                <p>Amount Paid: ${financialInfo.amountPaid.toFixed(2)}</p>
+                <p>Remaining Balance: ${financialInfo.remainingBalance.toFixed(2)}</p>
+                <p>Registered Courses: {financialInfo.registeredCourses} (${(financialInfo.registeredCourses * 600).toFixed(2)})</p>
+                {financialInfo.nextPaymentDue && <p>Next Payment Due: {financialInfo.nextPaymentDue}</p>}
+              </FinancialCard>
 
-            <FinancialCard title="Payment History">
-              {financialInfo.lastPayment ? (
-                <>
-                  <p>Last Payment: ${financialInfo.lastPayment.toFixed(2)}</p>
-                  <p>Payment Date: {financialInfo.lastPaymentDate}</p>
-                </>
-              ) : (
-                <p>No payment history available</p>
-              )}
-            </FinancialCard>
-          </div>
+              <FinancialCard title="Payment History">
+                {financialInfo.lastPayment ? (
+                  <>
+                    <p>Last Payment: ${financialInfo.lastPayment.toFixed(2)}</p>
+                    <p>Payment Date: {financialInfo.lastPaymentDate}</p>
+                  </>
+                ) : (
+                  <p>No payment history available</p>
+                )}
+              </FinancialCard>
+            </div>
 
-          <div className="apps-card">
-            <h3>Financial Actions</h3>
-            <div className="apps-buttons">
-              <FinancialActionButton onClick={() => handleNavigation("/makePayment")} label="Make Payment" />
-              <FinancialActionButton onClick={() => handleNavigation("/addPaymentMethod")} label="Add Payment Method" />
-              <FinancialActionButton onClick={() => handleNavigation("/paymentHistory")} label="View Payment History" />
-              <FinancialActionButton onClick={() => handleNavigation("/upcomingDue")} label="View Upcoming Dues" />
+            <div className="apps-card3">
+              <h3>Financial Actions</h3>
+              <div className="apps-buttons3">
+                <FinancialActionButton onClick={() => handleNavigation("/makePayment")} label="Make Payment" />
+                <FinancialActionButton onClick={() => handleNavigation("/addPaymentMethod")} label="Add Payment Method" />
+                <FinancialActionButton onClick={() => handleNavigation("/paymentHistory")} label="View Payment History" />
+                <FinancialActionButton onClick={() => handleNavigation("/upcomingDue")} label="View Upcoming Dues" />
+              </div>
             </div>
           </div>
-        </div>
-      ) : (
-        <div>Loading financial data...</div>  // This shows when financial info is not yet available
-      )}
-    </div>
+        ) : (
+          <div>Loading financial data...</div>  // This shows when financial info is not yet available
+        )}
+      </div>
+    </PageBackground>
   );
 };
 

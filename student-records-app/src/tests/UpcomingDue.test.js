@@ -63,7 +63,7 @@ describe("UpcomingDue Component", () => {
       render(<UpcomingDue mockDues={testDues}/>);
     });
 
-    await waitFor(() => expect(screen.getByText(/Upcoming Dues/i)).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText(/Upcoming Due/i)).toBeInTheDocument());
     const tableBody = screen.getByTestId("upcoming-table");
     const withinTable = within(tableBody);//ensures all of this is in the table body
 

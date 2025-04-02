@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./frontend/dashboardStyles.css";
-import ubcoImage from './frontend/img/UBCO4.jpg';
+import PageBackground from './components/PageBackground';
 import Calendar from './Calendar';
 
 const handleLogout = () => {
@@ -70,63 +70,61 @@ const calculateGPA = (grades) => {
 
 const AdminDashboard = () => {
   return (
-    <div className="dashboard-container">
-      <div className="campus-image">
-        <img src={ubcoImage} alt="UBCO Campus" />
-      </div>
-      <div className="hero">
-        <h2>Hi There Admin</h2>
-        <p>
-          {new Date().toLocaleDateString(undefined, {
-            weekday: "long",
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          })}
-        </p>
-      </div>
-
-      <div className="dashboard-content">
-        <div className="info-cards">
-          <div className="card">
-            <h3>Awaiting Your Action</h3>
-            <p>You're all caught up on your tasks.</p>
-          </div>
-          <div className="card">
-            <h3>Timely Suggestions</h3>
-            <p>Here's where you'll get updates on your active items.</p>
-          </div>
+    <PageBackground>
+      <div className="dashboard-container">
+        <div className="hero">
+          <h2>Hi There Admin</h2>
+          <p>
+            {new Date().toLocaleDateString(undefined, {
+              weekday: "long",
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
+          </p>
         </div>
 
-        <div className="apps-card">
-          <h3>Administrative Tools</h3>
-          <div className="apps-buttons">
-            <button onClick={() => (window.location.href = "/courses")} className="app-button">
-              Course Management
-            </button>
-            <button onClick={() => (window.location.href = "/editGrades")} className="app-button">
-              Grade Management
-            </button>
-            <button onClick={() => (window.location.href = "/studentSearch")} className="app-button">
-              Student Search
-            </button>
-            <button onClick={() => (window.location.href = "/studentRanking")} className="app-button">
-              Student Rankings
-            </button>
-            <button onClick={() => (window.location.href = "/studentProfileInput")} className="app-button">
-              Student Profile Lookup
-            </button>
-            <button onClick={() => (window.location.href = "/addFee")} className="app-button">
-              AddFee
-            </button>
-            <button onClick={() => (window.location.href = "/manageStudents")} className="app-button">
-              Manage Students
-            </button>
+        <div className="dashboard-content">
+          <div className="info-cards">
+            <div className="card">
+              <h3>Awaiting Your Action</h3>
+              <p>You're all caught up on your tasks.</p>
+            </div>
+            <div className="card">
+              <h3>Timely Suggestions</h3>
+              <p>Here's where you'll get updates on your active items.</p>
+            </div>
+          </div>
+
+          <div className="apps-card">
+            <h3>Administrative Tools</h3>
+            <div className="apps-buttons">
+              <button onClick={() => (window.location.href = "/courses")} className="app-button">
+                Course Management
+              </button>
+              <button onClick={() => (window.location.href = "/editGrades")} className="app-button">
+                Grade Management
+              </button>
+              <button onClick={() => (window.location.href = "/studentSearch")} className="app-button">
+                Student Search
+              </button>
+              <button onClick={() => (window.location.href = "/studentRanking")} className="app-button">
+                Student Rankings
+              </button>
+              <button onClick={() => (window.location.href = "/studentProfileInput")} className="app-button">
+                Student Profile Lookup
+              </button>
+              <button onClick={() => (window.location.href = "/addFee")} className="app-button">
+                AddFee
+              </button>
+              <button onClick={() => (window.location.href = "/manageStudents")} className="app-button">
+                Manage Students
+              </button>
+            </div>
           </div>
         </div>
       </div>
-
-    </div>
+    </PageBackground>
   );
 };
 
@@ -198,83 +196,82 @@ const StudentDashboard = () => {
   }, []);
 
   return (
-    <div className="dashboard-container">
-      <div className="campus-image">
-        <img src={ubcoImage} alt="UBCO Campus" />
-      </div>
-      <div className="hero">
-        <h2>Welcome, {username}!</h2>
-        <div className="date-quote-container">
-          <p>
-            {new Date().toLocaleDateString(undefined, {
-              weekday: "long",
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}
-          </p>
-          <span className="separator">|</span>
-          {isLoading ? (
-            <p className="quote-inline">Loading quote...</p>
-          ) : (
-            <p className="quote-inline">
-              "{quote.content}" — {quote.author}
+    <PageBackground>
+      <div className="dashboard-container">
+        <div className="hero">
+          <h2>Welcome, {username}!</h2>
+          <div className="date-quote-container">
+            <p>
+              {new Date().toLocaleDateString(undefined, {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
             </p>
-          )}
-        </div>
-      </div>
-
-      <div className="dashboard-content">
-        <div className="info-cards">
-          <div className="card">
-            <h3>Academic Status</h3>
-            <p>GPA: {academicInfo.gpa}</p>
-            <p>Credits Completed: {academicInfo.creditsCompleted}</p>
-            <p>Credits Remaining: {academicInfo.creditsRemaining}</p>
-          </div>
-          <div className="card">
-            <h3>Upcoming Deadlines</h3>
-            <p>Course Registration: March 15</p>
-            <p>Payment Due: March 20</p>
-            <p>Final Exams: April 10</p>
+            <span className="separator">|</span>
+            {isLoading ? (
+              <p className="quote-inline">Loading quote...</p>
+            ) : (
+              <p className="quote-inline">
+                "{quote.content}" — {quote.author}
+              </p>
+            )}
           </div>
         </div>
 
-        <div className="apps-card">
-          <h3>Quick Actions</h3>
-          <div className="apps-buttons">
-            <button onClick={() => (window.location.href = "/academicdashboard")} className="app-button">
-              Academic Dashboard
-            </button>
-            <button onClick={() => (window.location.href = "/courses")} className="app-button">
-              Course Registration
-            </button>
-            <button onClick={() => (window.location.href = "/finances")} className="app-button">
-              Financial Dashboard
-            </button>
-            <button onClick={() => (window.location.href = "/calendar")} className="app-button">
-              Worklist / Calendar
-            </button>
-            <button onClick={() => (window.location.href = "https://my.ubc.ca")} className="app-button">
-              myUBC
-            </button>
+        <div className="dashboard-content">
+          <div className="info-cards">
+            <div className="card">
+              <h3>Academic Status</h3>
+              <p>GPA: {academicInfo.gpa}</p>
+              <p>Credits Completed: {academicInfo.creditsCompleted}</p>
+              <p>Credits Remaining: {academicInfo.creditsRemaining}</p>
+            </div>
+            <div className="card">
+              <h3>Upcoming Deadlines</h3>
+              <p>Course Registration: March 15</p>
+              <p>Payment Due: March 20</p>
+              <p>Final Exams: April 10</p>
+            </div>
+          </div>
+
+          <div className="apps-card2">
+            <h3>Quick Actions</h3>
+            <div className="apps-buttons2">
+              <button onClick={() => (window.location.href = "/academicdashboard")} className="app-button">
+                Academic Dashboard
+              </button>
+              <button onClick={() => (window.location.href = "/courses")} className="app-button">
+                Course Registration
+              </button>
+              <button onClick={() => (window.location.href = "/finances")} className="app-button">
+                Financial Dashboard
+              </button>
+              <button onClick={() => (window.location.href = "/calendar")} className="app-button">
+                Worklist / Calendar
+              </button>
+              <button onClick={() => (window.location.href = "https://my.ubc.ca")} className="app-button">
+                myUBC
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
-      <button 
-        className="calendar-toggle"
-        onClick={() => setIsCalendarOpen(!isCalendarOpen)}
-      >
-        <span style={{ color: '#004385', fontSize: '18px' }}>
-          {isCalendarOpen ? '▶' : '◀ '}
-        </span>
-      </button>
+        <button 
+          className="calendar-toggle"
+          onClick={() => setIsCalendarOpen(!isCalendarOpen)}
+        >
+          <span style={{ color: '#004385', fontSize: '18px' }}>
+            {isCalendarOpen ? '▶' : '◀ '}
+          </span>
+        </button>
 
-      <div className={`calendar-panel ${isCalendarOpen ? 'open' : ''}`}>
-        <Calendar compact={true} />
+        <div className={`calendar-panel ${isCalendarOpen ? 'open' : ''}`}>
+          <Calendar compact={true} />
+        </div>
       </div>
-    </div>
+    </PageBackground>
   );
 };
 

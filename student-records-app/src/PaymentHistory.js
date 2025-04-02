@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { formatPayments, fetchFinances } from "./utils/FinanceUtils";
 import useUser from "./utils/useUser";
 import "./frontend/financeSummaryStyles.css";
-
+import PageBackground from './components/PageBackground';
 const PaymentHistory = ({ mockPayments = null}) => {
   const { userRole, loading, studentId, handleLogout, setLoading, handleNavigation } = useUser();
   const [payments, setPayments] = useState([]);
@@ -42,8 +42,9 @@ const PaymentHistory = ({ mockPayments = null}) => {
   }
 
   return (
+    <PageBackground>
     <div className="summary-page">
-      <div className="hero">
+      <div className="hero2">
         <h2>Payment History</h2>
       </div>
       <div className="summary-container">
@@ -97,6 +98,7 @@ const PaymentHistory = ({ mockPayments = null}) => {
         </div>
       </div>
     </div>
+    </PageBackground>
   );
 };
 

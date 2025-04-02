@@ -34,3 +34,63 @@
     border-bottom: 2px solid rgba(0, 67, 133, 0.1);
     padding-bottom: 8px;
 }
+
+.hero2 {
+    text-align: center;
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    margin-bottom: 30px;
+    box-shadow: 0px 4px 20px rgba(0, 67, 133, 0.08);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    margin-top: 100px; 
+  }
+  
+  .hero2 h2 {
+    color: #004385;
+    margin: 0 0 10px 0;
+  }
+  
+  .hero2 p {
+    font-size: 16px;
+    color: #577399;
+    margin: 0;
+  }
+
+.summary-page2 .summary-container2 {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+}
+.summary-table2 {
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0px 8px 24px rgba(0, 67, 133, 0.08);
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+}
+.summary-table2 table{
+    border: 1px solid var(--primary);
+    border-collapse: collapse;
+}
+.summary-table2 th {
+    background-color: rgba(255, 255, 255, 0.95);
+    color: #004385;
+    border: 1px solid var(--primary);
+    padding: 0.5rem 50px;
+}
+.summary-table2 td {
+    padding: 0.33rem;
+    border: 1px solid var(--primary);
+    text-align: center;
+}
+.summary-table2 h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #004385;
+    margin-bottom: 20px;
+    border-bottom: 2px solid rgba(0, 67, 133, 0.1);
+    padding-bottom: 8px;
+}

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./frontend/addPaymentMethod.css";
 import useUser from "./utils/useUser";
-
+import PageBackground from './components/PageBackground';
 function AddPaymentMethod() {
   const { userRole, studentId, handleLogout } = useUser();
   const [paymentMethod, setPaymentMethod] = useState("");
@@ -93,6 +93,7 @@ function AddPaymentMethod() {
   };
 
   return (
+    <PageBackground>
     <div className="payment-method-container">
       <h2>Add Payment Method</h2>
       <form onSubmit={handleSubmit}>
@@ -122,6 +123,7 @@ function AddPaymentMethod() {
         <button type="submit">Add Payment Method</button>
       </form>
     </div>
+    </PageBackground>
   );
 }
 

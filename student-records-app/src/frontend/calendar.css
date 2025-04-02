@@ -19,8 +19,9 @@
     color: white;
     text-align: center;
     font-weight: bold;
-    padding-top: 5px;
+    padding-top: 10px;
     padding-bottom: 15px;
+    height: 49px; 
   }
   
   .day-header {

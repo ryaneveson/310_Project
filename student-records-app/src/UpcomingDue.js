@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { formatPayments, fetchFinances } from "./utils/FinanceUtils";
 import useUser from "./utils/useUser";
 import "./frontend/financeSummaryStyles.css";
-
+import PageBackground from './components/PageBackground';
 const UpcomingDue = ({ mockDues = null }) => {
   const { userRole, loading, studentId, setLoading, handleLogout, handleNavigation } = useUser();
   const [upcoming, setUpcoming] = useState([]);
@@ -52,12 +52,13 @@ const UpcomingDue = ({ mockDues = null }) => {
   }
 
   return (
-    <div className="summary-page">
-      <div className="hero">
-        <h2>Upcoming Dues</h2>
+    <PageBackground>
+    <div className="summary-page2">
+      <div className="hero2">
+        <h2>Upcoming Due</h2>
       </div>
-      <div className="summary-container">
-        <div className="summary-table">
+      <div className="summary-container2">
+        <div className="summary-table2">
           <h3>Upcoming Items</h3>
           <table>
             <thead>
@@ -78,30 +79,30 @@ const UpcomingDue = ({ mockDues = null }) => {
             </tbody>
           </table>
         </div>
-        <div className="apps-card">
+        <div className="apps-card2">
           <h3>Financial Actions</h3>
-          <div className="apps-buttons">
+          <div className="apps-buttons2">
             <button
               onClick={() => handleNavigation("/Finances")}
-              className="app-button"
+              className="app-button2"
             >
               Finance Dashboard
             </button>
             <button
               onClick={() => handleNavigation("/makePayment")}
-              className="app-button"
+              className="app-button2"
             >
               Make Payment
             </button>
             <button
               onClick={() => handleNavigation("/addPaymentMethod")}
-              className="app-button"
+              className="app-button2"
             >
               Add Payment Method
             </button>
             <button
               onClick={() => handleNavigation("/paymentHistory")}
-              className="app-button"
+              className="app-button2"
             >
               View Payment History
             </button>
@@ -109,6 +110,7 @@ const UpcomingDue = ({ mockDues = null }) => {
         </div>
       </div>
     </div>
+    </PageBackground>
   );
 };
 

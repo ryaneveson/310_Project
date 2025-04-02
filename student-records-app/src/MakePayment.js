@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./frontend/makePayment.css";
 import useUser from "./utils/useUser";
+import PageBackground from './components/PageBackground';
 
 const formatCardNumber = (cardNumber) => `**** **** **** ${cardNumber.slice(-4)}`;
 
@@ -13,12 +14,11 @@ const FinancialSummary = ({ financialInfo, paymentAmount, setPaymentAmount, hand
 
     <label htmlFor="payment-amount">Payment amount:</label>
     <div className="input-container">
-      <span>$</span>
       <input
         type="text"
         id="payment-amount"
         className="currency-input"
-        placeholder="0.00"
+        placeholder="$0.00"
         value={paymentAmount}
         onChange={(e) => {
           let value = e.target.value.replace(/[^0-9.]/g, "").replace(/(\..*)\./g, "$1");
@@ -251,7 +251,8 @@ function MakePayment() {
   };
 
   return (
-    <div className="container" id="makePayment">
+    <PageBackground>
+    <div className="container2" id="makePayment">
       <h2>Make a Payment</h2>
       <FinancialSummary financialInfo={financialInfo} paymentAmount={paymentAmount} setPaymentAmount={setPaymentAmount} handleBlur={() => setPaymentAmount(parseFloat(paymentAmount).toFixed(2))} />
       <h2>Choose a payment method:</h2>
@@ -260,6 +261,7 @@ function MakePayment() {
         <button type="submit" className="confirm-button" disabled={financialInfo.remainingBalance <= 0}>Confirm Payment</button>
       </form>
     </div>
+    </PageBackground>
   );
 }
 
