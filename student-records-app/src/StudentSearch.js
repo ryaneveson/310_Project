@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./frontend/studentSearch.css";
 import axios from "axios";
+import PageBackground from './components/PageBackground';
 
 function StudentSearch({mockStudents = null}) {
     const [userRole, setUserRole] = useState(null);
@@ -188,8 +189,9 @@ function StudentSearch({mockStudents = null}) {
     }
 
     return (
+        <PageBackground>
         <div id="studentSearch">
-            <aside className="sidebar" id="sidebar">
+            <aside className="sidebar2" id="sidebar2">
                 <label>Maximum Percentage Average:<br />
                     <input
                         type="text"
@@ -219,7 +221,7 @@ function StudentSearch({mockStudents = null}) {
                     {isSidebarVisible ? 'Collapse' : 'Expand'}
                 </button>
                 <h3>Classes</h3>
-                <div className="checkboxes" data-testid="checkboxes" style={{
+                <div className="checkboxes2" data-testid="checkboxes" style={{
                     height: isSidebarVisible ? 'auto' : '0',
                     transition: 'width 0.3s ease',
                     overflow: 'hidden'
@@ -288,8 +290,12 @@ function StudentSearch({mockStudents = null}) {
                     </table>
                 </div>
             </article>
-            <article id="selected-students">
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <article id="search-results">
+                {/* ... existing search results code ... */}
+            </article>
+
+            <div className="selected-students-card">
+                <div className="selected-students-header">
                     <h2>Selected Students</h2>
                     <div className="export-buttons">
                         <button className="btn export-json" onClick={exportSelectedToJson}>
@@ -300,7 +306,7 @@ function StudentSearch({mockStudents = null}) {
                         </button>
                     </div>
                 </div>
-                <table>
+                <table className="selected-students-table">
                     <thead>
                         <tr>
                             <th>First Name</th>
@@ -316,7 +322,7 @@ function StudentSearch({mockStudents = null}) {
                                 <td>{student.lastName}</td>
                                 <td>{student.studentNumber}</td>
                                 <td>
-                                    <button className="btn" onClick={() => setSelectedStudents(prev => prev.filter(s => s.studentNumber !== student.studentNumber))}>
+                                    <button className="btn remove-student" onClick={() => setSelectedStudents(prev => prev.filter(s => s.studentNumber !== student.studentNumber))}>
                                         Remove Student
                                     </button>
                                 </td>
@@ -324,8 +330,9 @@ function StudentSearch({mockStudents = null}) {
                         ))}
                     </tbody>
                 </table>
-            </article>
+            </div>
         </div>
+        </PageBackground>
     );
 }
 

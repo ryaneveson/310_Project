@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./frontend/studentProfileInput.css";
+import PageBackground from './components/PageBackground';
 
 function StudentProfileInput() {
     const [userRole, setUserRole] = useState(null);
@@ -46,6 +47,7 @@ function StudentProfileInput() {
     }
 
     return (
+        <PageBackground>
         <div className="profile-search-container">
             <div className="profile-search-header">
                 <h2>Student Profile Search</h2>
@@ -65,6 +67,7 @@ function StudentProfileInput() {
                 </button>
             </div>
         </div>
+        </PageBackground>
     );
 }
 

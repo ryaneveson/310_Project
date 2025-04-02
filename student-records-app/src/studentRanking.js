@@ -3,6 +3,7 @@ import HeaderLoader from "./Header";
 import FooterLoader from "./Footer";
 import "./frontend/studentRanking.css";
 import axios from "axios";
+import PageBackground from './components/PageBackground';
 
 function StudentRanking() {
   const [students, setStudents] = useState([]);
@@ -191,7 +192,8 @@ function StudentRanking() {
   };
 
   return (
-    <div className="student-ranking">
+    <PageBackground>
+    <div className="student-ranking2">
       <HeaderLoader />
       
       <div className="ranking-container">
@@ -309,6 +311,7 @@ function StudentRanking() {
       
       <FooterLoader />
     </div>
+    </PageBackground>
   );
 }
 

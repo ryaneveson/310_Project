@@ -1,7 +1,7 @@
-.student-ranking {
+.student-ranking2 {
     min-height: 100vh;
-    background-color: #f8fafc;
     padding: 20px;
+    margin-top: 60px; 
 }
 
 .ranking-container {

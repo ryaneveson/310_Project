@@ -90,34 +90,34 @@ const AdminDashboard = () => {
               <h3>Awaiting Your Action</h3>
               <p>You're all caught up on your tasks.</p>
             </div>
-            <div className="card">
+            <div className="card4">
               <h3>Timely Suggestions</h3>
               <p>Here's where you'll get updates on your active items.</p>
             </div>
           </div>
 
-          <div className="apps-card">
+          <div className="apps-card4">
             <h3>Administrative Tools</h3>
-            <div className="apps-buttons">
-              <button onClick={() => (window.location.href = "/courses")} className="app-button">
+            <div className="apps-buttons4">
+              <button onClick={() => (window.location.href = "/courses")} className="app-button4">
                 Course Management
               </button>
-              <button onClick={() => (window.location.href = "/editGrades")} className="app-button">
+              <button onClick={() => (window.location.href = "/editGrades")} className="app-button4">
                 Grade Management
               </button>
-              <button onClick={() => (window.location.href = "/studentSearch")} className="app-button">
+              <button onClick={() => (window.location.href = "/studentSearch")} className="app-button4">
                 Student Search
               </button>
-              <button onClick={() => (window.location.href = "/studentRanking")} className="app-button">
+              <button onClick={() => (window.location.href = "/studentRanking")} className="app-button4">
                 Student Rankings
               </button>
-              <button onClick={() => (window.location.href = "/studentProfileInput")} className="app-button">
+              <button onClick={() => (window.location.href = "/studentProfileInput")} className="app-button4">
                 Student Profile Lookup
               </button>
-              <button onClick={() => (window.location.href = "/addFee")} className="app-button">
+              <button onClick={() => (window.location.href = "/addFee")} className="app-button4">
                 AddFee
               </button>
-              <button onClick={() => (window.location.href = "/manageStudents")} className="app-button">
+              <button onClick={() => (window.location.href = "/manageStudents")} className="app-button4">
                 Manage Students
               </button>
             </div>
