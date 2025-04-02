@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./frontend/loginStyles.css";
+import PageBackground from "./components/PageBackground";
 
 const CreateUser = () => {
   const [username, setUsername] = useState("");
@@ -71,6 +72,7 @@ const CreateUser = () => {
   };
 
   return (
+    <PageBackground>
     <div className="auth-container">
       <div className="auth-box">
         <h2 className="auth-title">Create Student Account</h2>
@@ -123,6 +125,7 @@ const CreateUser = () => {
         </p>
       </div>
     </div>
+    </PageBackground>
   );
 };
 
