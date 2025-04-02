@@ -12,7 +12,6 @@ describe('CreateUser Component', () => {
   test('renders initial student verification form', () => {
     render(<CreateUser />);
     
-    // check to see if student verification form elements are present
     expect(screen.getByText('Create Student Account')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('Student ID')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Verify Student ID' })).toBeInTheDocument();
@@ -21,7 +20,6 @@ describe('CreateUser Component', () => {
   test('shows error when student ID is empty', async () => {
     render(<CreateUser />);
     
-    // try to submit without student ID
     const verifyButton = screen.getByRole('button', { name: 'Verify Student ID' });
     fireEvent.click(verifyButton);
     
@@ -29,7 +27,6 @@ describe('CreateUser Component', () => {
   });
 
   test('shows registration form after successful verification', async () => {
-    //  successful verification response
     fetch.mockImplementationOnce(() => 
       Promise.resolve({
         ok: true,
@@ -39,12 +36,10 @@ describe('CreateUser Component', () => {
 
     render(<CreateUser />);
     
-    // submit verification form
     const studentIdInput = screen.getByPlaceholderText('Student ID');
     fireEvent.change(studentIdInput, { target: { value: '12345678' } });
     fireEvent.click(screen.getByRole('button', { name: 'Verify Student ID' }));
 
-    // wait for registration form to appear
     await waitFor(() => {
       expect(screen.getByPlaceholderText('Choose a username')).toBeInTheDocument();
       expect(screen.getByPlaceholderText('Choose a password')).toBeInTheDocument();
@@ -53,7 +48,6 @@ describe('CreateUser Component', () => {
   });
 
   test('handles failed student verification', async () => {
-    // failed verification response
     fetch.mockImplementationOnce(() => 
       Promise.resolve({
         ok: false,
@@ -66,12 +60,10 @@ describe('CreateUser Component', () => {
 
     render(<CreateUser />);
     
-    // fill and submit verification form
     const studentIdInput = screen.getByPlaceholderText('Student ID');
     fireEvent.change(studentIdInput, { target: { value: 'invalid_id' } });
     fireEvent.click(screen.getByRole('button', { name: 'Verify Student ID' }));
 
-    // wait for error message
     await waitFor(() => {
       expect(screen.getByText('Student ID not found')).toBeInTheDocument();
     });

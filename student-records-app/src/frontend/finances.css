@@ -1,4 +1,3 @@
-/* finances.css */
 #finances{
     font-family: Arial, sans-serif;
     margin: 20px;
@@ -18,7 +17,7 @@
 #finances .box-container > * {
     background-color: white;
     padding: 1rem 1.5rem;
-    box-shadow: 20px 20px 10px rgba(0, 0, 0, 0.05); /* Soft Shadow */
+    box-shadow: 20px 20px 10px rgba(0, 0, 0, 0.05); 
     border: 3px solid #004385;
     border-radius: 25px;
 }

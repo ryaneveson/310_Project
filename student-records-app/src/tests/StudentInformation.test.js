@@ -3,10 +3,8 @@ import { render, screen, waitFor } from '@testing-library/react';
 import axios from 'axios';
 import StudentInformation from '../StudentInfo';
 
-// Mock axios
 jest.mock('axios');
 
-// Mock localStorage
 const mockLocalStorage = {
     getItem: jest.fn(),
     setItem: jest.fn(),

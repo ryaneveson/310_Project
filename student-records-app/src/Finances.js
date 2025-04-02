@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
-import useUser from "./utils/useUser"; // Import the custom hook
+import useUser from "./utils/useUser"; 
 import "./frontend/dashboardStyles.css";
 import PageBackground from './components/PageBackground';
 
@@ -76,7 +76,7 @@ const Finances = () => {
     fetchFinancialData();
   }, [fetchFinancialData]);
 
-  if (!userRole) return <div>Loading...</div>;  // Loading state for userRole
+  if (!userRole) return <div>Loading...</div>; 
 
   if (userRole !== "student") {
     return (
@@ -99,7 +99,6 @@ const Finances = () => {
           <h2>Financial Information</h2>
         </div>
 
-        {/* Conditional rendering based on financialInfo */}
         {financialInfo ? (
           <div className="dashboard-content">
             <div className="info-cards">
@@ -134,7 +133,7 @@ const Finances = () => {
             </div>
           </div>
         ) : (
-          <div>Loading financial data...</div>  // This shows when financial info is not yet available
+          <div>Loading financial data...</div> 
         )}
       </div>
     </PageBackground>

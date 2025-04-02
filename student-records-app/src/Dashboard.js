@@ -8,7 +8,6 @@ const handleLogout = () => {
   window.location.href = "/";
 };
 
-// GPA conversion map based on the provided grade scale
 const gradeToGPAMap = new Map([
   [90, 4.33], // 90-100 = 4.33
   [89, 4.30], // 89 = 4.30
@@ -60,7 +59,6 @@ const calculateGPA = (grades) => {
   
   if (averageGrade < 50) return 0;
   
-  // Find the closest grade in the map
   let closestGrade = [...gradeToGPAMap.keys()].reduce((prev, curr) => {
     return Math.abs(curr - averageGrade) < Math.abs(prev - averageGrade) ? curr : prev;
   });
@@ -177,7 +175,6 @@ const StudentDashboard = () => {
       fetchAcademicInfo();
     }
 
-    // Fetch quote (existing code)
     const fetchQuote = async () => {
       try {
         setIsLoading(true);

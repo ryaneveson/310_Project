@@ -133,7 +133,6 @@ function Courses({ mockCourses = null }) {
     <div className="container">
       <h2>Available Courses</h2>
 
-      {/* Admin student search section */}
       {userRole === "admin" && (
         <div className="admin-controls">
           <h3>Register Student for Course</h3>
@@ -163,7 +162,6 @@ function Courses({ mockCourses = null }) {
         </div>
       )}
 
-      {/* Course search bar */}
       <input
         type="text"
         placeholder="Search for a course..."
@@ -208,7 +206,7 @@ function Courses({ mockCourses = null }) {
           </FilterBox>
 
         </div>
-        {/* Course list on the right side */}
+        
         <div className="course-list">
           <ul className="courses-list">
             {filteredCourses.length > 0 ? (
