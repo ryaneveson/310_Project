@@ -137,7 +137,7 @@ function Courses({ mockCourses = null }) {
       {userRole === "admin" && (
         <div className="admin-controls">
           <h3>Register Student for Course</h3>
-          <div className="student-search">
+          <div className="student-search2">
             <input
               type="text"
               placeholder="Enter Student ID..."

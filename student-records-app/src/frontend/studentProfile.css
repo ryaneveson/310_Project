@@ -60,13 +60,17 @@ tbody tr:nth-child(even) {
 }
 
 /* Style for the button container */
-.search-button-container {
+.search-button-container3 {
     width: 300px;
     position: absolute;
     text-align: right; /* Align the button to the right */
     margin-bottom: 20px; /* Add space below the button */
     left: 550px;
     right: -450px;
+    background-color: white; 
+    border-radius: 16px;
+    padding: 20px;
+    transform: translate(-120px);
 }
 
 /* Style for the button itself */

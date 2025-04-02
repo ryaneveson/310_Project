@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./frontend/addFee.css";
-
+import PageBackground from './components/PageBackground';
 function AddFee({ mockStudents = null }) {
     const [userRole, setUserRole] = useState(null);
     const [students, setStudents] = useState([]);
@@ -223,6 +223,7 @@ function AddFee({ mockStudents = null }) {
     };
 
     return (
+        <PageBackground>
         <div id="studentSearch">
             <aside className="sidebar" id="sidebar">
                 <div className="button-container">
@@ -370,6 +371,7 @@ function AddFee({ mockStudents = null }) {
                 </div>
             </article>
         </div>
+        </PageBackground>
     );
 }
 

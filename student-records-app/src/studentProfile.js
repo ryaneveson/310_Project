@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, memo } from "react";
 import axios from "axios";
 import HeaderLoader from "./Header";
 import "./frontend/studentProfile.css";
+import PageBackground from './components/PageBackground';
 
 const PersonalInfo = memo(({ studentData, edit, handleInputChange, editValues }) => {
     const [localValues, setLocalValues] = useState(editValues);
@@ -286,6 +287,7 @@ export default function StudentProfile() {
     //display student's profile data
     //display button for switching profile
     return (
+        <PageBackground>
         <div style={{ position: "relative" }}>
             <HeaderLoader />
             <h1>Student Profile</h1>
@@ -293,7 +295,7 @@ export default function StudentProfile() {
                 <p>Loading...</p>
             ) : studentData ? (
                 <div>
-                    <div style={{ position: "absolute" }} className="search-button-container">
+                    <div style={{ position: "absolute" }} className="search-button-container3">
                         <input
                             type="text"
                             placeholder="Enter Student ID"
@@ -328,6 +330,7 @@ export default function StudentProfile() {
                 <p>Student not found.</p>
             )}
         </div>
+        </PageBackground>
     );
 
 

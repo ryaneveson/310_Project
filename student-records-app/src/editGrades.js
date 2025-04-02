@@ -1,7 +1,7 @@
 import React, { useEffect, useState, memo } from "react";
 import axios from "axios";
 import "./frontend/dashboardStyles.css";
-import ReactDOM from "react-dom/client";
+import PageBackground from './components/PageBackground';
 
 // First, modify the StudentSearchForm to be a memoized component at the top of the file
 const StudentSearchForm = memo(({ studentId, onStudentIdChange, onSearch }) => {
@@ -50,9 +50,9 @@ const GradeTable = memo(({ title, grades, onGradeChange }) => {
     };
 
     return (
-        <div className="grades-table-container">
+        <div className="grades-table-container2">
             <h4>{title}</h4>
-            <table className="grades-table">
+            <table className="grades-table2">
                 <thead>
                     <tr>
                         <th>Course</th>
@@ -229,14 +229,15 @@ const EditGrades = () => {
 
 //return
   return (
+    <PageBackground>
     <div className="dashboard-container">
       <div className="hero">
         <h2>Grade Management</h2>
         <p>Update and manage student grades</p>
       </div>
       <div className="dashboard-content">
-        <div className="grades-section">
-          <div className="student-search">
+        <div className="grades-section2">
+          <div className="student-search2">
             <StudentSearchForm
               studentId={studentId}
               onStudentIdChange={handleStudentIdChange}
@@ -248,13 +249,13 @@ const EditGrades = () => {
           {error && <div className="error-message">{error}</div>}
 
           {studentName && (
-            <div className="student-info">
+            <div className="student-info2">
               <h3>Student: {studentName}</h3>
             </div>
           )}
 
           {(grades.registered.length > 0 || grades.completed.length > 0) && (
-            <div className="grades-tables">
+            <div className="grades-tables2">
               {renderRegisteredCourses()}
               {renderCompletedCourses()}
               <div className="actions-container">
@@ -267,6 +268,7 @@ const EditGrades = () => {
         </div>
       </div>
     </div>
+    </PageBackground>
   );
 };
 

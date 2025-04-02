@@ -3,7 +3,6 @@
   grid-template-columns: 300px 1fr 300px;
   gap: 2rem;
   padding: 2.5rem;
-  background-color: #f8fafc;
   min-height: 100vh;
 }
 
@@ -129,28 +128,30 @@ tr:hover td {
   background-color: #f8fafc;
 }
 
-.checkboxes {
+.checkboxes2 {
   margin-top: 1rem;
   max-height: 400px;
   overflow-y: auto;
   padding-right: 0.5rem;
+  background-color: white;
+  padding: 1rem; 
 }
 
-.checkboxes::-webkit-scrollbar {
+.checkboxes2::-webkit-scrollbar {
   width: 4px;
 }
 
-.checkboxes::-webkit-scrollbar-track {
+.checkboxes2::-webkit-scrollbar-track {
   background: #f1f5f9;
   border-radius: 2px;
 }
 
-.checkboxes::-webkit-scrollbar-thumb {
+.checkboxes2::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 2px;
 }
 
-.checkboxes label {
+.checkboxes2 label {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -160,7 +161,7 @@ tr:hover td {
   color: #475569;
 }
 
-.checkboxes input[type="checkbox"] {
+.checkboxes2 input[type="checkbox"] {
   width: 16px;
   height: 16px;
   border-radius: 4px;
@@ -232,4 +233,89 @@ h3 {
   .export-buttons {
     flex-direction: column;
   }
+}
+
+.selected-students-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 32px;
+  transform: translateX(-100px);
+}
+
+.selected-students-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.selected-students-header h2 {
+  color: black;
+  margin: 0;
+}
+
+.export-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.selected-students-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 8px;
+}
+
+.selected-students-table th {
+  color: white;
+  text-align: left;
+  padding: 12px;
+  font-weight: 500;
+}
+
+.selected-students-table td {
+  color: black;
+  padding: 12px;
+}
+
+.selected-students-table tr:hover td {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.btn.remove-student {
+  background: rgba(255, 59, 59, 0.3);
+  color: black;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn.remove-student:hover {
+  background: rgba(255, 59, 59, 0.5);
+}
+
+.btn.export-json, .btn.export-pdf {
+  background: rgba(255, 255, 255, 0.2);
+  color: black;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn.export-json:hover, .btn.export-pdf:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.sidebar2
+{
+  margin-left: 125px; 
+  padding: 20px;
+  background-color: #f5f5f5;
+  border-right: 1px solid #ddd;
+  border-radius: 16px;
+  margin-top: 30px; 
 }
